@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block sign_up_section %}
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col heading-section ftco-animate">
+                <h2 class="mb-4"><span>Sign Up</span></h2>
+                <form method="POST">
+                    <div class="form-group">
+                        <input type="email" class="form-control" id="user_email" name="email_input" placeholder="Email Address">
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="user_username" name="username_input" aria-describedby="user_username" placeholder="Choose A Username">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="user_password" name="password_input" placeholder="Password">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
+                    </div>
+                    <div class="mt-2">
+                        <span class="mr-2">Already have an account?</span>
+                        <a href="/login">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block sign_up_alert_section %}
+{% if successful_signup %}
+<div class="container">
+    <div class="alert alert-success" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="alert-heading">Account Created!</h4>
+        <p>Welcome to Craft Cooking! Your account has been successfully created!</p>
+    </div>
+</div>
+{% endif %}
+{% if error %}
+<div class="container">
+    <div class="alert alert-danger" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <p>The username you have chosen has already been chosen. Please choose another one!</p> 
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block jquery_script_section %}
+<script>
+    /* global $ */
+    $(function() {
+        $(".navbar-nav li").removeClass("active");
+        $("#sign_up_nav_item").addClass("active");
+    });
+</script>
+{% endblock %}

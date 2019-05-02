@@ -1,0 +1,36 @@
+{% extends "layout.html" %} 
+{% block login_in_section %}
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col heading-section ftco-animate">
+                <h2 class="mb-4"><span>Sign In</span></h2>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="user_username" aria-describedby="user_username" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="user_password" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">Log In</button>
+                </form>
+                <div class="mt-2">
+                    <span class="mr-2">New to Craft Cooking?</span>
+                    <a href="/user_creation">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{asd_error}}
+</section>
+{% endblock %}
+
+{% block jquery_script_section %}
+<script>
+/* global $ */
+    $(function(){
+        $(".navbar-nav li").removeClass("active");
+        $("#log_in_nav_item").addClass("active");
+    });
+</script>
+{% endblock %}
