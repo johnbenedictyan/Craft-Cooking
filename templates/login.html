@@ -5,12 +5,12 @@
         <div class="row">
             <div class="col heading-section ftco-animate">
                 <h2 class="mb-4"><span>Sign In</span></h2>
-                <form>
+                <form method="POST">
                     <div class="form-group">
-                        <input type="text" class="form-control" id="user_username" aria-describedby="user_username" placeholder="Username">
+                        <input type="text" class="form-control" id="user_username" name="username_input" aria-describedby="user_username" placeholder="Username">
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" id="user_password" placeholder="Password">
+                        <input type="password" class="form-control" id="user_password" name="password_input" placeholder="Password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-lg">Log In</button>
                 </form>
@@ -23,6 +23,24 @@
     </div>
     {{asd_error}}
 </section>
+{% endblock %}
+
+{% block login_alert_section %}
+{% if user_does_not_exist %}
+<div class="container">
+    <div class="alert alert-danger" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <p>The username you have does not exist.</p> 
+    </div>
+</div>
+{% elif incorrect_password %}
+<div class="container">
+    <div class="alert alert-danger" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <p>Incorrect Password</p> 
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block jquery_script_section %}
