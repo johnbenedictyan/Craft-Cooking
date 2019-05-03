@@ -78,28 +78,20 @@ def user_creation():
             pymysql_cursor.close()
             return render_template("signup.html",error=error)
         
-@app.route("/user/<current_user_id>/recipe_editor/<recipe_id>",methods=["GET","POST"])
-def edit(current_user_id,recipe_id):
-    return("Welcome!")
+@app.route("/user/recipe_creator",methods=["GET","POST"])
+def recipe_creator():
+    if request.method == "GET":
+        current_user_id = session["user_id"]
+        return render_template("recipe_creator.html",current_user_id=current_user_id)
+    else:
+        return("ASD")
 
-@app.route("/user/<current_user_id>/recipe_creator",methods=["GET","POST"])
-def recipe_creator(current_user_id):
-    return("Welcome!")
-
-@app.route("/user/<current_user_id>/recipe_deletor/<recipe_id>",methods=["GET","POST"])
-def recipe_deletor(current_user_id,recipe_id):
-    return("Welcome!")
-
-@app.route("/user/<current_user_id>/recipe_list")
-def recipe_list(current_user_id):
-    return("Welcome!")
-    
 @app.route("/user",methods=["GET","POST"])
 def user_dashboard():
     if request.method == "GET":
         pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
         user_details_sql="SELECT * FROM users WHERE `id` = '{}'".format(session["user_id"])
-        recipe_details_sql="SELECT `recipes`.`id`,`recipes`.`name` FROM recipes LEFT JOIN authors ON `recipes`.`author_id` = `authors`.`id` WHERE `authors`.`user_id` = '{}'".format(session["user_id"])
+        recipe_details_sql="SELECT `recipes`.`id`,`recipes`.`name` FROM recipes JOIN authors ON `recipes`.`author_id` = `authors`.`id` WHERE `authors`.`user_id` = '{}'".format(session["user_id"])
         pymysql_cursor.execute(user_details_sql)
         user_details=pymysql_cursor.fetchone()
         pymysql_cursor.execute(recipe_details_sql)
@@ -129,7 +121,10 @@ def user_dashboard():
         pymysql_connection.commit()
         pymysql_cursor.close()
         return render_template("login.html",no_change_required=no_change_required,password_changed=password_changed,email_changed=email_changed)
-        
+
+@app.route("/recipe_list")
+def recipe_list():
+    return render_template("recipe_list.html")
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'),
             port=int(os.environ.get('PORT')),

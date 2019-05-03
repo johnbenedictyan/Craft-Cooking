@@ -42,7 +42,7 @@
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{session.username}}</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="/user">Account Details</a>
-              <a class="dropdown-item" href="/user/{{session.user_id}}/recipe_list">My Recipes</a>
+              <a class="dropdown-item" href="/user/recipe_creator">My Recipes</a>
               <a class="dropdown-item" href="{{url_for('logout')}}">Log Out</a>
             </div>
           </li>
@@ -87,6 +87,12 @@
   {% block user_dashboard_section %}
   {% endblock %}
   
+  {% block recipe_creator_section %}
+  {% endblock %}
+  
+  {% block recipe_list_section %}
+  {% endblock %}
+
   <footer class="ftco-footer ftco-footer-2 ftco-section">
     <div class="container">
       <div class="row mb-5">
