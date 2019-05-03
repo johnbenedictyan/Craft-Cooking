@@ -3,10 +3,10 @@
     <div class="container">
         <div class="row">
             <div class="heading-section ftco-animate">
-                <h2 class="mb-4"><span>User Dashboard</span></h2>
+                <h2 class="mb-4 ml-4"><span>User Dashboard</span></h2>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-4">
             <div class="col-3">
                 <ul class="nav nav-tabs flex-column" id="user_dashboard_tab" role="tablist">
                     <li class="nav-item">
@@ -22,8 +22,15 @@
             </div>
             <div class="col-9">
                 <div class="tab-content" id="user_dashboard_tab_content">
-                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">...1</div>
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <div class="heading-section ftco-animate">
+                            <h2 class="mb-4"><span>Profile</span></h2>
+                        </div>
+                    </div>
                     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <div class="heading-section ftco-animate">
+                            <h2 class="mb-4"><span>Update Profile</span></h2>
+                        </div>
                         <form method="POST">
                             <div class="form-group">
                                 <input type="email" class="form-control" id="user_email" name="email_input" value="{{user_details.email}}">
@@ -51,7 +58,7 @@
                         </div>
                         <ul class="list-group">
                             {% for i in user_recipe_list %}
-                            <li class="list-group-item">{{i.name}}</li><a href="#">Edit</a>
+                            <li class="list-group-item">{{i.name}}<a class="float-right" href="#">Edit</a></li>
                             {% endfor %}
                         </ul>
                     </div>

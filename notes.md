@@ -20,3 +20,7 @@ app.sercet_key = os.urandom(24)
 
 if 'user' in sessions
 session.pop('user',None)
+
+the error of my hashed passwords not matching might be due to the fact that i have limited the amount of characters on the 
+password in the database to VARCHAR(30). Therefore the stored value would be a truncated version of the hashed password,
+therefore the checkpasswordhash function would not work.
