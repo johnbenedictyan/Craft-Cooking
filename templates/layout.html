@@ -46,7 +46,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="/user/{{user_details.id}}">Account Details</a>
               <a class="dropdown-item" href="/user/{{user_details.id}}/recipe_list">My Recipes</a>
-              <a class="dropdown-item" href="#">Log Out</a>
+              <a class="dropdown-item" href="{{url_for('logout')}}">Log Out</a>
             </div>
           </li>
           {% endif %}
@@ -54,10 +54,39 @@
     </div>
   </nav>
   <!-- END nav -->
-
-  {% block home_slider_section %} {% endblock %} {% block new_recipes_section %} {% endblock %} {% block featured_recipes_section %} {% endblock %} {% block seasonal_recipes_section %} {% endblock %} {% block newsletter_section %} {% endblock %} {% block
-  login_in_section %} {% endblock %} {% block sign_up_alert_section %} {% endblock %} {% block sign_up_section %} {% endblock %}
-
+  {% block home_slider_section %} 
+  {% endblock %} 
+  
+  {% block new_recipes_section %} 
+  {% endblock %} 
+  
+  {% block featured_recipes_section %} 
+  {% endblock %}
+  
+  {% block seasonal_recipes_section %} 
+  {% endblock %} 
+  
+  {% block newsletter_section %} 
+  {% endblock %} 
+  
+  {% block login_alert_section %}
+  {% endblock %}
+  
+  {% block update_user_profile_alert_section %}
+  {% endblock %}
+  
+  {% block login_section %} 
+  {% endblock %} 
+  
+  {% block sign_up_alert_section %} 
+  {% endblock %} 
+  
+  {% block sign_up_section %} 
+  {% endblock %}
+  
+  {% block user_dashboard_section %}
+  {% endblock %}
+  
   <footer class="ftco-footer ftco-footer-2 ftco-section">
     <div class="container">
       <div class="row mb-5">
