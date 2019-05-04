@@ -18,7 +18,6 @@ app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
 @app.route("/")
 def init():
-    print(session)
     return render_template("index.html",session=session)
 
 @app.route("/login",methods=["GET","POST"])
@@ -32,7 +31,6 @@ def login():
         check_sql = "SELECT id,password FROM users WHERE `username` = '{}'".format(username_input)
         pymysql_cursor.execute(check_sql)
         user_details = pymysql_cursor.fetchone()
-        print(user_details)
         pymysql_cursor.close()
         if user_details is not None:
             stored_password = user_details["password"]
@@ -96,7 +94,6 @@ def user_dashboard():
         user_details=pymysql_cursor.fetchone()
         pymysql_cursor.execute(recipe_details_sql)
         user_recipe_list=pymysql_cursor.fetchall()
-        print(user_recipe_list)
         pymysql_cursor.close()
         return render_template("user_dashboard.html",user_details=user_details,user_recipe_list=user_recipe_list)
     else:
@@ -125,6 +122,15 @@ def user_dashboard():
 @app.route("/recipe_list")
 def recipe_list():
     return render_template("recipe_list.html")
+    
+@app.route("/single")
+def article():
+    return render_template("single.html")
+    
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+    
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'),
             port=int(os.environ.get('PORT')),

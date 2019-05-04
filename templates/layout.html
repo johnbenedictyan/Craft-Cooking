@@ -23,6 +23,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block page_not_found_css_section %}
+  {% endblock %}
 </head>
 
 <body>
@@ -35,8 +37,8 @@
 
       <div class="collapse navbar-collapse" id="ftco-nav">
         <ul class="navbar-nav ml-auto">
-          <li id="home_nav_item" class="nav-item"><a href="/" class="nav-link">Home</a></li>
-          <li id="recipes_nav_item" class="nav-item"><a href="/recipe_list" class="nav-link">Recipes</a></li>
+          <li id="home_nav_item" class="nav-item"><a href="{{url_for('init')}}" class="nav-link">Home</a></li>
+          <li id="recipes_nav_item" class="nav-item"><a href="{{url_for('recipe_list')}}" class="nav-link">Recipes</a></li>
           {% if "username" in session %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{session.username}}</a>
@@ -47,8 +49,8 @@
             </div>
           </li>
           {% else %}
-          <li id="log_in_nav_item" class="nav-item"><a href="/login" class="nav-link">Log In</a></li>
-          <li id="sign_up_nav_item" class="nav-item"><a href="/user_creation" class="nav-link">Sign Up</a></li>
+          <li id="log_in_nav_item" class="nav-item"><a href="{{url_for('login')}}" class="nav-link">Log In</a></li>
+          <li id="sign_up_nav_item" class="nav-item"><a href="{{url_for('user_creation')}}" class="nav-link">Sign Up</a></li>
           {% endif %}
       </div>
     </div>
@@ -66,8 +68,20 @@
   {% block seasonal_recipes_section %} 
   {% endblock %} 
   
+  {% block recipe_list_hero_wrap_section %}
+  {% endblock %}
+  
+  {% block recipe_list_section %}
+  {% endblock %}
+  
+  {% block single_article_main_content_section %}
+  {% endblock %}
+  
   {% block newsletter_section %} 
   {% endblock %} 
+  
+  {% block login_hero_wrap_section %}
+  {% endblock %}
   
   {% block login_alert_section %}
   {% endblock %}
@@ -75,13 +89,16 @@
   {% block update_user_profile_alert_section %}
   {% endblock %}
   
-  {% block login_section %} 
+  {% block login_form_section %} 
   {% endblock %} 
+  
+  {% block sign_up_hero_wrap_section %}
+  {% endblock %}
   
   {% block sign_up_alert_section %} 
   {% endblock %} 
   
-  {% block sign_up_section %} 
+  {% block sign_up_form_section %} 
   {% endblock %}
   
   {% block user_dashboard_section %}
@@ -90,7 +107,7 @@
   {% block recipe_creator_section %}
   {% endblock %}
   
-  {% block recipe_list_section %}
+  {% block page_not_found_main_content_section %}
   {% endblock %}
 
   <footer class="ftco-footer ftco-footer-2 ftco-section">

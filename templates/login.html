@@ -1,5 +1,18 @@
 {% extends "layout.html" %} 
-{% block login_section %}
+{% block login_hero_wrap_section %}
+<section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+                <h1 class="mb-3 bread">Sign In</h1>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Sign In <i class="ion-ios-arrow-forward"></i></span></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block login_form_section %}
 <section class="ftco-section">
     <div class="container">
         <div class="row">
@@ -12,7 +25,7 @@
                     <div class="form-group">
                         <input type="password" class="form-control" id="user_password" name="password_input" placeholder="Password">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg">Log In</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
                 </form>
                 <div class="mt-2">
                     <span class="mr-2">New to Craft Cooking?</span>
