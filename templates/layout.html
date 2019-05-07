@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  {% block page_not_found_css_section %}
+  {% block page_specific_css_section %}
   {% endblock %}
 </head>
 
@@ -43,8 +43,8 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{session.username}}</a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/user">Account Details</a>
-              <a class="dropdown-item" href="/user/recipe_creator">My Recipes</a>
+              <a class="dropdown-item" href="{{url_for('user_dashboard')}}">Account Details</a>
+              <a class="dropdown-item" href="{{url_for('recipes')}}">My Recipes</a>
               <a class="dropdown-item" href="{{url_for('logout')}}">Log Out</a>
             </div>
           </li>
@@ -74,6 +74,9 @@
   {% block recipe_list_section %}
   {% endblock %}
   
+  {% block single_article_hero_wrap_section %}
+  {% endblock %}
+  
   {% block single_article_main_content_section %}
   {% endblock %}
   
@@ -101,7 +104,13 @@
   {% block sign_up_form_section %} 
   {% endblock %}
   
+  {% block user_dashboard_hero_wrap_section %}
+  {% endblock %}
+  
   {% block user_dashboard_section %}
+  {% endblock %}
+  
+  {% block recipe_creator_hero_wrap_section %}
   {% endblock %}
   
   {% block recipe_creator_section %}

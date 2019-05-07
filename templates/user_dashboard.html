@@ -1,4 +1,18 @@
-{% extends "layout.html" %} {% block user_dashboard_section %}
+{% extends "layout.html" %}
+{% block user_dashboard_hero_wrap_section %}
+<section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+                <h1 class="mb-3 bread">User Dashboard</h1>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>User Dashboard<i class="ion-ios-arrow-forward"></i></span></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block user_dashboard_section %}
 <section class="ftco-section">
     <div class="container">
         <div class="row">
@@ -8,63 +22,145 @@
         </div>
         <div class="row mt-4">
             <div class="col-3">
-                <ul class="nav nav-tabs flex-column" id="user_dashboard_tab" role="tablist">
+                <ul class="nav nav-pills flex-column" id="user_dashboard-tab" role="tablist" aria-orientation="vertical">
                     <li class="nav-item">
-                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+                        <a class="nav-link active" id="user_dashboard-home-tab" data-toggle="tab" href="#user_dashboard-home" role="tab" aria-controls="user_dashboard-home" aria-selected="true">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                        <a class="nav-link" id="user_dashboard-profile-tab" data-toggle="tab" href="#user_dashboard-profile" role="tab" aria-controls="user_dashboard-profile" aria-selected="false">Update Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="recipe_list-tab" data-toggle="tab" href="#recipe_list" role="tab" aria-controls="recipe_list" aria-selected="false">My Recipes</a>
+                        <a class="nav-link" id="user_dashboard-recipe_list-tab" data-toggle="tab" href="#user_dashboard-recipe_list" role="tab" aria-controls="user_dashboard-recipe_list" aria-selected="false">My Recipes</a>
                     </li>
                 </ul>
             </div>
             <div class="col-9">
-                <div class="tab-content" id="user_dashboard_tab_content">
-                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="tab-content" id="user_dashboard-tabContent">
+                    <div class="tab-pane fade show active" id="user_dashboard-home" role="tabpanel" aria-labelledby="user_dashboard-home-tab">
                         <div class="heading-section ftco-animate">
                             <h2 class="mb-4"><span>Profile</span></h2>
                         </div>
+                        <div class="ftco-animate">
+                            <div class="container">
+                                <div class="row mb-3">
+                                    <div class="col-4">
+                                        <img src="{{ url_for('static', filename='images/200-200.jpg') }}" class="img-thumbnail"></img>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="row">
+                                            <div class="col">
+                                                USERNAME
+                                            </div>
+                                            <div class="col">
+                                                Country
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                EMAIL
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                author since date OR not an author with become an author button
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <h3 class="">Bio</h3>
+                                        <blockquote class="blockquote">
+                                            <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="tab-pane fade" id="user_dashboard-profile" role="tabpanel" aria-labelledby="user_dashboard-profile-tab">
                         <div class="heading-section ftco-animate">
                             <h2 class="mb-4"><span>Update Profile</span></h2>
                         </div>
-                        <form method="POST">
-                            <div class="form-group">
-                                <input type="email" class="form-control" id="user_email" name="email_input" value="{{user_details.email}}">
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" readonly class="form-control-plaintext" id="user_username" aria-describedby="user_username" value="{{user_details.username}}">
+                        <div class="ftco-animate">
+                            <form method="POST">
+                                <div class="row">
+                                    <div class="col-4 text-center">
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <img src="{{ url_for('static', filename='images/200-200.jpg') }}" class="img-thumbnail"></img>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col">
+                                                <label class="btn btn-primary btn-rounded"><input type="file" name="profile-picture-input"/><i class="icon icon-cloud_upload"></i>New Picture</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="form-row">
+                                            <div class="form-group col">
+                                                <input type="text" class="form-control" readonly class="form-control-plaintext" id="user_username" aria-describedby="user_username" value="{{user_details.username}}">
+                                            </div>
+                                            <div class="form-group col">
+                                                <input type="text" class="form-control" readonly class="form-control-plaintext" id="user_username" aria-describedby="user_username" value="Country">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col">
+                                                <input type="email" class="form-control" id="user_email" name="email_input" value="{{user_details.email}}">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-7">
+                                                <input type="password" class="form-control" id="user_password" name="password_input" placeholder="New Password">
+                                            </div>
+                                            <div class="form-group col-5">
+                                                author since date OR not an author with become an author button
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <input type="password" class="form-control" id="user_password" name="password_input" placeholder="New Password">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <h3 class="">Bio</h3>
+                                        <textarea class="form-control" id="bio-text-area" value="text area" name="bio-input" rows="5">PUT THE JIJNA THING FOR user_details.bio here</textarea>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="mt-2">
-                                <button type="submit" class="btn btn-primary btn-lg">Update Profile</button>
-                            </div>
-                        </form>
+                                <div class="mt-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">Update Profile</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="tab-pane fade" id="recipe_list" role="tabpanel" aria-labelledby="recipe_list-tab">
+                    <div class="tab-pane fade" id="user_dashboard-recipe_list" role="tabpanel" aria-labelledby="user_dashboard-recipe_list-tab">
                         <div class="heading-section ftco-animate">
                             <h2 class="mb-4"><span>Recipe List</span></h2>
                         </div>
-                        <ul class="list-group">
-                            {% for i in user_recipe_list %}
-                            <li class="list-group-item">{{i.name}}<a class="float-right" href="#">Edit</a></li>
-                            {% endfor %}
-                        </ul>
+                        <div class="ftco-animate">
+                            <ul class="list-group">
+                                {% for i in user_recipe_list %}
+                                <li class="list-group-item">{{i.name|title}}<a class="float-right" href="#">Edit</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+{% endblock %} 
+{% block page_specific_css_section %} 
+<style>
+    input[type="file"] {
+    display: none;
+}
+/*.custom-file-upload {*/
+/*    border: 1px solid #ccc;*/
+/*    display: inline-block;*/
+/*    padding: 6px 12px;*/
+/*    cursor: pointer;*/
+/*}*/
+</style>
 {% endblock %}

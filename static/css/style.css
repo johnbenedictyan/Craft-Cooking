@@ -3414,7 +3414,8 @@ input[type="button"].btn-block {
 .nav-pills .nav-link.active,
 .nav-pills .show > .nav-link {
   color: #fff;
-  background-color: #007bff; }
+  background-color:#0072e3;  }
+  /*background-color: #007bff; }*/
 
 .nav-fill .nav-item {
   -webkit-box-flex: 1;

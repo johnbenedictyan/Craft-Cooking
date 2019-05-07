@@ -12,10 +12,67 @@ pymysql_connection = pymysql.connect(host="localhost",
                              user = "johnbenedict",
                              password="",
                              db="craft_cooking")
-                             
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
+
+def check_login_details(username_input,password_input):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    check_sql = "SELECT id,password FROM users WHERE `username` = '{}'".format(username_input)
+    pymysql_cursor.execute(check_sql)
+    user_details = pymysql_cursor.fetchone()
+    pymysql_cursor.close()
+    return user_details
+    
+def get_user_dashboard_details():
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    user_details_sql="SELECT * FROM users WHERE `id` = '{}'".format(session["user_id"])
+    recipe_details_sql="SELECT `recipes`.`id`,`recipes`.`name` FROM recipes JOIN authors ON `recipes`.`author_id` = `authors`.`id` WHERE `authors`.`user_id` = '{}'".format(session["user_id"])
+    pymysql_cursor.execute(user_details_sql)
+    user_details=pymysql_cursor.fetchone()
+    pymysql_cursor.execute(recipe_details_sql)
+    user_recipe_list=pymysql_cursor.fetchall()
+    pymysql_cursor.close()
+    return_array = [user_details,user_recipe_list]
+    return return_array
+
+def get_article_details(article_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    
+    get_author_details_sql = "SELECT users.username,users.id FROM `authors` JOIN `recipes` ON recipes.author_id = authors.id JOIN `users` ON authors.user_id = users.id WHERE recipes.id = '{}'".format(article_id)
+    pymysql_cursor.execute(get_author_details_sql)
+    author_details=pymysql_cursor.fetchone()
+    
+    get_recipe_details_sql = "SELECT recipes.serves,recipes.name,recipes.recipe_procedure FROM `recipes` WHERE recipes.id = '{}'".format(article_id)
+    pymysql_cursor.execute(get_recipe_details_sql)
+    recipe_details=pymysql_cursor.fetchone()
+    
+    get_recipe_time_details_sql = "SELECT recipes.ready_in_duration_seconds,recipes.prep_duration_seconds,recipes.cook_duration_seconds FROM `recipes` WHERE recipes.id = '{}'".format(article_id)
+    pymysql_cursor.execute(get_recipe_time_details_sql)
+    recipe_time_details=pymysql_cursor.fetchone()
+    
+    get_ingredient_details_sql="SELECT name,ingredient_amount FROM `ingredients` JOIN `ingredient_lists` ON ingredients.id = ingredient_lists.ingredient_id WHERE ingredient_lists.recipe_id = '{}'".format(article_id)
+    pymysql_cursor.execute(get_ingredient_details_sql)
+    ingredient_details=pymysql_cursor.fetchall()
+    
+    get_category_lists_sql = "SELECT name FROM `categories` JOIN `category_lists` ON categories.id = category_lists.category_id WHERE category_lists.recipe_id = '{}'".format(article_id)
+    pymysql_cursor.execute(get_category_lists_sql)
+    category_lists_details=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.close()
+    recipe_procedure = recipe_details["recipe_procedure"]
+    recipe_procedure_list = recipe_procedure.split(".")
+    for i in recipe_procedure_list:
+        if i == "":
+            recipe_procedure_list.remove(i)
+        else:
+            pass
+    
+    recipe_time_details_list = [recipe_time_details["prep_duration_seconds"],recipe_time_details["cook_duration_seconds"],recipe_time_details["ready_in_duration_seconds"]]
+    for j in recipe_time_details_list:
+        recipe_time_details_list[recipe_time_details_list.index(j)] = str(j)+" seconds"
+    return [author_details,recipe_details,ingredient_details,category_lists_details,recipe_procedure_list,recipe_time_details_list]
+
 @app.route("/")
 def init():
     return render_template("index.html",session=session)
@@ -25,13 +82,9 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     else:
-        pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
         username_input = request.form["username_input"]
         password_input = request.form["password_input"]
-        check_sql = "SELECT id,password FROM users WHERE `username` = '{}'".format(username_input)
-        pymysql_cursor.execute(check_sql)
-        user_details = pymysql_cursor.fetchone()
-        pymysql_cursor.close()
+        user_details = check_login_details(username_input,password_input)
         if user_details is not None:
             stored_password = user_details["password"]
             if bcrypt.check_password_hash(stored_password,password_input):
@@ -76,25 +129,20 @@ def user_creation():
             pymysql_cursor.close()
             return render_template("signup.html",error=error)
         
-@app.route("/user/recipe_creator",methods=["GET","POST"])
-def recipe_creator():
+@app.route("/user/recipes",methods=["GET","POST"])
+def recipes():
     if request.method == "GET":
         current_user_id = session["user_id"]
-        return render_template("recipe_creator.html",current_user_id=current_user_id)
+        return render_template("recipes.html",current_user_id=current_user_id)
     else:
         return("ASD")
 
 @app.route("/user",methods=["GET","POST"])
 def user_dashboard():
     if request.method == "GET":
-        pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-        user_details_sql="SELECT * FROM users WHERE `id` = '{}'".format(session["user_id"])
-        recipe_details_sql="SELECT `recipes`.`id`,`recipes`.`name` FROM recipes JOIN authors ON `recipes`.`author_id` = `authors`.`id` WHERE `authors`.`user_id` = '{}'".format(session["user_id"])
-        pymysql_cursor.execute(user_details_sql)
-        user_details=pymysql_cursor.fetchone()
-        pymysql_cursor.execute(recipe_details_sql)
-        user_recipe_list=pymysql_cursor.fetchall()
-        pymysql_cursor.close()
+        data = get_user_dashboard_details()
+        user_details = data[0]
+        user_recipe_list = data[1]
         return render_template("user_dashboard.html",user_details=user_details,user_recipe_list=user_recipe_list)
     else:
         pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -123,9 +171,10 @@ def user_dashboard():
 def recipe_list():
     return render_template("recipe_list.html")
     
-@app.route("/single")
-def article():
-    return render_template("single.html")
+@app.route("/single/<article_id>")
+def article(article_id):
+    data = get_article_details(article_id)
+    return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],category_lists_details=data[3],recipe_procedure_list=data[4],recipe_time_details_list = data[5])
     
 @app.errorhandler(404)
 def page_not_found(e):

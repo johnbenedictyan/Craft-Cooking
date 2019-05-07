@@ -1,0 +1,57 @@
+{% extends "layout.html" %} 
+{% block recipe_creator_hero_wrap_section %}
+<section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+                <h1 class="mb-3 bread">Recipes</h1>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Recipes <i class="ion-ios-arrow-forward"></i></span></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block recipe_creator_section %}
+<section class="ftco-section">
+    <div class="container">
+        <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-my_recipes-tab" data-toggle="pill" href="#pills-my_recipes" role="tab" aria-controls="pills-my_recipes" aria-selected="true">My Recipes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-recipe_creator-tab" data-toggle="pill" href="#pills-recipe_creator" role="tab" aria-controls="pills-recipe_creator" aria-selected="false">Recipe Creator</a>
+            </li>
+            <!--<li class="nav-item">-->
+            <!--    <a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Contact</a>-->
+            <!--</li>-->
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-my_recipes" role="tabpanel" aria-labelledby="pills-my_recipes-tab">
+                <div class="container">
+                    <div class="row">
+                        <div class="col heading-section ftco-animate">
+                            <h2 class="mb-4"><span>My Recipes</span></h2>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="pills-recipe_creator" role="tabpanel" aria-labelledby="pills-recipe_creator-tab">
+                <div class="container">
+                    <div class="row">
+                        <div class="col heading-section ftco-animate">
+                            <h2 class="mb-4"><span>Recipe Creator</span></h2>
+                            <form method="POST">
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>-->
+        </div>
+
+    </div>
+</section>
+{% endblock %}
