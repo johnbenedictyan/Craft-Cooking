@@ -67,3 +67,14 @@ Read function for single article page
 7 May:
 Profile layout
 Profile update layout
+
+13 May:
+Added in the photo to each single article
+Added the function to get all the recipes in the recipe list to show up
+Added in the search function for the recipe lists
+
+http://flask.pocoo.org/docs/1.0/patterns/flashing/
+http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
+https://pythonhosted.org/Flask-Uploads/
+
+decide on whether to use text area or the button which adds a new step for the recipe procedure

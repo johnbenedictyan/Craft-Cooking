@@ -59,6 +59,10 @@ def get_article_details(article_id):
     pymysql_cursor.execute(get_category_lists_sql)
     category_lists_details=pymysql_cursor.fetchall()
     
+    get_photo_lists_sql = "SELECT `uri` FROM `photos` JOIN `recipes` ON photos.recipe_id = recipes.id WHERE recipes.id = '{}'".format(article_id)
+    pymysql_cursor.execute(get_photo_lists_sql)
+    photo_lists_details=pymysql_cursor.fetchall()
+    
     pymysql_cursor.close()
     recipe_procedure = recipe_details["recipe_procedure"]
     recipe_procedure_list = recipe_procedure.split(".")
@@ -69,9 +73,69 @@ def get_article_details(article_id):
             pass
     
     recipe_time_details_list = [recipe_time_details["prep_duration_seconds"],recipe_time_details["cook_duration_seconds"],recipe_time_details["ready_in_duration_seconds"]]
+    
+    # photo_array = []
+    # for j in photo_lists_details:
+    #     for key,value in j.items():
+    #         photo_array.append(str(value))
+    
+    for j in photo_lists_details:
+        photo_uri = j["uri"]
+    
     for j in recipe_time_details_list:
         recipe_time_details_list[recipe_time_details_list.index(j)] = str(j)+" seconds"
-    return [author_details,recipe_details,ingredient_details,category_lists_details,recipe_procedure_list,recipe_time_details_list]
+    return [author_details,recipe_details,ingredient_details,category_lists_details,recipe_procedure_list,recipe_time_details_list,photo_uri]
+
+def recipe_list_helper_function(recipe_lists_article_list_details,category_link_details):
+    sorted_category_link_details=sorted(category_link_details, key = lambda k:k['recipe_id'])
+    result = {}
+    for i in sorted_category_link_details:
+        if i["recipe_id"] not in result:
+            result.update({i["recipe_id"]:[i["recipe_category_name"],i["category_id"]]})
+        else:
+            x=i["recipe_id"]
+            if isinstance(result.get(x), (list,)):
+                category_array = []
+                category_array.append(result.get(x))
+                category_array.append([i["recipe_category_name"],i["category_id"]])
+                result[i["recipe_id"]] = category_array
+            else:
+                category_array = []
+                category_array.append(result.get(i["recipe_id"]))
+                category_array.append([i["recipe_category_name"],i["category_id"]])
+                result[i["recipe_id"]] = category_array
+    
+    result_array = [ v for v in result.values() ]
+    sorted_recipe_lists_article_list_details=sorted(recipe_lists_article_list_details, key = lambda k:k['post_recipe_id'])
+    counter = 0
+    for j in sorted_recipe_lists_article_list_details:
+        j["post_categories"] = result_array[counter]
+        counter+=1
+    return sorted_recipe_lists_article_list_details
+    
+def get_recipe_lists_article_list_details():
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    recipe_lists_details_sql = "SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views, recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `photos` ON recipes.id = photos.recipe_id"
+    pymysql_cursor.execute(recipe_lists_details_sql)
+    recipe_lists_article_list_details=pymysql_cursor.fetchall()
+    category_link_details_sql = "SELECT categories.id AS category_id,categories.name AS recipe_category_name, recipes.id AS recipe_id FROM `category_lists` JOIN `categories` ON category_lists.category_id = categories.id JOIN `recipes` ON category_lists.recipe_id = recipes.id JOIN `posts` ON recipes.id = posts.recipe_id" 
+    pymysql_cursor.execute(category_link_details_sql)
+    category_link_details=pymysql_cursor.fetchall()
+    result = recipe_list_helper_function(recipe_lists_article_list_details,category_link_details)
+    return result
+
+def recipe_list_search_function(search_terms):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    search_sql = "SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views, recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `photos` ON recipes.id = photos.recipe_id WHERE recipes.name LIKE '%{}%'".format(search_terms)
+    pymysql_cursor.execute(search_sql)
+    recipe_lists_article_list_details=pymysql_cursor.fetchall()
+    
+    search_sql_2 = "SELECT categories.id AS category_id,categories.name AS recipe_category_name, recipes.id AS recipe_id FROM `category_lists` JOIN `categories` ON category_lists.category_id = categories.id JOIN `recipes` ON category_lists.recipe_id = recipes.id JOIN `posts` ON recipes.id = posts.recipe_id WHERE recipes.name LIKE '%{}%'".format(search_terms) 
+    pymysql_cursor.execute(search_sql_2)
+    category_link_details=pymysql_cursor.fetchall()
+    
+    result=recipe_list_helper_function(recipe_lists_article_list_details,category_link_details)
+    return result
 
 @app.route("/")
 def init():
@@ -169,12 +233,19 @@ def user_dashboard():
 
 @app.route("/recipe_list")
 def recipe_list():
-    return render_template("recipe_list.html")
+    if request.args.get("search"):
+        search_terms = request.args.get("search")
+        print(search_terms)
+        recipe_lists_article_list_details = recipe_list_search_function(search_terms)
+        return render_template("recipe_list.html",recipe_list=recipe_lists_article_list_details)
+    else:
+        recipe_lists_article_list_details = get_recipe_lists_article_list_details()
+        return render_template("recipe_list.html",recipe_list=recipe_lists_article_list_details)
     
 @app.route("/single/<article_id>")
 def article(article_id):
     data = get_article_details(article_id)
-    return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],category_lists_details=data[3],recipe_procedure_list=data[4],recipe_time_details_list = data[5])
+    return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],category_lists_details=data[3],recipe_procedure_list=data[4],recipe_time_details_list=data[5],photo_uri=data[6])
     
 @app.errorhandler(404)
 def page_not_found(e):

@@ -1,5 +1,4 @@
-{% extends "layout.html" %} 
-{% block recipe_creator_hero_wrap_section %}
+{% extends "layout.html" %} {% block recipe_creator_hero_wrap_section %}
 <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
     <div class="overlay"></div>
     <div class="container">
@@ -11,8 +10,7 @@
         </div>
     </div>
 </section>
-{% endblock %}
-{% block recipe_creator_section %}
+{% endblock %} {% block recipe_creator_section %}
 <section class="ftco-section">
     <div class="container">
         <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
@@ -32,7 +30,60 @@
                     <div class="row">
                         <div class="col heading-section ftco-animate">
                             <h2 class="mb-4"><span>My Recipes</span></h2>
-                            
+                            <section class="ftco-section ftco-animate">
+                                <div class="container">
+                                    <div class="card-columns">
+                                        <div class="card">
+                                            <img src="..." class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Card title 1</h5>
+                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <img src="..." class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Card title 2</h5>
+                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <img src="..." class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Card title 3</h5>
+                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <img src="..." class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Card title 4</h5>
+                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <img src="..." class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Card title 5</h5>
+                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <img src="..." class="card-img-top" alt="...">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Card title 6</h5>
+                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     </div>
                 </div>
@@ -42,9 +93,65 @@
                     <div class="row">
                         <div class="col heading-section ftco-animate">
                             <h2 class="mb-4"><span>Recipe Creator</span></h2>
-                            <form method="POST">
-
-                            </form>
+                            <section class="ftco-section ftco-animate">
+                                <div class="container">
+                                    <form method="POST">
+                                        <div class="form-row">
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label for="recipe_title">Recipe Title</label>
+                                                    <input type="text" class="form-control" name="recipe_title">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label for="prep_time">Total Preparation Time:</label>
+                                                    <input type="text" class="form-control" name="prep_time">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label for="cook_time">Total Cooking Time:</label>
+                                                    <input type="text" class="form-control" name="cook_time">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label for="ready_in_time">Ready in Time:</label>
+                                                    <input type="text" class="form-control" name="ready_in_time">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label for="serve_selection_list">Serves:</label>
+                                                    <select class="form-control" id="serve_selection_list" name="serves_number">
+                                                      <option>1</option>
+                                                      <option>2</option>
+                                                      <option>3</option>
+                                                      <option>4</option>
+                                                      <option>5</option>
+                                                      <option>6</option>
+                                                      <option>7</option>
+                                                      <option>8</option>
+                                                      <option>9</option>
+                                                      <option>10</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col">
+                                                <div class="form-group">
+                                                    <label for="recipe_procedure_text_area">Recipe Procedure: </label>
+                                                    <textarea class="form-control" id="recipe_procedure_text_area" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </section>
                         </div>
                     </div>
                 </div>
