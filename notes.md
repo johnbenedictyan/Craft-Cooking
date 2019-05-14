@@ -76,6 +76,7 @@ Added in the search function for the recipe lists
 14 May:
 Added in the recipes and the recipe search functionality to each of the user's dashboard
 Added a error handler for when the user reloads the page and the session does not exist but the user is trying to access a page which requires the session to exist.
+Added in all of the countries into the countries table.
 
 http://flask.pocoo.org/docs/1.0/patterns/flashing/
 http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
