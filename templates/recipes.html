@@ -32,55 +32,36 @@
                             <h2 class="mb-4"><span>My Recipes</span></h2>
                             <section class="ftco-section ftco-animate">
                                 <div class="container">
-                                    <div class="card-columns">
-                                        <div class="card">
-                                            <img src="..." class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Card title 1</h5>
-                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="sidebar-box px-md-5 mb-5">
+                                                <form class="search-form">
+                                                    <div class="form-group">
+                                                        <span class="icon icon-search"></span>
+                                                        <input type="text" name="search" class="form-control" placeholder="Search for a recipe">
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
-                                        <div class="card">
-                                            <img src="..." class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Card title 2</h5>
-                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                    </div>
+                                    <div class="row">
+                                        {% for i in user_recipe_list %}
+                                        <div class="col-md-4 ftco-animate">
+                                            <div class="blog-entry">
+                                                <a href="single.html" class="img-2"><img src="{{ url_for('static', filename='{}'.format(i.post_photo_uri)) }}" class="img-fluid" alt="Colorlib Template"></a>
+                                                <div class="text pt-3">
+                                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
+                                                    <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
+                                                    <div class="tagcloud">
+                                                        {% if i.post_categories[0] is iterable and i.post_categories[0] is not string %} {% for j in i.post_categories %}
+                                                        <a href="#" class="tag-cloud-link">{{j[0]}}</a> {% endfor %} {% else %}
+                                                        <a href="#" class="tag-cloud-link">{{i.post_categories[0]}}</a> {% endif %}
+                                                    </div>
+                                                    <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Update Recipe</a></p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="card">
-                                            <img src="..." class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Card title 3</h5>
-                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <img src="..." class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Card title 4</h5>
-                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <img src="..." class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Card title 5</h5>
-                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                                            </div>
-                                        </div>
-                                        <div class="card">
-                                            <img src="..." class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <h5 class="card-title">Card title 6</h5>
-                                                <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </section>

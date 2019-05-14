@@ -15,7 +15,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <div class="sidebar-box px-5 mb-5">
+                <div class="sidebar-box px-md-5 mb-5">
                     <form class="search-form">
                         <div class="form-group">
                             <span class="icon icon-search"></span>
@@ -29,26 +29,22 @@
             <div class="col-lg-9">
                 <div class="row">
                     {% for i in recipe_list %}
-                        <div class="col-md-4 ftco-animate">
-                            <div class="blog-entry">
-                                <a href="single.html" class="img-2"><img src="{{ url_for('static', filename='{}'.format(i.post_photo_uri)) }}" class="img-fluid" alt="Colorlib Template"></a>
-                                <div class="text pt-3">
-                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
-                                    <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
-                                    <div class="tagcloud">
-                                        {% if i.post_categories[0] is iterable and i.post_categories[0] is not string %}
-                                        {% for j in i.post_categories %}
-                                        <a href="#" class="tag-cloud-link">{{j[0]}}</a>
-                                        {% endfor %}
-                                        {% else %}
-                                        <a href="#" class="tag-cloud-link">{{i.post_categories[0]}}</a>
-                                        {% endif %}
-                                    </div>
-                                    <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                    <div class="col-md-4 ftco-animate">
+                        <div class="blog-entry">
+                            <a href="single.html" class="img-2"><img src="{{ url_for('static', filename='{}'.format(i.post_photo_uri)) }}" class="img-fluid" alt="Colorlib Template"></a>
+                            <div class="text pt-3">
+                                <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
+                                <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
+                                <div class="tagcloud">
+                                    {% if i.post_categories[0] is iterable and i.post_categories[0] is not string %} {% for j in i.post_categories %}
+                                    <a href="#" class="tag-cloud-link">{{j[0]}}</a> {% endfor %} {% else %}
+                                    <a href="#" class="tag-cloud-link">{{i.post_categories[0]}}</a> {% endif %}
                                 </div>
+                                <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
-                   {% endfor %}
+                    </div>
+                    {% endfor %}
                 </div>
                 <div class="row mt-5">
                     <div class="col text-center">

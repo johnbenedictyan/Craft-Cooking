@@ -29,7 +29,7 @@ Things to note:
 
 Things needed to be done:
 RED:
-1. Recipe list search functionality
+1. Update the search functionality to also check if the search term matches the cuisine/ingredient rather than just the name of the recipe
 2. Recipe creator
 3. Recipe updator
 4. Add in recipes and populate both the front page as well as the recipe list page.
@@ -72,6 +72,10 @@ Profile update layout
 Added in the photo to each single article
 Added the function to get all the recipes in the recipe list to show up
 Added in the search function for the recipe lists
+
+14 May:
+Added in the recipes and the recipe search functionality to each of the user's dashboard
+Added a error handler for when the user reloads the page and the session does not exist but the user is trying to access a page which requires the session to exist.
 
 http://flask.pocoo.org/docs/1.0/patterns/flashing/
 http://flask.pocoo.org/docs/1.0/patterns/fileuploads/
