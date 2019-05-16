@@ -1,5 +1,4 @@
-{% extends "layout.html" %}
-{% block sign_up_hero_wrap_section %}
+{% extends "layout.html" %} {% block sign_up_hero_wrap_section %}
 <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
     <div class="overlay"></div>
     <div class="container">
@@ -11,8 +10,7 @@
         </div>
     </div>
 </section>
-{% endblock %}
-{% block sign_up_form_section %}
+{% endblock %} {% block sign_up_form_section %}
 <section class="ftco-section">
     <div class="container">
         <div class="row">
@@ -35,6 +33,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <select class="form-control" id="user_country" name="country_input">
+                                    {% for i in country_list %}
+                                    <option value="{{i.id}}">{{i.country_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mt-2">
                         <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
                     </div>
@@ -47,10 +56,7 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block sign_up_alert_section %}
-{% if successful_signup %}
+{% endblock %} {% block sign_up_alert_section %} {% if successful_signup %}
 <div class="container">
     <div class="alert alert-success" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -63,13 +69,10 @@
     <div class="alert alert-danger" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="alert-heading"><strong>Unsuccesful Account Creation</strong></h4>
-        <p>The username you have chosen has already been chosen. Please choose another one!</p> 
+        <p>The username you have chosen has already been chosen. Please choose another one!</p>
     </div>
 </div>
-{% endif %}
-{% endblock %}
-
-{% block jquery_script_section %}
+{% endif %} {% endblock %} {% block jquery_script_section %}
 <script>
     /* global $ */
     $(function() {
@@ -78,4 +81,3 @@
     });
 </script>
 {% endblock %}
-

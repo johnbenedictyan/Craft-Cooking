@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,session
+from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory
 from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from werkzeug.utils import secure_filename
 import pymongo
@@ -16,8 +16,21 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
 
-UPLOAD_FOLDER = os.path.basename('uploads/images')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+PROFILE_PICTURE_UPLOAD_FOLDER = './uploads/profile-pictures/'
+app.config['PROFILE_PICTURE_UPLOAD_FOLDER'] = PROFILE_PICTURE_UPLOAD_FOLDER
+
+RECIPE_PICTURE_UPLOAD_FOLDER = './uploads/recipe-pictures/'
+app.config['RECIPE_PICTURE_UPLOAD_FOLDER'] = RECIPE_PICTURE_UPLOAD_FOLDER
+
+def profile_picture_provider(filename):
+    return send_from_directory('uploads/profile-pictures/', filename)
+    
+def recipe_picture_provider(filename):
+    return send_from_directory('uploads/recipe-pictures/', filename)
+    
+app.add_url_rule('/uploads/images/<path:filename>', endpoint='profile_picture', view_func=profile_picture_provider)
+
+app.add_url_rule('/uploads/images/<path:filename>', endpoint='recipe_picture', view_func=recipe_picture_provider)
 
 def check_login_details(username_input,password_input):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -37,10 +50,10 @@ def get_user_recipe_details():
     pymysql_cursor.close()
     return user_recipe_list
     
-def get_user_dashboard_details():
+def get_user_dashboard_details(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
-    user_details_sql="SELECT * FROM users WHERE `id` = '{}'".format(session["user_id"])
+    user_details_sql="SELECT * FROM users JOIN countries ON users.country_of_origin_id = countries.id WHERE `users`.`id` = '{}'".format(current_user_id)
     pymysql_cursor.execute(user_details_sql)
     user_details=pymysql_cursor.fetchone()
     pymysql_cursor.close()
@@ -73,7 +86,7 @@ def get_article_details(article_id):
     pymysql_cursor.execute(get_category_lists_sql)
     category_lists_details=pymysql_cursor.fetchall()
     
-    get_photo_lists_sql = "SELECT `uri` FROM `photos` JOIN `recipes` ON photos.recipe_id = recipes.id WHERE recipes.id = '{}'".format(article_id)
+    get_photo_lists_sql = "SELECT `uri` FROM `recipe_photos` JOIN `recipes` ON recipe_photos.recipe_id = recipes.id WHERE recipes.id = '{}'".format(article_id)
     pymysql_cursor.execute(get_photo_lists_sql)
     photo_lists_details=pymysql_cursor.fetchall()
     
@@ -130,8 +143,8 @@ def recipe_list_helper_function(recipe_lists_article_list_details,category_link_
 def get_recipe_lists_article_list_details():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
-    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views, 
-    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `photos` ON recipes.id = photos.recipe_id"""
+    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views, 
+    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id"""
     pymysql_cursor.execute(recipe_lists_details_sql)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
     
@@ -148,9 +161,9 @@ def get_recipe_lists_article_list_details():
 def get_user_recipe_lists_article_list_details(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
-    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, photos.uri AS post_photo_uri,
+    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri,
     posts.number_of_views AS post_number_of_views,recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id 
-    JOIN `photos` ON recipes.id = photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id WHERE authors.user_id = '{}'""".format(current_user_id)
+    JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id WHERE authors.user_id = '{}'""".format(current_user_id)
     pymysql_cursor.execute(recipe_lists_details_sql)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
     
@@ -167,8 +180,8 @@ def get_user_recipe_lists_article_list_details(current_user_id):
 
 def recipe_list_search_function(search_terms):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-    search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
-    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `photos` ON recipes.id = photos.recipe_id WHERE recipes.name LIKE '%{}%'""".format(search_terms)
+    search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
+    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id WHERE recipes.name LIKE '%{}%'""".format(search_terms)
     pymysql_cursor.execute(search_sql)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
     
@@ -185,8 +198,8 @@ def recipe_list_search_function(search_terms):
 def user_recipe_list_search_function(current_user_id,search_terms):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
-    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
-    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `photos` ON recipes.id = photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id 
+    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
+    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id 
     WHERE authors.user_id = '{}' AND recipes.name LIKE '%{}%'""".format(current_user_id,search_terms)
     pymysql_cursor.execute(recipe_lists_details_sql)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
@@ -233,21 +246,24 @@ def logout():
     
 @app.route("/user_creation",methods=["GET","POST"])
 def user_creation():
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     if request.method == "GET":
-        pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-        return render_template("signup.html")
+        country_sql = "SELECT * FROM `countries`"
+        pymysql_cursor.execute(country_sql)
+        country_list = pymysql_cursor.fetchall()
+        return render_template("signup.html",country_list=country_list)
     else:
         error = False
-        pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
         email_input = request.form["email_input"]
         username_input = request.form["username_input"]
         password_input = request.form["password_input"]
+        country_input = request.form["country_input"]
         check_if_user_exists_sql = "SELECT * FROM users WHERE username = '{}'".format(username_input)
         pymysql_cursor.execute(check_if_user_exists_sql)
         existing_user_check = pymysql_cursor.fetchone()
         if(existing_user_check is None):
             hashed_password = bcrypt.generate_password_hash(password_input).decode('utf-8')
-            sql = "INSERT INTO users (username,password,email) VALUES (\"{}\",\"{}\",\"{}\")".format(username_input,hashed_password,email_input)
+            sql = "INSERT INTO users (username,password,email,country_of_origin_id,profile_picture_uri) VALUES (\"{}\",\"{}\",\"{}\",\"{}\",\"{}\")".format(username_input,hashed_password,email_input,country_input,"default-profile-picture.png")
             pymysql_cursor.execute(sql)
             pymysql_connection.commit()
             pymysql_cursor.close()
@@ -275,8 +291,9 @@ def recipes():
 @app.route("/user",methods=["GET","POST"])
 def user_dashboard():
     if session:
+        current_user_id = session["user_id"]
         if request.method == "GET":
-            data = get_user_dashboard_details()
+            data = get_user_dashboard_details(current_user_id)
             user_details = data[0]
             user_recipe_list = data[1]
             return render_template("user_dashboard.html",user_details=user_details,user_recipe_list=user_recipe_list)
@@ -287,7 +304,7 @@ def user_dashboard():
             email_changed=False
             email_input = request.form["email_input"]
             password_input = request.form["password_input"]
-            current_user_id = session["user_id"]
+            bio_input = request.form["bio_input"]
             user_details_sql="SELECT * FROM users WHERE `id` = '{}'".format(current_user_id)
             pymysql_cursor.execute(user_details_sql)
             user_details = pymysql_cursor.fetchone()
@@ -295,20 +312,22 @@ def user_dashboard():
                 no_change_required=True
             elif((email_input==user_details["email"] or email_input=="") and password_input!=""):
                 password_changed=True
-                update_user_details_sql = "UPDATE users SET password='{}' WHERE id='{}'".format(password_input,current_user_id)
+                update_user_details_sql = "UPDATE users SET password='{}', bio='{}' WHERE id='{}'".format(password_input,bio_input,current_user_id)
             else:
                 email_changed=True
-                update_user_details_sql = "UPDATE users SET email = '{}' WHERE id='{}'".format(email_input,current_user_id)
+                update_user_details_sql = "UPDATE users SET email = '{}', bio='{}' WHERE id='{}'".format(email_input,bio_input,current_user_id)
             pymysql_cursor.execute(update_user_details_sql)
             
             if request.files:
-                uploaded_image = request.files['image']
-                f = os.path.join(app.config['UPLOAD_FOLDER'], uploaded_image.filename)
-                uploaded_image.save(f)
-                
-                profile_picture_uri="images/"+str(uploaded_image.filename)
-                update_user_photo_sql = "UPDATE users SET profile_picture_uri = '{}' WHERE id = '{}'".format(profile_picture_uri,current_user_id)
-                pymysql_cursor.execute(update_user_photo_sql)
+                uploaded_image = request.files["profile-picture-input"]
+                if uploaded_image.filename == '':
+                    print("no file selected")
+                else:
+                    f = os.path.join(app.config['PROFILE_PICTURE_UPLOAD_FOLDER'], uploaded_image.filename)
+                    uploaded_image.save(f)
+                    profile_picture_uri=str(uploaded_image.filename)
+                    update_user_photo_sql = "UPDATE users SET profile_picture_uri = '{}' WHERE id = '{}'".format(profile_picture_uri,current_user_id)
+                    pymysql_cursor.execute(update_user_photo_sql)
             
             pymysql_connection.commit()
             pymysql_cursor.close()
@@ -334,7 +353,7 @@ def article(article_id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
-    
+                               
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'),
             port=int(os.environ.get('PORT')),
