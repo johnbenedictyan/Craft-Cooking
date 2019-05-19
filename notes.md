@@ -7,8 +7,10 @@
 # Things needed to be done:
 
 ## Code Red
-- Recipe creator(DONE HALF OF IT, JUST INSERT THE POST CATEGORIES INTO THE DATABASE AND IT SHOULD WORK. CHANGE THE FORM SO THAT A DROPOUT MULTI SELECT CAN BE USED TO SELECT THE CATEGORIES)
-- Change all the sql statements so that instead of only looking through the categories table(NEED TO GET RID OF THIS GENERIC CATEGORIES TABLE), the <category_link_details> will have all of the possible categories from all of the tables (allergens,cookingstyle,health and diet,etc) [UPDATE:CHANGE THE SQL STATEMENTS SO THAT category_link_details is now an array of all of the different categories, still need to fix the functions that take that array in]
+- Recipe creator(DONE HALF OF IT, JUST INSERT THE POST CATEGORIES INTO THE DATABASE AND IT SHOULD WORK. CHANGE THE FORM SO THAT A DROPOUT MULTI SELECT CAN BE USED TO SELECT THE CATEGORIES) [DONE]
+- Change all the sql statements so that instead of only looking through the categories table(NEED TO GET RID OF THIS GENERIC CATEGORIES TABLE), the <category_link_details> 
+will have all of the possible categories from all of the tables (allergens,cookingstyle,health and diet,etc) [UPDATE:CHANGE THE SQL STATEMENTS SO THAT category_link_details is now an array of all of the different categories, 
+still need to fix the functions that take that array in) [DONE] 
 - Recipe updater
 - Add in more recipes into the database and populate the front page
 - Before rendering the single page article template. Pass in all of the categories into tag-cloud-links and place them at the bottom of the page
@@ -70,6 +72,7 @@
 
 ## 19 May
 - New Feature: Recipe Creator
+- Added in all the categories
 
 ## USEFUL LINKS
 **Stock profile pictures**

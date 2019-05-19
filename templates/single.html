@@ -56,11 +56,29 @@
                     <li>{{j}}.</li>
                     {% endfor %}
                 </ol>
+                <h2 class="mb-3 mt-5">Allergens</h2>
+                <ul>
+                    {% for l in allergens %}
+                    <li>{{l.allergen_name |title}}</li>
+                    {% endfor %}
+                </ul>
                 <div class="tag-widget post-tag-container mb-5 mt-5">
                     <div class="tagcloud">
-                        {% for k in category_lists_details%}
-                        <a href="#" class="tag-cloud-link">{{k.name}}</a>
+                        {% for m in cooking_styles %}
+                        <a href="#" class="tag-cloud-link">{{m.cooking_style_name}}</a> 
                         {% endfor %}
+                        {% for n in cuisines %}
+                        <a href="#" class="tag-cloud-link">{{n.cuisine_name}}</a> 
+                        {% endfor %} 
+                        {% for o in diet_health_types %}
+                        <a href="#" class="tag-cloud-link">{{o.diet_health_type_name}}</a> 
+                        {% endfor %} 
+                        {% for p in dish_types %}
+                        <a href="#" class="tag-cloud-link">{{p.dish_type_name}}</a> 
+                        {% endfor %} 
+                        {% for q in meal_types %}
+                        <a href="#" class="tag-cloud-link">{{q.meal_type_name}}</a> 
+                        {% endfor %} 
                     </div>
                 </div>
 

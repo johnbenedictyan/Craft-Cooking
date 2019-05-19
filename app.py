@@ -63,7 +63,52 @@ def get_user_dashboard_details(current_user_id):
     return_array = [user_details,user_recipe_list]
     return return_array
 
-#category_link_details AFFECTED FUNCTION    
+def get_article_categories(post_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    
+    get_allergen_lists_sql = "SELECT allergens.id AS allergen_id,allergens.name AS allergen_name FROM `allergens` JOIN `allergen_lists` ON allergens.id = allergen_lists.allergen_id WHERE allergen_lists.recipe_id = %s"
+    get_allergen_lists_input = (post_id)
+    pymysql_cursor.execute(get_allergen_lists_sql,get_allergen_lists_input)
+    allergen_lists_details=pymysql_cursor.fetchall()
+    
+    get_cooking_style_lists_sql = "SELECT cooking_styles.id AS cooking_style_id,cooking_styles.name AS cooking_style_name FROM `cooking_styles` JOIN `cooking_style_lists` ON cooking_styles.id = cooking_style_lists.cooking_style_id WHERE cooking_style_lists.recipe_id = %s"
+    get_cooking_style_lists_input = (post_id)
+    pymysql_cursor.execute(get_cooking_style_lists_sql,get_cooking_style_lists_input)
+    cooking_style_lists_details=pymysql_cursor.fetchall()
+    
+    get_cuisine_lists_sql = "SELECT cuisines.id AS cuisine_id,cuisines.name AS cuisine_name FROM `cuisines` JOIN `cuisine_lists` ON cuisines.id = cuisine_lists.cuisine_id WHERE cuisine_lists.recipe_id = %s"
+    get_cuisine_lists_input = (post_id)
+    pymysql_cursor.execute(get_cuisine_lists_sql,get_cuisine_lists_input)
+    cuisine_lists_details=pymysql_cursor.fetchall()
+    
+    get_diet_health_type_lists_sql = "SELECT diet_health_types.id AS diet_health_type_id,diet_health_types.name AS diet_health_type_name FROM `diet_health_types` JOIN `diet_health_type_lists` ON diet_health_types.id = diet_health_type_lists.diet_health_type_id WHERE diet_health_type_lists.recipe_id = %s"
+    get_diet_health_type_lists_input = (post_id)
+    pymysql_cursor.execute(get_diet_health_type_lists_sql,get_diet_health_type_lists_input)
+    diet_health_type_lists_details=pymysql_cursor.fetchall()
+    
+    get_dish_type_lists_sql = "SELECT dish_types.id AS dish_type_id,dish_types.name AS dish_type_name FROM `dish_types` JOIN `dish_type_lists` ON dish_types.id = dish_type_lists.dish_type_id WHERE dish_type_lists.recipe_id = %s"
+    get_dish_type_lists_input = (post_id)
+    pymysql_cursor.execute(get_dish_type_lists_sql,get_dish_type_lists_input)
+    dish_type_lists_details=pymysql_cursor.fetchall()
+    
+    get_meal_type_lists_sql = "SELECT meal_types.id AS meal_type_id,meal_types.name AS meal_type_name FROM `meal_types` JOIN `meal_type_lists` ON meal_types.id = meal_type_lists.meal_type_id WHERE meal_type_lists.recipe_id = %s"
+    get_meal_type_lists_input = (post_id)
+    pymysql_cursor.execute(get_meal_type_lists_sql,get_meal_type_lists_input)
+    meal_type_lists_details=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.close()
+    
+    category_lists_details = [
+        allergen_lists_details,
+        cooking_style_lists_details,
+        cuisine_lists_details,
+        diet_health_type_lists_details,
+        dish_type_lists_details,
+        meal_type_lists_details
+        ]
+    
+    return category_lists_details
+    
 def get_article_details(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
@@ -92,37 +137,7 @@ def get_article_details(post_id):
     pymysql_cursor.execute(get_photo_lists_sql,get_photo_lists_input)
     photo_lists_details=pymysql_cursor.fetchall()
     
-    get_allergen_lists_sql = "SELECT allergens.id,allergens.name FROM `allergens` JOIN `allergen_lists` ON allergens.id = allergen_lists.allergen_id WHERE allergen_lists.recipe_id = %s"
-    get_allergen_lists_input = (post_id)
-    pymysql_cursor.execute(get_allergen_lists_sql,get_allergen_lists_input)
-    allergen_lists_details=pymysql_cursor.fetchall()
     
-    get_cooking_style_lists_sql = "SELECT cooking_styles.id,cooking_styles.name FROM `cooking_styles` JOIN `cooking_style_lists` ON cooking_styles.id = cooking_style_lists.cooking_style_id WHERE cooking_style_lists.recipe_id = %s"
-    get_cooking_style_lists_input = (post_id)
-    pymysql_cursor.execute(get_cooking_style_lists_sql,get_cooking_style_lists_input)
-    cooking_style_lists_details=pymysql_cursor.fetchall()
-    
-    get_cuisine_lists_sql = "SELECT cuisines.id,cuisines.name FROM `cuisines` JOIN `cuisine_lists` ON cuisines.id = cuisine_lists.cuisine_id WHERE cuisine_lists.recipe_id = %s"
-    get_cuisine_lists_input = (post_id)
-    pymysql_cursor.execute(get_cuisine_lists_sql,get_cuisine_lists_input)
-    cuisine_lists_details=pymysql_cursor.fetchall()
-    
-    get_diet_health_type_lists_sql = "SELECT diet_health_types.id,diet_health_types.name FROM `diet_health_types` JOIN `diet_health_type_lists` ON diet_health_types.id = diet_health_type_lists.diet_health_type_id WHERE diet_health_type_lists.recipe_id = %s"
-    get_diet_health_type_lists_input = (post_id)
-    pymysql_cursor.execute(get_diet_health_type_lists_sql,get_diet_health_type_lists_input)
-    diet_health_type_lists_details=pymysql_cursor.fetchall()
-    
-    get_dish_type_lists_sql = "SELECT dish_types.id,dish_types.name FROM `dish_types` JOIN `dish_type_lists` ON dish_types.id = dish_type_lists.dish_type_id WHERE dish_type_lists.recipe_id = %s"
-    get_dish_type_lists_input = (post_id)
-    pymysql_cursor.execute(get_dish_type_lists_sql,get_dish_type_lists_input)
-    dish_type_lists_details=pymysql_cursor.fetchall()
-    
-    get_meal_type_lists_sql = "SELECT meal_types.id,meal_types.name FROM `meal_types` JOIN `meal_type_lists` ON meal_types.id = meal_type_lists.meal_type_id WHERE meal_type_lists.recipe_id = %s"
-    get_meal_type_lists_input = (post_id)
-    pymysql_cursor.execute(get_meal_type_lists_sql,get_meal_type_lists_input)
-    meal_type_lists_details=pymysql_cursor.fetchall()
-    
-    pymysql_cursor.close()
     recipe_procedure = recipe_details["recipe_procedure"]
     recipe_procedure_list = recipe_procedure.split(".")
     for i in recipe_procedure_list:
@@ -140,130 +155,75 @@ def get_article_details(post_id):
         recipe_time_details_list[recipe_time_details_list.index(j)] = str(j)+" seconds"
         
         
-    category_lists_details = [
-        allergen_lists_details,
-        cooking_style_lists_details,
-        cuisine_lists_details,
-        diet_health_type_lists_details,
-        dish_type_lists_details,
-        meal_type_lists_details
-        ]
+    return [author_details,recipe_details,ingredient_details,recipe_procedure_list,recipe_time_details_list,photo_uri]
+    
+def recipe_list_helper_function(recipe_lists_article_list_details):
+    for i in recipe_lists_article_list_details:
+        categories = get_article_categories(int(i['post_id']))
+        i["allergens"] = categories[0]
+        i["cooking_styles"] = categories[1]
+        i["cuisines"] = categories[2]
+        i["diet_health_types"] = categories[3]
+        i["dish_types"] = categories[4]
+        i["meal_types"] = categories[5]
         
-    return [author_details,recipe_details,ingredient_details,category_lists_details,recipe_procedure_list,recipe_time_details_list,photo_uri]
+    return recipe_lists_article_list_details
     
-#category_link_details AFFECTED FUNCTION
-def recipe_list_helper_function(recipe_lists_article_list_details,category_link_details): #category_link_details AFFECTED FUNCTION
-    #This sorted the category link details by ascending order of recipe id
-    sorted_category_link_details=sorted(category_link_details, key = lambda k:k['recipe_id'])
-    result = {}
-    
-    #This for loop just takes the categories and changes them into an array of an array of arrays of category name and category id
-    for i in sorted_category_link_details:
-        if i["recipe_id"] not in result:
-            result.update({i["recipe_id"]:[i["recipe_category_name"],i["category_id"]]})
-        else:
-            x=i["recipe_id"]
-            if isinstance(result.get(x), (list,)):
-                category_array = []
-                category_array.append(result.get(x))
-                category_array.append([i["recipe_category_name"],i["category_id"]])
-                result[i["recipe_id"]] = category_array
-            else:
-                category_array = []
-                category_array.append(result.get(i["recipe_id"]))
-                category_array.append([i["recipe_category_name"],i["category_id"]])
-                result[i["recipe_id"]] = category_array
-    
-    result_array = [ v for v in result.values() ]
-    
-    #This sorted the recipe list details by ascending order of recipe id
-    sorted_recipe_lists_article_list_details=sorted(recipe_lists_article_list_details, key = lambda k:k['post_recipe_id'])
-    counter = 0
-    
-    #This for loop just joins the massaged post_categories back into their original place in the recipe list under the key of <post_categories>
-    for j in sorted_recipe_lists_article_list_details:
-        j["post_categories"] = result_array[counter]
-        counter+=1
-        
-    return sorted_recipe_lists_article_list_details
-    
-#category_link_details AFFECTED FUNCTION    
 def get_recipe_lists_article_list_details(): 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
     recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views, 
-    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id"""
+    recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id"""
     pymysql_cursor.execute(recipe_lists_details_sql)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
     
-    category_link_details_sql = """SELECT categories.id AS category_id,categories.name AS recipe_category_name, recipes.id AS recipe_id FROM `category_lists` JOIN `categories` ON 
-    category_lists.category_id = categories.id JOIN `recipes` ON category_lists.recipe_id = recipes.id JOIN `posts` ON recipes.id = posts.recipe_id"""
-    pymysql_cursor.execute(category_link_details_sql)
-    category_link_details=pymysql_cursor.fetchall()
-    
     pymysql_cursor.close()
     
-    result = recipe_list_helper_function(recipe_lists_article_list_details,category_link_details)
+    result = recipe_list_helper_function(recipe_lists_article_list_details)
+    print(result)
     return result
 
-#category_link_details AFFECTED FUNCTION
 def get_user_recipe_lists_article_list_details(current_user_id): 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
     recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri,
-    posts.number_of_views AS post_number_of_views,recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id 
-    JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id WHERE authors.user_id = '{}'""".format(current_user_id)
-    pymysql_cursor.execute(recipe_lists_details_sql)
+    posts.number_of_views AS post_number_of_views,recipes.id AS post_recipe_id, posts.id AS post_id  FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id 
+    JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id WHERE authors.user_id = %s """
+    recipe_lists_details_input = (current_user_id)
+    pymysql_cursor.execute(recipe_lists_details_sql,recipe_lists_details_input)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
-    
-    category_link_details_sql = """SELECT categories.id AS category_id,categories.name AS recipe_category_name, recipes.id AS recipe_id FROM `category_lists` 
-    JOIN `categories` ON category_lists.category_id = categories.id JOIN `recipes` ON category_lists.recipe_id = recipes.id JOIN `posts` ON recipes.id = posts.recipe_id 
-    JOIN `authors` ON recipes.author_id = authors.id WHERE authors.user_id = '{}'""".format(current_user_id)
-    pymysql_cursor.execute(category_link_details_sql)
-    category_link_details=pymysql_cursor.fetchall()
     
     pymysql_cursor.close()
     
-    result = recipe_list_helper_function(recipe_lists_article_list_details,category_link_details)
+    result = recipe_list_helper_function(recipe_lists_article_list_details)
     return result
     
-#category_link_details AFFECTED FUNCTION
+#CHANGE THIS FUNCTION SO THAT NOT ONLY THE NAME CAN BE SEARCHED
 def recipe_list_search_function(search_terms): 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
-    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id WHERE recipes.name LIKE '%{}%'""".format(search_terms)
-    pymysql_cursor.execute(search_sql)
+    recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id WHERE recipes.name LIKE %s """
+    search_input = ("%" + search_terms +"%")
+    pymysql_cursor.execute(search_sql,search_input)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
     
-    search_sql_2 = """SELECT categories.id AS category_id,categories.name AS recipe_category_name, recipes.id AS recipe_id FROM `category_lists`
-    JOIN `categories` ON category_lists.category_id = categories.id JOIN `recipes` ON category_lists.recipe_id = recipes.id JOIN `posts` ON recipes.id = posts.recipe_id 
-    WHERE recipes.name LIKE '%{}%'""".format(search_terms) 
-    pymysql_cursor.execute(search_sql_2)
-    category_link_details=pymysql_cursor.fetchall()
-    
     pymysql_cursor.close()
-    result=recipe_list_helper_function(recipe_lists_article_list_details,category_link_details)
+    result=recipe_list_helper_function(recipe_lists_article_list_details)
     return result
     
-#category_link_details AFFECTED FUNCTION
 def user_recipe_list_search_function(current_user_id,search_terms): 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     
     recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
-    recipes.id AS post_recipe_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id 
-    WHERE authors.user_id = '{}' AND recipes.name LIKE '%{}%'""".format(current_user_id,search_terms)
-    pymysql_cursor.execute(recipe_lists_details_sql)
+    recipes.id AS post_recipe_id, posts.id AS post_id  FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id 
+    WHERE authors.user_id = %s AND recipes.name LIKE %s """
+    recipe_lists_details_input = (current_user_id,"%"+search_terms+"%")
+    pymysql_cursor.execute(recipe_lists_details_sql,recipe_lists_details_input)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
-    
-    category_link_details_sql = """SELECT categories.id AS category_id,categories.name AS recipe_category_name, recipes.id AS recipe_id FROM `category_lists`
-    JOIN `categories` ON category_lists.category_id = categories.id JOIN `recipes` ON category_lists.recipe_id = recipes.id JOIN `posts` ON recipes.id = posts.recipe_id
-    JOIN `authors` ON recipes.author_id = authors.id WHERE authors.user_id = '{}' AND recipes.name LIKE '%{}%'""".format(current_user_id,search_terms)
-    pymysql_cursor.execute(category_link_details_sql)
-    category_link_details=pymysql_cursor.fetchall()
     
     pymysql_cursor.close()
     
-    result = recipe_list_helper_function(recipe_lists_article_list_details,category_link_details)
+    result = recipe_list_helper_function(recipe_lists_article_list_details)
     return result
 
 def check_if_user_is_an_author(current_user_id):
@@ -543,7 +503,8 @@ def recipe_list():
 @app.route("/single/<article_id>")
 def article(article_id):
     data = get_article_details(article_id)
-    return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],category_lists_details=data[3],recipe_procedure_list=data[4],recipe_time_details_list=data[5],photo_uri=data[6])
+    categories = get_article_categories(article_id)
+    return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5])
     
 @app.errorhandler(404)
 def page_not_found(e):
@@ -551,9 +512,8 @@ def page_not_found(e):
                                
 @app.route("/testing")
 def testing():
-    current_user_id = session["user_id"]
-    author_id = check_if_user_is_an_author(current_user_id)
-    print(author_id)
+    print(get_article_categories(1))
+    print(get_article_categories(2))
     return redirect(url_for('init'))
     
 if __name__ == '__main__':
