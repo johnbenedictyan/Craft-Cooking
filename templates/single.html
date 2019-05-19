@@ -6,7 +6,7 @@
 </style>
 {% endblock %}
 {% extends "layout.html" %} {% block single_article_hero_wrap_section %}
-<section class="hero-wrap hero-wrap-2" style="background-image: url({{ url_for('static', filename='{}'.format(photo_uri)) }});">
+<section class="hero-wrap hero-wrap-2" style="background-image: url({{ url_for('recipe_picture', filename='{}'.format(photo_uri)) }});">
     <div class="overlay"></div>
     <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-center">
@@ -66,11 +66,11 @@
 
                 <div class="about-author d-flex p-4 bg-light">
                     <div class="bio mr-5">
-                        <img src="images/person_1.jpg" alt="Image placeholder" class="img-fluid mb-4">
+                        <img src="{{ url_for('profile_picture', filename='{}'.format(author_details.profile_picture_uri)) }}" alt="Image placeholder" class="img-fluid mb-4">
                     </div>
                     <div class="desc">
                         <h3>{{author_details.username}}</h3>
-                        <p>author_details.bio</p>
+                        <p>{{author_details.bio}}</p>
                     </div>
                 </div>
 

@@ -2,16 +2,18 @@
 1. Use the class "tag-cloud-link" for the categories
 2. The cuisine, cooking styles,diet and health,dish type, cooking style should all be drop down with the option to add custom values, but the custom values must be approved by an admin figure.
 3. The program should pass the inputs into lowercase and singular form for the ingredients
+4. Hero images should be at max 2000X2000 ish and recipe thumbnail images should be 1000X1000 ish and their main image can be 2000X2000 ish
 
 # Things needed to be done:
 
 ## Code Red
-- Recipe creator
+- Recipe creator(DONE HALF OF IT, JUST INSERT THE POST CATEGORIES INTO THE DATABASE AND IT SHOULD WORK. CHANGE THE FORM SO THAT A DROPOUT MULTI SELECT CAN BE USED TO SELECT THE CATEGORIES)
+- Change all the sql statements so that instead of only looking through the categories table(NEED TO GET RID OF THIS GENERIC CATEGORIES TABLE), the <category_link_details> will have all of the possible categories from all of the tables (allergens,cookingstyle,health and diet,etc) [UPDATE:CHANGE THE SQL STATEMENTS SO THAT category_link_details is now an array of all of the different categories, still need to fix the functions that take that array in]
 - Recipe updater
 - Add in more recipes into the database and populate the front page
 - Before rendering the single page article template. Pass in all of the categories into tag-cloud-links and place them at the bottom of the page
 - Update the SQL statement so that the meal type, diet and health,dish type ,cooking style show up in the links in each recipe when displayed in the recipe list section. The number of tags should be limited to 5.
-- Fix the profile picture uploading
+- Fix the profile picture uploading [DONE]
 - Update the search functionality to also check if the search term matches the cuisine/ingredient rather than just the name of the recipe
 
 ## Code Yellow
@@ -29,11 +31,13 @@
 
 ## Things that don't work
  1. URL_FOR to a folder that is not the static folder. [FIXED][look at 2 on funny things]
+ 2. Recipe Creator sql doesn't want me to define variables inside of the sql query.
 
 
 ## Things to think about
 
  1. Decide on whether to use text area or the button which adds a new step for the recipe procedure
+ 2. Get a featured post list where a sql query is set to return a list of the top 5 highest viewed recipes. Put those on the main page.
 
 # PROJECT LOGS:
 ## 4 May:
@@ -63,6 +67,9 @@
 ## 16 May
 - Fixed the profile picture updater and bio updater.
 - User Sign ups now can enter their country.
+
+## 19 May
+- New Feature: Recipe Creator
 
 ## USEFUL LINKS
 **Stock profile pictures**
