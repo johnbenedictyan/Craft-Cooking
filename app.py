@@ -348,11 +348,18 @@ def recipe_creator_ingredient_list_sorting_function():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     pymysql_cursor.close()
 
-def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure_text_area,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types):
+def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-    
+    final_recipe_procedure_result = ""
+    for i in recipe_procedure:
+        if(i[len(i)-1]=="."):
+            final_recipe_procedure_result+=i
+        else:
+            i += "."
+            final_recipe_procedure_result+=i
+            
     recipe_creation_sql = "INSERT INTO recipes (id,name,author_id,prep_duration_seconds,cook_duration_seconds,ready_in_duration_seconds,serves,recipe_procedure) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"
-    recipe_creation_input = (None,recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure_text_area)
+    recipe_creation_input = (None,recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,final_recipe_procedure_result)
     pymysql_cursor.execute(recipe_creation_sql,recipe_creation_input)
     pymysql_connection.commit()
     
@@ -502,7 +509,7 @@ def recipes():
             cook_time = request.form["cook_time"]
             ready_in_time = request.form["ready_in_time"]
             serves_number = request.form["serves_number"]
-            recipe_procedure_text_area = request.form["recipe_procedure_text_area"]
+            recipe_procedure = request.form.getlist("recipe_procedure")
             
             allergens = request.form.getlist("allergens")
             cooking_styles = request.form.getlist("cooking_styles")
@@ -511,7 +518,7 @@ def recipes():
             dish_types = request.form.getlist("dish_types")
             meal_types = request.form.getlist("meal_types")
             
-            creation_result = recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure_text_area,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types)
+            creation_result = recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types)
             if creation_result == True:
                 return redirect(url_for("recipes"))
             else:
@@ -589,7 +596,6 @@ def page_not_found(e):
                                
 @app.route("/testing")
 def testing():
-    user_recipe_list_search_function(12,"western")
     return redirect(url_for('init'))
     
 if __name__ == '__main__':
