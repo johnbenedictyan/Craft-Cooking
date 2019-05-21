@@ -36,31 +36,28 @@ pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
 def check_login_details(username_input,password_input):
     
-    check_sql = "SELECT id,password FROM users WHERE `username` = '{}'".format(username_input)
-    pymysql_cursor.execute(check_sql)
+    check_sql = "SELECT id,password FROM users WHERE `username` = %s"
+    check_input = (username_input)
+    pymysql_cursor.execute(check_sql,check_input)
     user_details = pymysql_cursor.fetchone()
     
     return user_details
 
-def get_user_recipe_details():
-    
-    
-    recipe_details_sql="SELECT `recipes`.`id`,`recipes`.`name` FROM recipes JOIN authors ON `recipes`.`author_id` = `authors`.`id` WHERE `authors`.`user_id` = '{}'".format(session["user_id"])
-    pymysql_cursor.execute(recipe_details_sql)
+def get_user_recipe_details(current_user_id):
+    recipe_details_sql="SELECT `recipes`.`id`,`recipes`.`name` FROM recipes JOIN authors ON `recipes`.`author_id` = `authors`.`id` WHERE `authors`.`user_id` = %s"
+    recipe_details_input = (current_user_id)
+    pymysql_cursor.execute(recipe_details_sql,recipe_details_input)
     user_recipe_list=pymysql_cursor.fetchall()
-    
     
     return user_recipe_list
     
 def get_user_dashboard_details(current_user_id):
-    
-    
-    user_details_sql="SELECT * FROM users JOIN countries ON users.country_of_origin_id = countries.id WHERE `users`.`id` = '{}'".format(current_user_id)
-    pymysql_cursor.execute(user_details_sql)
+    user_details_sql="SELECT * FROM users JOIN countries ON users.country_of_origin_id = countries.id WHERE `users`.`id` = %s"
+    user_details_input=(current_user_id)
+    pymysql_cursor.execute(user_details_sql,user_details_input)
     user_details=pymysql_cursor.fetchone()
     
-    
-    user_recipe_list=get_user_recipe_details()
+    user_recipe_list=get_user_recipe_details(current_user_id)
     
     return_array = [user_details,user_recipe_list]
     return return_array
@@ -445,8 +442,9 @@ def user_recipe_list_search_function(current_user_id,search_terms):
 
 def check_if_user_is_an_author(current_user_id):
     
-    get_author_id_sql = "SELECT id FROM authors WHERE authors.user_id = {}".format(current_user_id)
-    pymysql_cursor.execute(get_author_id_sql)
+    get_author_id_sql = "SELECT id FROM authors WHERE authors.user_id = %s"
+    get_author_id_input = (current_user_id)
+    pymysql_cursor.execute(get_author_id_sql,get_author_id_input)
     author_id = int(pymysql_cursor.fetchone()["id"])
     
     return author_id
@@ -487,10 +485,8 @@ def get_recipe_creator_form_details():
 def recipe_creator_ingredient_list_sorting_function():
     return None
     
-
 def recipe_updater_ingredient_list():
     return None
-    
     
 def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types):
     
@@ -676,7 +672,6 @@ def logout():
     
 @app.route("/user_creation",methods=["GET","POST"])
 def user_creation():
-    
     if request.method == "GET":
         country_sql = "SELECT * FROM `countries`"
         pymysql_cursor.execute(country_sql)
@@ -688,8 +683,9 @@ def user_creation():
         username_input = request.form["username_input"]
         password_input = request.form["password_input"]
         country_input = request.form["country_input"]
-        check_if_user_exists_sql = "SELECT * FROM users WHERE username = '{}'".format(username_input)
-        pymysql_cursor.execute(check_if_user_exists_sql)
+        check_if_user_exists_sql = "SELECT * FROM users WHERE username = %s"
+        check_if_user_exists_input = (username_input)
+        pymysql_cursor.execute(check_if_user_exists_sql,check_if_user_exists_input)
         existing_user_check = pymysql_cursor.fetchone()
         if(existing_user_check is None):
             hashed_password = bcrypt.generate_password_hash(password_input).decode('utf-8')
@@ -778,18 +774,22 @@ def user_dashboard():
             email_input = request.form["email_input"]
             password_input = request.form["password_input"]
             bio_input = request.form["bio_input"]
-            user_details_sql="SELECT * FROM users WHERE `id` = '{}'".format(current_user_id)
-            pymysql_cursor.execute(user_details_sql)
+            user_details_sql="SELECT * FROM users WHERE `id` = %s"
+            user_details_input=(current_user_id)
+            pymysql_cursor.execute(user_details_sql,user_details_input)
             user_details = pymysql_cursor.fetchone()
             if((email_input==user_details["email"] and password_input==user_details["password"])or(email_input=="" and password_input=="")):
                 no_change_required=True
             elif((email_input==user_details["email"] or email_input=="") and password_input!=""):
                 password_changed=True
-                update_user_details_sql = "UPDATE users SET password='{}', bio='{}' WHERE id='{}'".format(password_input,bio_input,current_user_id)
+                update_user_details_sql = "UPDATE users SET password=%s, bio=%s WHERE id=%s"
+                update_user_details_input=(password_input,bio_input,current_user_id)
+                
             else:
                 email_changed=True
-                update_user_details_sql = "UPDATE users SET email = '{}', bio='{}' WHERE id='{}'".format(email_input,bio_input,current_user_id)
-            pymysql_cursor.execute(update_user_details_sql)
+                update_user_details_sql = "UPDATE users SET email = %s, bio=%s WHERE id=%s"
+                update_user_details_input=(email_input,bio_input,current_user_id)
+            pymysql_cursor.execute(update_user_details_sql,update_user_details_input)
             
             if request.files:
                 uploaded_image = request.files["profile-picture-input"]
@@ -799,8 +799,10 @@ def user_dashboard():
                     f = os.path.join(app.config['PROFILE_PICTURE_UPLOAD_FOLDER'], uploaded_image.filename)
                     uploaded_image.save(f)
                     profile_picture_uri=str(uploaded_image.filename)
-                    update_user_photo_sql = "UPDATE users SET profile_picture_uri = '{}' WHERE id = '{}'".format(profile_picture_uri,current_user_id)
-                    pymysql_cursor.execute(update_user_photo_sql)
+                    update_user_photo_sql = "UPDATE users SET profile_picture_uri = %s WHERE id = %s"
+                    update_user_photo_input = (profile_picture_uri,current_user_id)
+                    
+                    pymysql_cursor.execute(update_user_photo_sql,update_user_photo_input)
             
             pymysql_connection.commit()
             

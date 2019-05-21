@@ -31,7 +31,7 @@ still need to fix the functions that take that array in) [DONE]
 
 ## Code Green
 
- - Change all the '{}'.format() to python prepared statements, to prevent SQL injects.
+ - Change all the '{}'.format() to python prepared statements, to prevent SQL injects. [DONE]
  - Change the upload folder to an external server ssh thingy thingy.
 
 
