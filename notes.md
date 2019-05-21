@@ -14,9 +14,13 @@ still need to fix the functions that take that array in) [DONE]
 - Recipe updater
 - Add in more recipes into the database and populate the front page
 - Before rendering the single page article template. Pass in all of the categories into tag-cloud-links and place them at the bottom of the page [DONE]
-- Update the SQL statement so that the meal type, diet and health,dish type ,cooking style show up in the links in each recipe when displayed in the recipe list section. The number of tags should be limited to 5.
+- Update the SQL statement so that the meal type, diet and health,dish type ,cooking style show up in the links in each recipe when displayed in the recipe list section. The number of tags should be limited to 5. [DONE]
 - Fix the profile picture uploading [DONE]
 - Update the search functionality to also check if the search term matches the cuisine/ingredient rather than just the name of the recipe [DONE]
+- Recipe creator and updater need to have the ingredients be implemented.
+- Find out to go through the many to many relationships and update them in sql. [DONE]
+- Single page for all of the categories with a description of each of them and then a recipe_list with a preset search term.
+- Allow the user to enter the ingredients list in the recipe creator and change it in the recipe editor.
 
 ## Code Yellow
 

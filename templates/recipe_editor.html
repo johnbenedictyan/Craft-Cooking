@@ -1,0 +1,230 @@
+{% extends "layout.html" %} {% block recipe_editor_hero_wrap_section %}
+<section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+                <h1 class="mb-3 bread">Recipe Editor</h1>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Recipe Editor <i class="ion-ios-arrow-forward"></i></span></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} {% block recipe_editor_section %}
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col heading-section ftco-animate">
+                <h2 class="mb-4"><span>Recipe Editor</span></h2>
+                <section class="ftco-section ftco-animate">
+                    <div class="container">
+                        <form method="POST" enctype="multipart/form-data">
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="recipe_photo">Recipe Photo</label>
+                                        <input type="file" class="form-control" name="recipe_photo">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="recipe_title">Recipe Title</label>
+                                        <input type="text" class="form-control" name="recipe_title" value="{{recipe_details[0]['name'] | title}}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="prep_time">Total Preparation Time:</label>
+                                        <input type="text" class="form-control" name="prep_time" value="{{recipe_details[3]['prep_duration_seconds']}}">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="cook_time">Total Cooking Time:</label>
+                                        <input type="text" class="form-control" name="cook_time" value="{{recipe_details[3]['cook_duration_seconds']}}">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="ready_in_time">Ready in Time:</label>
+                                        <input type="text" class="form-control" name="ready_in_time" value="{{recipe_details[3]['ready_in_duration_seconds']}}">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="serve_selection_list">Serves:</label>
+                                        <select class="form-control" id="serve_selection_list" name="serves_number">
+                                            {% for i in range(1,16) %}
+                                            {% if i == recipe_details[0]["serves"] %}
+                                            <option value="{{i}}" selected>{{i}}</option>
+                                            {% else %}
+                                            <option value="{{i}}">{{i}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="recipe_procedure_text_area">Recipe Procedure: </label>
+                                        <ol id="recipe_procedure_ordered_list">
+                                            {% for i in recipe_details[2] %}
+                                            <li><input type="text" class="form-control recipe_procedure_list_item_custom_css recipe_procedure_item" name="recipe_procedure" value="{{i}}"/><button class="btn btn-outline-danger ml-2 remove_step_button">&times</button></li>
+                                            {% endfor %}
+                                        </ol>
+                                        <button class="btn btn-primary btn-lg" id="add_next_step_button">Add a next step</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="allergens">Allergens:</label>
+                                        <select class="form-control" id="allergen_selection_list" name="allergens" multiple>
+                                                    {% for i in all_available_categories[0] %}
+                                                        {% if i.id in current_post_categories[0] %}
+                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                                        {% else %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </select>
+                                        <small id="allergens_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="cooking_styles">Cooking Style:</label>
+                                        <select class="form-control" id="cooking_style_selection_list" name="cooking_styles" multiple>
+                                                    {% for i in all_available_categories[1] %}
+                                                    {% if i.id in current_post_categories[1] %}
+                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                                        {% else %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </select>
+                                        <small id="cooking_styles_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="cuisines">Cuisine:</label>
+                                        <select class="form-control" id="cuisine_selection_list" name="cuisines" multiple>
+                                                    {% for i in all_available_categories[2] %}
+                                                    {% if i.id in current_post_categories[2] %}
+                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                                        {% else %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </select>
+                                        <small id="cuisines_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="diet_health_types">Diet & Health:</label>
+                                        <select class="form-control" id="diet_health_type_selection_list" name="diet_health_types" multiple>
+                                                    {% for i in all_available_categories[3] %}
+                                                    {% if i.id in current_post_categories[3] %}
+                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                                        {% else %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </select>
+                                        <small id="diet_health_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="dish_types">Dish Type:</label>
+                                        <select class="form-control" id="dish_type_selection_list" name="dish_types" multiple>
+                                                    {% for i in all_available_categories[4] %}
+                                                    {% if i.id in current_post_categories[4] %}
+                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                                        {% else %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </select>
+                                        <small id="dish_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="meal_types">Meal Type:</label>
+                                        <select class="form-control" id="meal_type_selection_list" name="meal_types" multiple>
+                                                    {% for i in all_available_categories[5] %}
+                                                    {% if i.id in current_post_categories[5] %}
+                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                                        {% else %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </select>
+                                        <small id="meal_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg">Create Recipe</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block jquery_script_section %}
+<script>
+    /* global $ */
+    $(function(){
+        $("#add_next_step_button").click(function(event){
+            event.preventDefault();
+            $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control recipe_procedure_list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times</button></li>");
+        });
+        // $(".remove_step_button").click(function(event){
+        //     event.preventDefault();
+        //     let list_item = $(this).parent();
+        //     list_item.remove();
+        // });
+        $('.remove_step_button').click(function(event){
+            event.preventDefault();
+            $(this).parent().remove();
+            });
+    });
+</script>
+{% endblock %}
+
+{% block page_specific_css_section %}
+<style>
+    .recipe_procedure_list_item_custom_css {
+        display:inline;
+        width:85%;
+    }
+    #recipe_procedure_ordered_list {
+        font-size:x-large;
+    }
+    .remove_step_button {
+        font-size:x-large;
+        width:52px;
+    }
+</style>
+{% endblock %}

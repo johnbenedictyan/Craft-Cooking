@@ -140,7 +140,7 @@
                         <div class="ftco-animate">
                             <ul class="list-group">
                                 {% for i in user_recipe_list %}
-                                <li class="list-group-item">{{i.name|title}}<a class="float-right" href="#">Edit</a></li>
+                                <li class="list-group-item">{{i.name|title}}<a class="float-right" href="{{ url_for('recipe_editor', post_id=i.id) }}">Edit</a></li>
                                 {% endfor %}
                             </ul>
                         </div>

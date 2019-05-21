@@ -1,11 +1,11 @@
 {% block page_specific_css_section %}
 <style>
-    .article_icon {
+    .post_icon {
         font-size:2rem;
     }
 </style>
 {% endblock %}
-{% extends "layout.html" %} {% block single_article_hero_wrap_section %}
+{% extends "layout.html" %} {% block single_post_hero_wrap_section %}
 <section class="hero-wrap hero-wrap-2" style="background-image: url({{ url_for('recipe_picture', filename='{}'.format(photo_uri)) }});">
     <div class="overlay"></div>
     <div class="container">
@@ -17,29 +17,29 @@
         </div>
     </div>
 </section>
-{% endblock %} {% block single_article_main_content_section %}
+{% endblock %} {% block single_post_main_content_section %}
 <section class="ftco-section">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 order-lg-last ftco-animate">
                 <div class="row mb-3">
                     <div class="col text-center">
-                        <span class="icon icon-hourglass-2 article_icon mb-4"></span>
+                        <span class="icon icon-hourglass-2 post_icon mb-4"></span>
                         <h5><strong>Preparation Time</strong></h5>
                         <p>{{recipe_time_details_list[0]}}</p>
                     </div>
                     <div class="col text-center">
-                        <span class="icon icon-hourglass-2 article_icon mb-4"></span>
+                        <span class="icon icon-hourglass-2 post_icon mb-4"></span>
                         <h5><strong>Cooking Time</strong></h5>
                         <p>{{recipe_time_details_list[1]}}</p>
                     </div>
                     <div class="col text-center">
-                        <span class="icon icon-hourglass-2 article_icon mb-4"></span>
+                        <span class="icon icon-hourglass-2 post_icon mb-4"></span>
                         <h5><strong>Ready In</strong></h5>
                         <p>{{recipe_time_details_list[2]}}</p>
                     </div>
                     <div class="col text-center">
-                        <span class="icon icon-spoon article_icon mb-4"></span>
+                        <span class="icon icon-spoon post_icon mb-4"></span>
                         <h5><strong>Serves</strong></h5>
                         <p>{{recipe_details.serves}}</p>
                     </div>

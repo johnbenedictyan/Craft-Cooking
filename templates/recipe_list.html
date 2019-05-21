@@ -31,7 +31,7 @@
                     {% for i in recipe_list %}
                     <div class="col-md-4 ftco-animate">
                         <div class="blog-entry">
-                            <a href="{{ url_for('article', article_id='{}'.format(i.post_recipe_id)) }}" class="img-2"><img src="{{ url_for('recipe_picture', filename='{}'.format(i.post_photo_uri)) }}" class="img-fluid" alt="Post Photo"></a>
+                            <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2"><img src="{{ url_for('recipe_picture', filename='{}'.format(i.post_photo_uri)) }}" class="img-fluid" alt="Post Photo"></a>
                             <div class="text pt-3">
                                 <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
                                 <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
@@ -52,7 +52,7 @@
                                     <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a> 
                                     {% endfor %} 
                                 </div>
-                                <p class="mb-0"><a href="{{ url_for('article', article_id='{}'.format(i.post_recipe_id)) }}" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
