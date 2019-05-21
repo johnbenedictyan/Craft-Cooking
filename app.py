@@ -177,10 +177,10 @@ def get_recipe_lists_article_list_details():
     pymysql_cursor.execute(recipe_lists_details_sql)
     recipe_lists_article_list_details=pymysql_cursor.fetchall()
     
+    result = recipe_list_helper_function(recipe_lists_article_list_details)
+    
     pymysql_cursor.close()
     
-    result = recipe_list_helper_function(recipe_lists_article_list_details)
-    print(result)
     return result
 
 def get_user_recipe_lists_article_list_details(current_user_id): 
@@ -198,32 +198,109 @@ def get_user_recipe_lists_article_list_details(current_user_id):
     result = recipe_list_helper_function(recipe_lists_article_list_details)
     return result
     
-#CHANGE THIS FUNCTION SO THAT NOT ONLY THE NAME CAN BE SEARCHED
 def recipe_list_search_function(search_terms): 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
-    recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id WHERE recipes.name LIKE %s """
+    recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id WHERE recipes.id = %s
+    """
+    sql_1 = "SELECT recipes.id AS recipe_id FROM `recipes` WHERE recipes.name LIKE %s"
+    sql_2 = "SELECT cuisine_lists.recipe_id FROM `cuisine_lists` JOIN `cuisines` ON cuisine_lists.cuisine_id = cuisines.id WHERE cuisines.name LIKE %s"
+    sql_3 = "SELECT cooking_style_lists.recipe_id FROM `cooking_style_lists` JOIN `cooking_styles` ON cooking_style_lists.cooking_style_id = cooking_styles.id WHERE cooking_styles.name LIKE %s"
+    sql_4 = "SELECT diet_health_type_lists.recipe_id FROM `diet_health_type_lists` JOIN `diet_health_types` ON diet_health_type_lists.diet_health_type_id = diet_health_types.id WHERE diet_health_types.name LIKE %s"
+    sql_5 = "SELECT dish_type_lists.recipe_id FROM `dish_type_lists` JOIN `dish_types` ON dish_type_lists.dish_type_id = dish_types.id WHERE dish_types.name LIKE %s"
+    sql_6 = "SELECT meal_type_lists.recipe_id FROM `meal_type_lists` JOIN `meal_types` ON meal_type_lists.meal_type_id = meal_types.id WHERE meal_types.name LIKE %s"
+    
     search_input = ("%" + search_terms +"%")
-    pymysql_cursor.execute(search_sql,search_input)
-    recipe_lists_article_list_details=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_1,search_input)
+    result_1=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_2,search_input)
+    result_2=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_3,search_input)
+    result_3=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_4,search_input)
+    result_4=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_5,search_input)
+    result_5=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_6,search_input)
+    result_6=pymysql_cursor.fetchall()
+    
+    recipe_input_array = [result_1,result_2,result_3,result_4,result_5,result_6]
+    recipe_result_array = []
+    for i in recipe_input_array:
+        if i is not tuple:
+            for j in i:
+                if j not in recipe_result_array:
+                    recipe_result_array.append(j["recipe_id"])
+    
+    final_recipe_list_result = []
+    for k in recipe_result_array:
+        search_input = k
+        pymysql_cursor.execute(search_sql,k)
+        search_result = pymysql_cursor.fetchone()
+        final_recipe_list_result.append(search_result)
+        
+    result=recipe_list_helper_function(final_recipe_list_result)
     
     pymysql_cursor.close()
-    result=recipe_list_helper_function(recipe_lists_article_list_details)
     return result
     
 def user_recipe_list_search_function(current_user_id,search_terms): 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
+    recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id WHERE recipes.id = %s AND authors.user_id = %s
+    """
+    sql_1 = "SELECT recipes.id AS recipe_id FROM `recipes` WHERE recipes.name LIKE %s"
+    sql_2 = "SELECT cuisine_lists.recipe_id FROM `cuisine_lists` JOIN `cuisines` ON cuisine_lists.cuisine_id = cuisines.id WHERE cuisines.name LIKE %s"
+    sql_3 = "SELECT cooking_style_lists.recipe_id FROM `cooking_style_lists` JOIN `cooking_styles` ON cooking_style_lists.cooking_style_id = cooking_styles.id WHERE cooking_styles.name LIKE %s"
+    sql_4 = "SELECT diet_health_type_lists.recipe_id FROM `diet_health_type_lists` JOIN `diet_health_types` ON diet_health_type_lists.diet_health_type_id = diet_health_types.id WHERE diet_health_types.name LIKE %s"
+    sql_5 = "SELECT dish_type_lists.recipe_id FROM `dish_type_lists` JOIN `dish_types` ON dish_type_lists.dish_type_id = dish_types.id WHERE dish_types.name LIKE %s"
+    sql_6 = "SELECT meal_type_lists.recipe_id FROM `meal_type_lists` JOIN `meal_types` ON meal_type_lists.meal_type_id = meal_types.id WHERE meal_types.name LIKE %s"
     
-    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
-    recipes.id AS post_recipe_id, posts.id AS post_id  FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id 
-    WHERE authors.user_id = %s AND recipes.name LIKE %s """
-    recipe_lists_details_input = (current_user_id,"%"+search_terms+"%")
-    pymysql_cursor.execute(recipe_lists_details_sql,recipe_lists_details_input)
-    recipe_lists_article_list_details=pymysql_cursor.fetchall()
+    search_input = ("%" + search_terms +"%")
     
+    pymysql_cursor.execute(sql_1,search_input)
+    result_1=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_2,search_input)
+    result_2=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_3,search_input)
+    result_3=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_4,search_input)
+    result_4=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_5,search_input)
+    result_5=pymysql_cursor.fetchall()
+    
+    pymysql_cursor.execute(sql_6,search_input)
+    result_6=pymysql_cursor.fetchall()
+    
+    recipe_input_array = [result_1,result_2,result_3,result_4,result_5,result_6]
+    recipe_result_array = []
+    for i in recipe_input_array:
+        if i is not tuple:
+            for j in i:
+                if j not in recipe_result_array:
+                    recipe_result_array.append(j["recipe_id"])
+    
+    final_recipe_list_result = []
+    for k in recipe_result_array:
+        search_input = (k,current_user_id)
+        pymysql_cursor.execute(search_sql,search_input)
+        search_result = pymysql_cursor.fetchone()
+        if search_result:
+            final_recipe_list_result.append(search_result)
+    
+    
+    result=recipe_list_helper_function(final_recipe_list_result)
     pymysql_cursor.close()
-    
-    result = recipe_list_helper_function(recipe_lists_article_list_details)
     return result
 
 def check_if_user_is_an_author(current_user_id):
@@ -512,8 +589,7 @@ def page_not_found(e):
                                
 @app.route("/testing")
 def testing():
-    print(get_article_categories(1))
-    print(get_article_categories(2))
+    user_recipe_list_search_function(12,"western")
     return redirect(url_for('init'))
     
 if __name__ == '__main__':
