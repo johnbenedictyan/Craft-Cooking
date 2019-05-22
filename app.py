@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory
+from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,session
 from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from werkzeug.utils import secure_filename
 import pymongo
@@ -52,7 +52,7 @@ def get_user_recipe_details(current_user_id):
     return user_recipe_list
     
 def get_user_dashboard_details(current_user_id):
-    user_details_sql="SELECT * FROM users JOIN countries ON users.country_of_origin_id = countries.id WHERE `users`.`id` = %s"
+    user_details_sql="SELECT users.id,users.username,users.email,users.bio,users.profile_picture_uri,countries.country_name,countries.id,authors.user_to_author_date FROM users JOIN countries ON users.country_of_origin_id = countries.id LEFT JOIN authors ON users.id = authors.user_id WHERE `users`.`id` = %s"
     user_details_input=(current_user_id)
     pymysql_cursor.execute(user_details_sql,user_details_input)
     user_details=pymysql_cursor.fetchone()
@@ -441,13 +441,15 @@ def user_recipe_list_search_function(current_user_id,search_terms):
     return result
 
 def check_if_user_is_an_author(current_user_id):
-    
     get_author_id_sql = "SELECT id FROM authors WHERE authors.user_id = %s"
     get_author_id_input = (current_user_id)
     pymysql_cursor.execute(get_author_id_sql,get_author_id_input)
-    author_id = int(pymysql_cursor.fetchone()["id"])
-    
-    return author_id
+    result = pymysql_cursor.fetchone()
+    if result:
+        author_id = int(result["id"])
+        return author_id
+    else:
+        return None
 
 def get_recipe_creator_form_details():
     
@@ -657,12 +659,16 @@ def delete_user_function(user_id):
     return True
 
 def user_to_author_function(user_id):
-    user_to_author_sql = "INSERT INTO `authors`(`id`, `user_id`, `user_to_author_date`) VALUES (%s,CURRENT_DATE(),%s)"
+    user_to_author_sql = "INSERT INTO `authors`(`id`, `user_id`, `user_to_author_date`) VALUES (%s,%s,CURRENT_DATE())"
     user_to_author_input = (None,user_id)
     pymysql_cursor.execute(user_to_author_sql,user_to_author_input)
     pymysql_connection.commit()
     return True
-    
+
+def session_clear_function():
+    session.clear()
+    return True
+
 @app.route("/")
 def init():
     return render_template("index.html",session=session)
@@ -716,13 +722,10 @@ def user_creation():
             user_creation_input = (username_input,hashed_password,email_input,country_input,default_profile_picture)
             pymysql_cursor.execute(user_creation_sql,user_creation_input)
             pymysql_connection.commit()
-            session.pop('username',None)
-            session["username"]=username_input
-            # SHOULD FLASH THE MESSAGE THAT THE USER HAS BEEN CREATED SUCESSFULLY HERE AND THE LOG THE PERSON OUT INSTEAD OF PLACING ONLY THEIR USERNAME INTO THE SESSION.
-            return redirect(url_for('init'))
+            # SHOULD FLASH THE MESSAGE THAT THE USER HAS BEEN CREATED SUCESSFULLY HERE AND ASK THEM TO LOG IN. PASS TO LOGOUT PASS TO INIT
+            return redirect(url_for('logout'))
         else:
             error = True
-            
             return render_template("signup.html",error=error)
         
 @app.route("/user/recipes",methods=["GET","POST"])
@@ -904,10 +907,8 @@ def page_not_found(e):
                                
 @app.route("/testing")
 def testing():
-    recipe_details = get_recipe_details_for_recipe_editor(2)["current_post_details"][0]
-    asd = get_recipe_details_for_recipe_editor(2)["current_post_details"][3]
-    print(recipe_details)
-    print(asd)
+    test = user_to_author_function(15)
+    print(test)
     return redirect(url_for('init'))
     
 @app.route("/delete-post/<post_id>")

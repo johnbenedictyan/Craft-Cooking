@@ -62,7 +62,11 @@
                                         </div>
                                         <div class="row">
                                             <div class="col">
-                                                author since date OR not an author with become an author button
+                                                {% if user_details.user_to_author_date %}
+                                                <p>Author Since: <span>{{user_details.user_to_author_date}}</span></p>
+                                                {% else %}
+                                                <a href="{{ url_for('become_an_author', user_id=user_details.id) }}" class="btn btn-primary btn-lg">Become an author</a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -116,7 +120,11 @@
                                                 <input type="password" class="form-control" id="user_password" name="password_input" placeholder="New Password">
                                             </div>
                                             <div class="form-group col-5">
-                                                author since date OR not an author with become an author button
+                                                {% if user_details.user_to_author_date %}
+                                                <p>Author Since: <span>{{user_details.user_to_author_date}}</span></p>
+                                                {% else %}
+                                                <a href="{{ url_for('become_an_author', user_id=user_details.id) }}" class="btn btn-primary btn-lg">Become an author</a>
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>

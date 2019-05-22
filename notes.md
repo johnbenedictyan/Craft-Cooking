@@ -11,7 +11,7 @@
 - Change all the sql statements so that instead of only looking through the categories table(NEED TO GET RID OF THIS GENERIC CATEGORIES TABLE), the <category_link_details> 
 will have all of the possible categories from all of the tables (allergens,cookingstyle,health and diet,etc) [UPDATE:CHANGE THE SQL STATEMENTS SO THAT category_link_details is now an array of all of the different categories, 
 still need to fix the functions that take that array in) [DONE] 
-- Recipe updater
+- Recipe updater [DONE]
 - Add in more recipes into the database and populate the front page
 - Before rendering the single page article template. Pass in all of the categories into tag-cloud-links and place them at the bottom of the page [DONE]
 - Update the SQL statement so that the meal type, diet and health,dish type ,cooking style show up in the links in each recipe when displayed in the recipe list section. The number of tags should be limited to 5. [DONE]
@@ -48,6 +48,12 @@ still need to fix the functions that take that array in) [DONE]
  3. What is the relationship between users and reviews and recipes. One to many or many to many.
 
 ## Messages that need to be flashed
+ 1. User Creation Success/Error
+ 2. Recipe Creation Success/Error
+ 3. Recipe Editor Success/Error/Not the author error
+ 4. Post delete success/error
+ 5. User delete success/error
+ 6. Update User details success/error/which one was updated
 
 # PROJECT LOGS:
 ## 4 May:
@@ -117,3 +123,4 @@ still need to fix the functions that take that array in) [DONE]
 password in the database to VARCHAR(30). Therefore the stored value would be a truncated version of the hashed password,
 therefore the checkpasswordhash function would not work.
 2. Fixed the user profile picture delivery system with a custom function which returns a send from directory of the picture.
+3. Jquery onclick only works for static buttons whereas the on function works for dynamically added buttons. Thats how i solved the bug of the recipe procedure not working
