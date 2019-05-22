@@ -28,6 +28,7 @@ still need to fix the functions that take that array in) [DONE]
  - Add a bio section to the user and pass into the SQL query for author_details. [DONE]
  - Change the seconds into seconds and minutes in each articles.
  - Change the update user details from simple flashing to flask flashing.
+ - Create a custom flash message modal box to contain all the messages or errors.
 
 ## Code Green
 
@@ -47,6 +48,7 @@ still need to fix the functions that take that array in) [DONE]
  1. Decide on whether to use text area or the button which adds a new step for the recipe procedure
  2. Get a featured post list where a sql query is set to return a list of the top 5 highest viewed recipes. Put those on the main page.
  3. What is the relationship between users and reviews and recipes. One to many or many to many.
+ 4. On the testing.html there are the preliminary designs of the message flashing modal boxes.
 
 ## Messages that need to be flashed
  1. User Creation Success/Error
@@ -94,6 +96,10 @@ still need to fix the functions that take that array in) [DONE]
 - Bug Fix: The bug whereby the user would not be popped out of session when he created a new user whilst being logged in to the old user account.
 - New Feature: User Deletion
 - Bug Fix: Recipe Procedure buttons not working.
+- Formatting: Made all of the recipe photos the same height and limited the number of categories to be displayed to five.
+
+## 23 May
+- New Feature: Message Flashing
 
 ## USEFUL LINKS
 **Stock profile pictures**

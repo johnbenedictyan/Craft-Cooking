@@ -38,54 +38,6 @@
 </section>
 {% endblock %}
 
-{% block login_alert_section %}
-{% if user_does_not_exist %}
-<div class="container">
-    <div class="alert alert-danger" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="alert-heading"><strong>Unsuccessful Login!</strong></h4>
-        <p>The username you have entered does not exist.</p> 
-    </div>
-</div>
-{% elif incorrect_password %}
-<div class="container">
-    <div class="alert alert-danger" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="alert-heading"><strong>Unsuccessful Login!</strong></h4>
-        <p>Incorrect Password</p> 
-    </div>
-</div>
-{% endif %}
-{% endblock %}
-
-{% block update_user_profile_alert_section %}
-{% if no_change_required %}
-<div class="container">
-    <div class="alert alert-info" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="alert-heading"><strong>Profile Update Unsuccessful!</strong></h4>
-        <p>No change required.</p> 
-    </div>
-</div>
-{% elif password_changed %}
-<div class="container">
-    <div class="alert alert-info" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="alert-heading"><strong>Profile Update Successful!</strong></h4>
-        <p>Password Changed.</p> 
-    </div>
-</div>
-{% elif email_changed %}
-<div class="container">
-    <div class="alert alert-info" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="alert-heading"><strong>Profile Update Successful!</strong></h4>
-        <p>Email Changed.</p> 
-    </div>
-</div>
-{% endif %}
-{% endblock %}
-
 {% block jquery_script_section %}
 <script>
 /* global $ */

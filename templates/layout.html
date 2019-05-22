@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>.message-success{color: #39ed29;}.message-error{color: #ed2939;}.icon-wrap i{font-size: 6rem;}.flash-message-modal{top:15%;}.flash-message-modal .modal-header{border:none;}.flash-message-modal .modal-footer{border:none;}</style>
   {% block page_specific_css_section %}
   {% endblock %}
 </head>
@@ -86,20 +87,11 @@
   {% block login_hero_wrap_section %}
   {% endblock %}
   
-  {% block login_alert_section %}
-  {% endblock %}
-  
-  {% block update_user_profile_alert_section %}
-  {% endblock %}
-  
   {% block login_form_section %} 
   {% endblock %} 
   
   {% block sign_up_hero_wrap_section %}
   {% endblock %}
-  
-  {% block sign_up_alert_section %} 
-  {% endblock %} 
   
   {% block sign_up_form_section %} 
   {% endblock %}
@@ -127,7 +119,95 @@
   
   {% block page_not_found_main_content_section %}
   {% endblock %}
-
+  
+  {% with messages = get_flashed_messages(category_filter=["message"]) %}
+  {% if messages %}
+  <div class="modal fade" id="flash_message_modal_messages" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_messages_label" aria-hidden="true">
+      <div class="modal-dialog flash-message-modal" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                  <div class="container">
+                      <div class="row my-2">
+                          <div class="col text-center icon-wrap">
+                              <i class="ion-ios-checkmark-circle-outline message-success"></i>
+                          </div>
+                      </div>
+                      <div class="row my-2">
+                          <div class="col text-center">
+                              <h1 class="modal-title font-weight-bold display-4" id="flash_message_modal_messages_label">SUCCESS</h1>
+                          </div>
+                      </div>
+                      <div class="row my-2 border-top pt-4">
+                          <div class="col text-center">
+                              {% for msg in messages %}
+                              <h3>{{msg}}</h3>
+                              {% endfor %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer mb-3">
+                  <div class="container">
+                      <div class="row">
+                          <div class="col text-center">
+                              <button type="button" class="btn btn-primary btn-lg w-75" data-dismiss="modal">Close</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+  
+  {% with errors = get_flashed_messages(category_filter=["error"]) %}
+  {% if errors %}
+  <div class="modal fade" id="flash_message_modal_errors" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_errors_label" aria-hidden="true">
+      <div class="modal-dialog flash-message-modal" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+              <div class="modal-body">
+                  <div class="container">
+                      <div class="row my-2">
+                          <div class="col text-center icon-wrap message-error">
+                              <i class="ion-ios-alert"></i>
+                          </div>
+                      </div>
+                      <div class="row my-2">
+                          <div class="col text-center">
+                              <h1 class="modal-title font-weight-bold display-4" id="flash_message_modal_errors_label">ERROR</h1>
+                          </div>
+                      </div>
+                      <div class="row my-2 border-top pt-4">
+                          <div class="col text-center">
+                              {% for msg in errors %}
+                              <h3>{{msg}}</h3>
+                              {% endfor %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer mb-3">
+                  <div class="container">
+                      <div class="row">
+                          <div class="col text-center">
+                              <button type="button" class="btn btn-primary btn-lg w-75" data-dismiss="modal">Close</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% endif %} 
+  {% endwith %}
+  
   <footer class="ftco-footer ftco-footer-2 ftco-section">
     <div class="container">
       <div class="row mb-5">
@@ -216,8 +296,9 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="{{ url_for('static', filename='js/google-map.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
   {% block jquery_script_section %} {% endblock %}
+  <script>/* global $ */$(function(){$('#flash_message_modal_messages').modal('show');$('#flash_message_modal_errors').modal('show');});
+</script>
 </body>
 
 </html>
