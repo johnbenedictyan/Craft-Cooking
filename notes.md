@@ -7,32 +7,18 @@
 # Things needed to be done:
 
 ## Code Red
-- Recipe creator(DONE HALF OF IT, JUST INSERT THE POST CATEGORIES INTO THE DATABASE AND IT SHOULD WORK. CHANGE THE FORM SO THAT A DROPOUT MULTI SELECT CAN BE USED TO SELECT THE CATEGORIES) [DONE]
-- Change all the sql statements so that instead of only looking through the categories table(NEED TO GET RID OF THIS GENERIC CATEGORIES TABLE), the <category_link_details> 
-will have all of the possible categories from all of the tables (allergens,cookingstyle,health and diet,etc) [UPDATE:CHANGE THE SQL STATEMENTS SO THAT category_link_details is now an array of all of the different categories, 
-still need to fix the functions that take that array in) [DONE] 
-- Recipe updater [DONE]
-- Add in more recipes into the database and populate the front page
-- Before rendering the single page article template. Pass in all of the categories into tag-cloud-links and place them at the bottom of the page [DONE]
-- Update the SQL statement so that the meal type, diet and health,dish type ,cooking style show up in the links in each recipe when displayed in the recipe list section. The number of tags should be limited to 5. [DONE]
-- Fix the profile picture uploading [DONE]
-- Update the search functionality to also check if the search term matches the cuisine/ingredient rather than just the name of the recipe [DONE]
 - Recipe creator and updater need to have the ingredients be implemented.
-- Find out to go through the many to many relationships and update them in sql. [DONE]
 - Single page for all of the categories with a description of each of them and then a recipe_list with a preset search term.
 - Allow the user to enter the ingredients list in the recipe creator and change it in the recipe editor.
 
 ## Code Yellow
 
  - Form validation so that the users cannot send empty form, preferably the form validation should be on the client side. Also ban the use of unique characters in password to prevent SQL injects.
- - Add a bio section to the user and pass into the SQL query for author_details. [DONE]
  - Change the seconds into seconds and minutes in each articles.
- - Change the update user details from simple flashing to flask flashing.
- - Create a custom flash message modal box to contain all the messages or errors.
+ - Add in more recipes into the database and populate the front page
 
 ## Code Green
 
- - Change all the '{}'.format() to python prepared statements, to prevent SQL injects. [DONE]
  - Change the upload folder to an external server ssh thingy thingy.
  - The user dashboard navigation should be at the top for mobile devices and tablets.
  - Add a description section to each recipe and show that on the featured post.
@@ -45,10 +31,8 @@ still need to fix the functions that take that array in) [DONE]
 
 ## Things to think about
 
- 1. Decide on whether to use text area or the button which adds a new step for the recipe procedure
- 2. Get a featured post list where a sql query is set to return a list of the top 5 highest viewed recipes. Put those on the main page.
- 3. What is the relationship between users and reviews and recipes. One to many or many to many.
- 4. On the testing.html there are the preliminary designs of the message flashing modal boxes.
+ 1. Get a featured post list where a sql query is set to return a list of the top 5 highest viewed recipes. Put those on the main page.
+ 2. What is the relationship between users and reviews and recipes. One to many or many to many.
 
 ## Messages that need to be flashed
  1. User Creation Success/Error
