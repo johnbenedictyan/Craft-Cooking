@@ -100,6 +100,9 @@ still need to fix the functions that take that array in) [DONE]
 - https://damyanon.net/post/flask-series-security/
 - http://flask.pocoo.org/docs/1.0/security/
 
+**Example Modal Box**
+- https://www.tutorialrepublic.com/codelab.php?topic=bootstrap&file=delete-confirmation-modal
+
 ## Funny things that happened along the way
 1. The error of my hashed passwords not matching might be due to the fact that i have limited the amount of characters on the 
 password in the database to VARCHAR(30). Therefore the stored value would be a truncated version of the hashed password,

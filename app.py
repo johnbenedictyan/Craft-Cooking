@@ -640,6 +640,19 @@ def check_if_the_user_is_the_current_posts_author(user_id,recipe_id):
         return True
     else:
         return False
+
+def delete_post_function(post_id):
+    delete_post_recipe_sql = "DELETE FROM `recipes` WHERE recipes.id = %s"
+    delete_post_recipe_input = (post_id)
+    pymysql_cursor.execute(delete_post_recipe_sql,delete_post_recipe_input)
+    return True
+
+def delete_user_function(user_id):
+    session.pop('username',None)
+    delete_user_sql = "DELETE FROM `users` WHERE users.id = %s"
+    delete_user_input = (user_id)
+    pymysql_cursor.execute(delete_user_sql,delete_user_input)
+    return True
     
 @app.route("/")
 def init():
@@ -888,6 +901,18 @@ def testing():
     print(asd)
     return redirect(url_for('init'))
     
+@app.route("/delete-post/<post_id>")
+def delete_post(post_id):
+    if(delete_post_function(post_id) is True):
+        #FLASH THE MESSAGE OF THE POST IS SUCCESSFULLY DELETED
+        return redirect(url_for("recipes"))
+
+@app.route("/delete-user/<user_id>")
+def delete_user(user_id):
+    if(delete_user_function(user_id) is True):
+        #FLASH THE MESSAGE THAT THE USER HAS BEEN DELETED
+        return redirect(url_for("init"))    
+        
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'),
             port=int(os.environ.get('PORT')),

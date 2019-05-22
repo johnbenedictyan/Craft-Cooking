@@ -45,28 +45,20 @@
                                         {% for i in user_recipe_list %}
                                         <div class="col-md-4 ftco-animate">
                                             <div class="blog-entry">
-                                                <a href="{{ url_for('post', post_id=i.post_recipe_id) }}"class="img-2"><img src="{{ url_for('recipe_picture', filename=i.post_photo_uri) }}" class="img-fluid" alt="Post Photo"></a>
+                                                <a href="{{ url_for('post', post_id=i.post_recipe_id) }}" class="img-2"><img src="{{ url_for('recipe_picture', filename=i.post_photo_uri) }}" class="img-fluid" alt="Post Photo"></a>
                                                 <div class="text pt-3">
                                                     <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
                                                     <h3><a href="{{ url_for('post', post_id=i.post_recipe_id) }}">{{i.post_recipe_name |title}}</a></h3>
-                                                    <div class="tagcloud">
+                                                    <div class="tagcloud mb-2">
                                                         {% for j in i.cooking_styles %}
-                                                        <a href="#" class="tag-cloud-link">{{j.cooking_style_name}}</a> 
-                                                        {% endfor %}
-                                                        {% for k in i.cuisines %}
-                                                        <a href="#" class="tag-cloud-link">{{k.cuisine_name}}</a> 
-                                                        {% endfor %} 
-                                                        {% for l in i.diet_health_types %}
-                                                        <a href="#" class="tag-cloud-link">{{l.diet_health_type_name}}</a> 
-                                                        {% endfor %} 
-                                                        {% for m in i.dish_types %}
-                                                        <a href="#" class="tag-cloud-link">{{m.dish_type_name}}</a> 
-                                                        {% endfor %} 
-                                                        {% for n in i.meal_types %}
-                                                        <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a> 
-                                                        {% endfor %} 
+                                                        <a href="#" class="tag-cloud-link">{{j.cooking_style_name}}</a> {% endfor %} {% for k in i.cuisines %}
+                                                        <a href="#" class="tag-cloud-link">{{k.cuisine_name}}</a> {% endfor %} {% for l in i.diet_health_types %}
+                                                        <a href="#" class="tag-cloud-link">{{l.diet_health_type_name}}</a> {% endfor %} {% for m in i.dish_types %}
+                                                        <a href="#" class="tag-cloud-link">{{m.dish_type_name}}</a> {% endfor %} {% for n in i.meal_types %}
+                                                        <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a> {% endfor %}
                                                     </div>
-                                                    <p class="mb-0"><a href="{{ url_for('recipe_editor', post_id=i.post_recipe_id) }}" class="btn btn-black py-2">Edit Recipe</a></p>
+                                                    <span class="mb-0"><a href="{{ url_for('recipe_editor', post_id=i.post_recipe_id) }}" class="btn btn-black py-2">Edit Recipe</a></span>
+                                                    <span class="mb-0"><button type="button" class="btn btn-black py-2" data-delete-button-recipe-id="{{i.post_recipe_id}}" data-delete-button-recipe-name="{{i.post_recipe_name}}" data-toggle="modal" data-target="#confirm_recipe_deletion_modal">Delete Recipe</button></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -144,15 +136,14 @@
                                             <div class="col">
                                                 <div class="form-group">
                                                     <label for="recipe_procedure_text_area">Recipe Procedure: </label>
-                                                    <!--<textarea class="form-control" name="recipe_procedure_text_area" id="recipe_procedure_text_area" rows="5"></textarea>-->
                                                     <ol id="recipe_procedure_ordered_list">
-                                                        <li><input type="text" class="form-control recipe_procedure_list_item_custom_css recipe_procedure_item" name="recipe_procedure"/><button class="btn btn-outline-danger ml-2 remove_step_button">&times</button></li>
+                                                        <li><input type="text" class="form-control recipe_procedure_list_item_custom_css recipe_procedure_item" name="recipe_procedure" /><button class="btn btn-outline-danger ml-2 remove_step_button">&times</button></li>
                                                     </ol>
                                                     <button class="btn btn-primary btn-lg" id="add_next_step_button">Add a next step</button>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="form-row">
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
@@ -165,7 +156,7 @@
                                                     <small id="allergens_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="cooking_styles">Cooking Style:</label>
@@ -178,7 +169,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="form-row">
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
@@ -191,7 +182,7 @@
                                                     <small id="cuisines_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="diet_health_types">Diet & Health:</label>
@@ -204,7 +195,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="form-row">
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
@@ -217,7 +208,7 @@
                                                     <small id="dish_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
                                                 </div>
                                             </div>
-                                        
+
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="meal_types">Meal Type:</label>
@@ -230,7 +221,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="row mt-3">
                                             <div class="col text-center">
                                                 <button type="submit" class="btn btn-primary btn-lg">Create Recipe</button>
@@ -258,13 +249,11 @@
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block jquery_script_section %}
+{% endblock %} {% block jquery_script_section %}
 <script>
     /* global $ */
-    $(function(){
-        $("#add_next_step_button").click(function(event){
+    $(function() {
+        $("#add_next_step_button").click(function(event) {
             event.preventDefault();
             $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control recipe_procedure_list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times</button></li>");
         });
@@ -273,14 +262,22 @@
         //     let list_item = $(this).parent();
         //     list_item.remove();
         // });
-        $('.remove_step_button').click(function(event){
+        $('.remove_step_button').click(function(event) {
             event.preventDefault();
             $(this).parent().remove();
-            });
+        });
+        $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
+           let button = $(event.relatedTarget);
+           let recipe_id = parseInt(button.data("delete-button-recipe-id"), 10);
+           let recipe_name = button.data("delete-button-recipe-name");
+           let modal = $(this);
+           let delete_link = "/delete-post/"+recipe_id;
+           modal.find("#delete-modal-recipe-name").text(recipe_name);
+           modal.find("#delete-modal-delete-link").attr("href",delete_link);
+        });
     });
 </script>
-{% endblock %}
-
+{% endblock %} 
 {% block page_specific_css_section %}
 <style>
     .recipe_procedure_list_item_custom_css {
@@ -294,5 +291,60 @@
         font-size:x-large;
         width:52px;
     }
+    .icon-wrap i{
+        color: #f15e5e;
+		font-size: 6rem;
+    }
+    .modal-delete{
+        top:15%;
+    }
+    .modal-delete .modal-header{
+        border:none;
+    }
+    .modal-delete .modal-footer{
+        border:none;
+    }
 </style>
+{% endblock %}
+{% block confirm_delete_modal_section %}
+<div class="modal fade" id="confirm_recipe_deletion_modal" tabindex="-1" role="dialog" aria-labelledby="confirm_recipe_deletion_modal_label" aria-hidden="true">
+    <div class="modal-dialog modal-delete" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row my-2">
+                        <div class="col text-center icon-wrap">
+                            <i class="ion-ios-close-circle-outline" stlye="font-size:6rem;color:red;"></i>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col text-center">
+                            <h3 class="modal-title" id="confirm_recipe_deletion_modal_label">Are you sure?</h3>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col text-center">
+                            <p>Do you want to delete <span id="delete-modal-recipe-name"></span><br/>This process cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col text-right">
+                            <button type="button" class="btn btn-secondary w-75" data-dismiss="modal">Close</button>
+                        </div>
+                        <div class="col text-left">
+                            <a href="#" class="btn btn-danger w-75" id="delete-modal-delete-link">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
