@@ -5,6 +5,7 @@ import pymongo
 import os
 import pymysql
 from bson import ObjectId
+import random
 db_url = "mongodb://dbuser:asd123@cluster0-shard-00-00-6c1o3.mongodb.net:27017,cluster0-shard-00-01-6c1o3.mongodb.net:27017,cluster0-shard-00-02-6c1o3.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongo_connection = pymongo.MongoClient(db_url)
 
@@ -297,12 +298,36 @@ def get_recipe_details_for_recipe_editor(post_id):
 def recipe_list_helper_function(recipe_lists_post_list_details):
     for i in recipe_lists_post_list_details:
         categories = get_post_categories(int(i['post_id']))
-        i["allergens"] = categories[0]
-        i["cooking_styles"] = categories[1]
-        i["cuisines"] = categories[2]
-        i["diet_health_types"] = categories[3]
-        i["dish_types"] = categories[4]
-        i["meal_types"] = categories[5]
+        total_number_of_categories = 0
+        for j in categories:
+            total_number_of_categories += len(j)
+        
+        if total_number_of_categories <= 5:
+            i["allergens"] = categories[0]
+            i["cooking_styles"] = categories[1]
+            i["cuisines"] = categories[2]
+            i["diet_health_types"] = categories[3]
+            i["dish_types"] = categories[4]
+            i["meal_types"] = categories[5]
+        else:
+            i["allergens"] = [
+                random.choice(categories[0])
+                ]
+            i["cooking_styles"] = [
+                random.choice(categories[1])
+                ]
+            i["cuisines"] = [
+                random.choice(categories[2])
+                ]
+            i["diet_health_types"] = [
+                random.choice(categories[3])
+                ]
+            i["dish_types"] = [
+                random.choice(categories[4])
+                ]
+            i["meal_types"] = [
+                random.choice(categories[5])
+                ]
         
     return recipe_lists_post_list_details
     

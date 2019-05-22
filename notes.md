@@ -34,6 +34,7 @@ still need to fix the functions that take that array in) [DONE]
  - Change all the '{}'.format() to python prepared statements, to prevent SQL injects. [DONE]
  - Change the upload folder to an external server ssh thingy thingy.
  - The user dashboard navigation should be at the top for mobile devices and tablets.
+ - Add a description section to each recipe and show that on the featured post.
 
 
 ## Things that don't work
@@ -92,6 +93,7 @@ still need to fix the functions that take that array in) [DONE]
 - New Feature: Recipe Deletion
 - Bug Fix: The bug whereby the user would not be popped out of session when he created a new user whilst being logged in to the old user account.
 - New Feature: User Deletion
+- Bug Fix: Recipe Procedure buttons not working.
 
 ## USEFUL LINKS
 **Stock profile pictures**
@@ -123,4 +125,5 @@ still need to fix the functions that take that array in) [DONE]
 password in the database to VARCHAR(30). Therefore the stored value would be a truncated version of the hashed password,
 therefore the checkpasswordhash function would not work.
 2. Fixed the user profile picture delivery system with a custom function which returns a send from directory of the picture.
-3. Jquery onclick only works for static buttons whereas the on function works for dynamically added buttons. Thats how i solved the bug of the recipe procedure not working
+3. Jquery onclick only works for static buttons whereas the on function works for dynamically added buttons. Thats how i solved the bug of the recipe procedure not working.
+4. To make all of the recipes in the recipe list to be of the same height. If the number of categories was above 5, i would randomly chooose one from each type of category to display. This however did not affect the search functionality.

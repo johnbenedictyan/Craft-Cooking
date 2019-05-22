@@ -31,7 +31,9 @@
                     {% for i in recipe_list %}
                     <div class="col-md-4 ftco-animate">
                         <div class="blog-entry">
-                            <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2"><img src="{{ url_for('recipe_picture', filename='{}'.format(i.post_photo_uri)) }}" class="img-fluid" alt="Post Photo"></a>
+                            <div class="img-2-wrapper">
+                            <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{ url_for('recipe_picture', filename='{}'.format(i.post_photo_uri)) }})"></a>
+                            </div>
                             <div class="text pt-3">
                                 <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
                                 <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
@@ -52,7 +54,7 @@
                                     <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a> 
                                     {% endfor %} 
                                 </div>
-                                <p class="mb-0"><a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0 mt-2"><a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
@@ -116,4 +118,33 @@
         $("#recipes_nav_item").addClass("active");
     });
 </script>
+{% endblock %}
+{% block page_specific_css_section %}
+<style>
+    .blog-entry .img-2-wrapper{
+        height:250px;
+        overflow: hidden; 
+    }
+    .blog-entry .img-2-wrapper .img-2 {
+         height: 100%;
+         width: 100%;
+         background-position: center;
+         background-size: cover;
+      -webkit-transform: scale(1);
+      -moz-transform: scale(1);
+      -o-transform: scale(1);
+      -ms-transform: scale(1);
+      transform: scale(1);
+      -moz-transition: all 0.3s ease;
+      -o-transition: all 0.3s ease;
+      -webkit-transition: all 0.3s ease;
+      -ms-transition: all 0.3s ease;
+      transition: all 0.3s ease; }
+  .blog-entry .img-2-wrapper:hover .img-2 {
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transform: scale(1.2); }
+</style>
 {% endblock %}
