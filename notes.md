@@ -33,6 +33,7 @@ still need to fix the functions that take that array in) [DONE]
 
  - Change all the '{}'.format() to python prepared statements, to prevent SQL injects. [DONE]
  - Change the upload folder to an external server ssh thingy thingy.
+ - The user dashboard navigation should be at the top for mobile devices and tablets.
 
 
 ## Things that don't work
@@ -44,6 +45,9 @@ still need to fix the functions that take that array in) [DONE]
 
  1. Decide on whether to use text area or the button which adds a new step for the recipe procedure
  2. Get a featured post list where a sql query is set to return a list of the top 5 highest viewed recipes. Put those on the main page.
+ 3. What is the relationship between users and reviews and recipes. One to many or many to many.
+
+## Messages that need to be flashed
 
 # PROJECT LOGS:
 ## 4 May:
@@ -77,6 +81,11 @@ still need to fix the functions that take that array in) [DONE]
 ## 19 May
 - New Feature: Recipe Creator
 - Added in all the categories
+
+## 22 May
+- New Feature: Recipe Deletion
+- Bug Fix: The bug whereby the user would not be popped out of session when he created a new user whilst being logged in to the old user account.
+- New Feature: User Deletion
 
 ## USEFUL LINKS
 **Stock profile pictures**

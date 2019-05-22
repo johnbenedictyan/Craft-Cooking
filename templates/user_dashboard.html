@@ -30,7 +30,7 @@
                         <a class="nav-link" id="user_dashboard-profile-tab" data-toggle="tab" href="#user_dashboard-profile" role="tab" aria-controls="user_dashboard-profile" aria-selected="false">Update Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="user_dashboard-recipe_list-tab" data-toggle="tab" href="#user_dashboard-recipe_list" role="tab" aria-controls="user_dashboard-recipe_list" aria-selected="false">My Recipes</a>
+                        <a class="nav-link" id="user_dashboard-delete_account-tab" data-toggle="tab" href="#user_dashboard-delete_account" role="tab" aria-controls="user_dashboard-delete_account" aria-selected="false">Delete Account</a>
                     </li>
                 </ul>
             </div>
@@ -133,16 +133,31 @@
                             </form>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="user_dashboard-recipe_list" role="tabpanel" aria-labelledby="user_dashboard-recipe_list-tab">
+                    <div class="tab-pane fade" id="user_dashboard-delete_account" role="tabpanel" aria-labelledby="user_dashboard-delete_account-tab">
                         <div class="heading-section ftco-animate">
-                            <h2 class="mb-4"><span>Recipe List</span></h2>
+                            <h2 class="mb-4"><span>Delete Account</span></h2>
                         </div>
                         <div class="ftco-animate">
-                            <ul class="list-group">
-                                {% for i in user_recipe_list %}
-                                <li class="list-group-item">{{i.name|title}}<a class="float-right" href="{{ url_for('recipe_editor', post_id=i.id) }}">Edit</a></li>
-                                {% endfor %}
-                            </ul>
+                            <div class="container">
+                                <div class="row my-2">
+                                    <div class="col p-0">
+                                        <h2><span class="badge badge-warning w-100">Danger Zone</span></h2>
+                                    </div>
+                                </div>
+                                <div class="row my-2">
+                                    <div class="col-12 col-md-8">
+                                        <div class="row">
+                                            <h4 class="font-weight-bold">Delete this Account</h4>
+                                        </div>
+                                        <div class="row">
+                                            <p>All the recipes you wrote will also be delete with the account!</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4 text-center my-auto pr-0 px-md-3">
+                                        <span class="mb-0"><button type="button" class="btn btn-danger w-100" data-delete-button-user-id="{{user_details.id}}" data-toggle="modal" data-target="#confirm_recipe_deletion_modal">Delete Account</button></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -155,12 +170,75 @@
 <style>
     input[type="file"] {
     display: none;
-}
-/*.custom-file-upload {*/
-/*    border: 1px solid #ccc;*/
-/*    display: inline-block;*/
-/*    padding: 6px 12px;*/
-/*    cursor: pointer;*/
-/*}*/
+    }
+    .icon-wrap i{
+        color: #f15e5e;
+		font-size: 6rem;
+    }
+    .modal-delete{
+        top:15%;
+    }
+    .modal-delete .modal-header{
+        border:none;
+    }
+    .modal-delete .modal-footer{
+        border:none;
+    }
 </style>
 {% endblock %}
+{% block confirm_delete_modal_section %}
+<div class="modal fade" id="confirm_recipe_deletion_modal" tabindex="-1" role="dialog" aria-labelledby="confirm_recipe_deletion_modal_label" aria-hidden="true">
+    <div class="modal-dialog modal-delete" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row my-2">
+                        <div class="col text-center icon-wrap">
+                            <i class="ion-ios-close-circle-outline" stlye="font-size:6rem;color:red;"></i>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col text-center">
+                            <h3 class="modal-title" id="confirm_recipe_deletion_modal_label">Are you sure?</h3>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col text-center">
+                            <p>Do you want to delete your account.<br/>This process cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col text-right">
+                            <button type="button" class="btn btn-secondary w-75" data-dismiss="modal">Close</button>
+                        </div>
+                        <div class="col text-left">
+                            <a href="#" class="btn btn-danger w-75" id="delete-modal-delete-link">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block jquery_script_section %}
+<script>
+    /* global $ */
+    $(function() {
+        $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
+           let button = $(event.relatedTarget);
+           let user_id = parseInt(button.data("delete-button-user-id"), 10);
+           let modal = $(this);
+           let delete_link = "/delete-user/"+user_id;
+           modal.find("#delete-modal-delete-link").attr("href",delete_link);
+        });
+    });
+</script>
+{% endblock %} 

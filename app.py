@@ -645,6 +645,7 @@ def delete_post_function(post_id):
     delete_post_recipe_sql = "DELETE FROM `recipes` WHERE recipes.id = %s"
     delete_post_recipe_input = (post_id)
     pymysql_cursor.execute(delete_post_recipe_sql,delete_post_recipe_input)
+    pymysql_connection.commit()
     return True
 
 def delete_user_function(user_id):
@@ -652,6 +653,14 @@ def delete_user_function(user_id):
     delete_user_sql = "DELETE FROM `users` WHERE users.id = %s"
     delete_user_input = (user_id)
     pymysql_cursor.execute(delete_user_sql,delete_user_input)
+    pymysql_connection.commit()
+    return True
+
+def user_to_author_function(user_id):
+    user_to_author_sql = "INSERT INTO `authors`(`id`, `user_id`, `user_to_author_date`) VALUES (%s,CURRENT_DATE(),%s)"
+    user_to_author_input = (None,user_id)
+    pymysql_cursor.execute(user_to_author_sql,user_to_author_input)
+    pymysql_connection.commit()
     return True
     
 @app.route("/")
@@ -707,7 +716,7 @@ def user_creation():
             user_creation_input = (username_input,hashed_password,email_input,country_input,default_profile_picture)
             pymysql_cursor.execute(user_creation_sql,user_creation_input)
             pymysql_connection.commit()
-            
+            session.pop('username',None)
             session["username"]=username_input
             # SHOULD FLASH THE MESSAGE THAT THE USER HAS BEEN CREATED SUCESSFULLY HERE AND THE LOG THE PERSON OUT INSTEAD OF PLACING ONLY THEIR USERNAME INTO THE SESSION.
             return redirect(url_for('init'))
@@ -912,7 +921,13 @@ def delete_user(user_id):
     if(delete_user_function(user_id) is True):
         #FLASH THE MESSAGE THAT THE USER HAS BEEN DELETED
         return redirect(url_for("init"))    
-        
+
+@app.route("/become-an-author/<user_id>")
+def become_an_author(user_id):
+    if user_to_author_function(user_id) is True:
+        #Flash message that user has become an author
+        return redirect(url_for("user_dashboard"))
+    
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'),
             port=int(os.environ.get('PORT')),
