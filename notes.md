@@ -84,6 +84,7 @@
 
 ## 23 May
 - New Feature: Message Flashing
+- Bug Fix: The bug where the updated password wasn't being hashed.
 
 ## USEFUL LINKS
 **Stock profile pictures**

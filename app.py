@@ -783,8 +783,9 @@ def user_dashboard():
                 update_user_details_sql = "UPDATE `users` SET `email`=%s,`bio`=%s WHERE id = %s"
                 update_user_details_input=(email_input,bio_input,current_user_id)
             else:
+                hashed_password = bcrypt.generate_password_hash(password_input).decode('utf-8')
                 update_user_details_sql = "UPDATE `users` SET `password`=%s,`email`=%s,`bio`=%s WHERE id = %s"
-                update_user_details_input=(password_input,email_input,bio_input,current_user_id)
+                update_user_details_input=(hashed_password,email_input,bio_input,current_user_id)
             pymysql_cursor.execute(update_user_details_sql,update_user_details_input)
             
             if request.files:
@@ -802,7 +803,7 @@ def user_dashboard():
             
             pymysql_connection.commit()
             flash("Your account details have successfully been updated!","message")
-            redirect(url_for("user_dashboard"))
+            return redirect(url_for("user_dashboard"))
     else:
         return redirect(url_for("init"))
 
@@ -891,7 +892,7 @@ def become_an_author(user_id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
-    
+
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'),
             port=int(os.environ.get('PORT')),
