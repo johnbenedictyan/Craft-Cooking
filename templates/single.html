@@ -47,7 +47,15 @@
                 <h2 class="mb-3">Ingredients</h2>
                 <ul>
                     {% for i in ingredient_details %}
-                    <li>{{i.ingredient_amount|title}}&nbsp{{i.name|title}}</li>
+                    {% if i.measurement_type == "no units" and i.extra_information == "None" %}
+                    <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}}</li>
+                    {% elif i.measurement_type == "no units" %}
+                    <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
+                    {% elif i.extra_information == "None" %}
+                    <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}}</li>
+                    {% else %}
+                    <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
                 <h2 class="mb-3 mt-5">Instructions</h2>

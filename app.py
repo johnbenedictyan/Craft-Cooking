@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,session, flash
+from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,session,flash,abort
 from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from werkzeug.utils import secure_filename
 import pymongo
@@ -103,13 +103,13 @@ def get_post_categories(post_id):
         ]
     
     return category_lists_details
-    
+
 def get_post_details(post_id):
     get_author_details_sql = "SELECT users.username,users.id,users.profile_picture_uri,users.bio FROM `authors` JOIN `recipes` ON recipes.author_id = authors.id JOIN `users` ON authors.user_id = users.id WHERE recipes.id = %s"
     get_author_details_input = (post_id)
     pymysql_cursor.execute(get_author_details_sql,get_author_details_input)
     author_details=pymysql_cursor.fetchone()
-    
+
     get_recipe_details_sql = "SELECT recipes.serves,recipes.name,recipes.recipe_procedure FROM `recipes` WHERE recipes.id = %s"
     get_recipe_details_input = (post_id)
     pymysql_cursor.execute(get_recipe_details_sql,get_recipe_details_input)
@@ -120,15 +120,15 @@ def get_post_details(post_id):
     pymysql_cursor.execute(get_recipe_time_details_sql,get_recipe_time_details_input)
     recipe_time_details=pymysql_cursor.fetchone()
     
-    get_ingredient_details_sql="SELECT name,ingredient_amount FROM `ingredients` JOIN `ingredient_lists` ON ingredients.id = ingredient_lists.ingredient_id WHERE ingredient_lists.recipe_id = %s"
-    get_ingredient_details_input = (post_id)
-    pymysql_cursor.execute(get_ingredient_details_sql,get_ingredient_details_input)
-    ingredient_details=pymysql_cursor.fetchall()
-    
     get_photo_lists_sql = "SELECT `uri` FROM `recipe_photos` JOIN `recipes` ON recipe_photos.recipe_id = recipes.id WHERE recipes.id = %s"
     get_photo_lists_input = (post_id)
     pymysql_cursor.execute(get_photo_lists_sql,get_photo_lists_input)
     photo_details=pymysql_cursor.fetchone()
+    
+    get_ingredient_list_sql = "SELECT ingredient_id,ingredient_amount,measurement_type,extra_information,ingredients.name AS ingredient_name FROM `ingredient_lists` JOIN `ingredients` ON `ingredient_lists`.ingredient_id = `ingredients`.id WHERE `ingredient_lists`.recipe_id = %s"
+    get_ingredient_list_input = (post_id)
+    pymysql_cursor.execute(get_ingredient_list_sql,get_ingredient_list_input)
+    ingredient_list_details = list(pymysql_cursor.fetchall())
     
     recipe_procedure = recipe_details["recipe_procedure"]
     recipe_procedure_list = recipe_procedure.split(".")
@@ -145,7 +145,7 @@ def get_post_details(post_id):
     for j in recipe_time_details_list:
         recipe_time_details_list[recipe_time_details_list.index(j)] = str(j)+" seconds"
         
-    return [author_details,recipe_details,ingredient_details,recipe_procedure_list,recipe_time_details_list,photo_uri]
+    return [author_details,recipe_details,ingredient_list_details,recipe_procedure_list,recipe_time_details_list,photo_uri]
 
 def get_post_categories_for_recipe_editor(post_id):
     cat_allergen = []
@@ -218,10 +218,10 @@ def get_recipe_details_for_recipe_editor(post_id):
     pymysql_cursor.execute(get_recipe_time_details_sql,get_recipe_time_details_input)
     recipe_time_details=pymysql_cursor.fetchone()
     
-    get_ingredient_details_sql="SELECT name,ingredient_amount FROM `ingredients` JOIN `ingredient_lists` ON ingredients.id = ingredient_lists.ingredient_id WHERE ingredient_lists.recipe_id = %s"
-    get_ingredient_details_input = (post_id)
-    pymysql_cursor.execute(get_ingredient_details_sql,get_ingredient_details_input)
-    ingredient_details=pymysql_cursor.fetchall()
+    get_ingredient_list_sql = "SELECT ingredient_id,ingredient_amount,measurement_type,extra_information,ingredients.name AS ingredient_name FROM `ingredient_lists` JOIN `ingredients` ON `ingredient_lists`.ingredient_id = `ingredients`.id WHERE `ingredient_lists`.recipe_id = %s"
+    get_ingredient_list_input = (post_id)
+    pymysql_cursor.execute(get_ingredient_list_sql,get_ingredient_list_input)
+    ingredient_details = list(pymysql_cursor.fetchall())
     
     get_photo_sql = "SELECT `uri` FROM `recipe_photos` JOIN `recipes` ON recipe_photos.recipe_id = recipes.id WHERE recipes.id = %s"
     get_photo_input = (post_id)
@@ -230,32 +230,12 @@ def get_recipe_details_for_recipe_editor(post_id):
     
     current_post_categories_list = get_post_categories_for_recipe_editor(post_id)
     
-    get_recipe_creator_form_details_allergens_sql = "SELECT id,name FROM allergens"
-    pymysql_cursor.execute(get_recipe_creator_form_details_allergens_sql)
-    allergens_form_list = pymysql_cursor.fetchall()
+    data = get_recipe_creator_form_details()
     
-    get_recipe_creator_form_details_cooking_styles_sql = "SELECT id,name FROM cooking_styles"
-    pymysql_cursor.execute(get_recipe_creator_form_details_cooking_styles_sql)
-    cooking_styles_form_list = pymysql_cursor.fetchall()
+    all_categories_list = [data[1],data[2],data[3],data[4],data[5],data[6]]
     
-    get_recipe_creator_form_details_cuisines_sql = "SELECT id,name FROM cuisines"
-    pymysql_cursor.execute(get_recipe_creator_form_details_cuisines_sql)
-    cuisines_form_list = pymysql_cursor.fetchall()
-    
-    get_recipe_creator_form_details_diet_health_types_sql = "SELECT id,name FROM diet_health_types"
-    pymysql_cursor.execute(get_recipe_creator_form_details_diet_health_types_sql)
-    diet_health_types_form_list = pymysql_cursor.fetchall()
-    
-    get_recipe_creator_form_details_dish_types_sql = "SELECT id,name FROM dish_types"
-    pymysql_cursor.execute(get_recipe_creator_form_details_dish_types_sql)
-    dish_types_form_list = pymysql_cursor.fetchall()
-    
-    get_recipe_creator_form_details_meal_types_sql = "SELECT id,name FROM meal_types"
-    pymysql_cursor.execute(get_recipe_creator_form_details_meal_types_sql)
-    meal_types_form_list = pymysql_cursor.fetchall()
-    
-    all_categories_list = [allergens_form_list,cooking_styles_form_list,cuisines_form_list,diet_health_types_form_list,dish_types_form_list,meal_types_form_list]
-    
+    all_ingredients_list = data[0]
+    print(all_ingredients_list)
     recipe_procedure = recipe_details["recipe_procedure"]
     recipe_procedure_list = recipe_procedure.split(".")
     for c,v in enumerate(recipe_procedure_list):
@@ -269,7 +249,8 @@ def get_recipe_details_for_recipe_editor(post_id):
     result  = {
         "current_post_details":current_post_details,
         "current_post_categories":current_post_categories_list,
-        "all_available_categories":all_categories_list
+        "all_available_categories":all_categories_list,
+        "all_available_ingredients":all_ingredients_list
     }
     return result
     
@@ -444,43 +425,45 @@ def check_if_user_is_an_author(current_user_id):
         return None
 
 def get_recipe_creator_form_details():
-    get_recipe_creator_form_details_allergens_sql = "SELECT id,name FROM allergens"
-    pymysql_cursor.execute(get_recipe_creator_form_details_allergens_sql)
+    all_allergens_sql = "SELECT id,name FROM allergens"
+    pymysql_cursor.execute(all_allergens_sql)
     allergens_form_list = pymysql_cursor.fetchall()
     
-    get_recipe_creator_form_details_cooking_styles_sql = "SELECT id,name FROM cooking_styles"
-    pymysql_cursor.execute(get_recipe_creator_form_details_cooking_styles_sql)
+    all_cooking_styles_sql = "SELECT id,name FROM cooking_styles"
+    pymysql_cursor.execute(all_cooking_styles_sql)
     cooking_styles_form_list = pymysql_cursor.fetchall()
     
-    get_recipe_creator_form_details_cuisines_sql = "SELECT id,name FROM cuisines"
-    pymysql_cursor.execute(get_recipe_creator_form_details_cuisines_sql)
+    all_cuisines_sql = "SELECT id,name FROM cuisines"
+    pymysql_cursor.execute(all_cuisines_sql)
     cuisines_form_list = pymysql_cursor.fetchall()
     
-    get_recipe_creator_form_details_diet_health_types_sql = "SELECT id,name FROM diet_health_types"
-    pymysql_cursor.execute(get_recipe_creator_form_details_diet_health_types_sql)
+    all_diet_health_types_sql = "SELECT id,name FROM diet_health_types"
+    pymysql_cursor.execute(all_diet_health_types_sql)
     diet_health_types_form_list = pymysql_cursor.fetchall()
     
-    get_recipe_creator_form_details_dish_types_sql = "SELECT id,name FROM dish_types"
-    pymysql_cursor.execute(get_recipe_creator_form_details_dish_types_sql)
+    all_dish_types_sql = "SELECT id,name FROM dish_types"
+    pymysql_cursor.execute(all_dish_types_sql)
     dish_types_form_list = pymysql_cursor.fetchall()
     
-    get_recipe_creator_form_details_meal_types_sql = "SELECT id,name FROM meal_types"
-    pymysql_cursor.execute(get_recipe_creator_form_details_meal_types_sql)
+    all_meal_types_sql = "SELECT id,name FROM meal_types"
+    pymysql_cursor.execute(all_meal_types_sql)
     meal_types_form_list = pymysql_cursor.fetchall()
     
-    result = [allergens_form_list,cooking_styles_form_list,cuisines_form_list,diet_health_types_form_list,dish_types_form_list,meal_types_form_list]
+    all_ingredient_sql = "SELECT id,name FROM ingredients"
+    pymysql_cursor.execute(all_ingredient_sql)
+    ingredient_list = pymysql_cursor.fetchall()
+    
+    result = [ingredient_list,allergens_form_list,cooking_styles_form_list,cuisines_form_list,diet_health_types_form_list,dish_types_form_list,meal_types_form_list]
     
     return result
 
-#Incomplete Function
-def recipe_creator_ingredient_list_sorting_function():
-    return None
-
-#Incomplete Function    
-def recipe_updater_ingredient_list():
-    return None
+def ingredient_list_packing_function(unpacked_ingredient_list_array):
+    result_array = []
+    for i in range(len(unpacked_ingredient_list_array[0])):
+        result_array.append([unpacked_ingredient_list_array[0][i],unpacked_ingredient_list_array[1][i],unpacked_ingredient_list_array[2][i],unpacked_ingredient_list_array[3][i]])
+    return result_array
     
-def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types):
+def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array):
     final_recipe_procedure_result = ""
     for i in recipe_procedure:
         if(i[len(i)-1]=="."):
@@ -494,9 +477,7 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready
     pymysql_cursor.execute(recipe_creation_sql,recipe_creation_input)
     pymysql_connection.commit()
     
-    find_lastest_recipe_sql = "SELECT id FROM recipes ORDER BY id DESC LIMIT 1"
-    pymysql_cursor.execute(find_lastest_recipe_sql)
-    lastest_recipe_id = int(pymysql_cursor.fetchone()["id"])
+    lastest_recipe_id = int(pymysql_cursor.lastrowid)
     
     recipe_photo_creation_sql = "INSERT INTO recipe_photos (id,uri,recipe_id) VALUES (%s,%s,%s);"
     recipe_photo_creation_input = (None,recipe_picture_uri,lastest_recipe_id)
@@ -513,36 +494,41 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready
         recipe_creation_allergen_input = (lastest_recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_allergen_sql,recipe_creation_allergen_input)
     
-    for j in cooking_styles:
+    for i in cooking_styles:
         recipe_creation_cooking_styles_sql = "INSERT INTO cooking_style_lists (recipe_id,cooking_style_id) VALUES (%s,%s);"
-        recipe_creation_cooking_styles_input = (lastest_recipe_id,int(j))
+        recipe_creation_cooking_styles_input = (lastest_recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_cooking_styles_sql,recipe_creation_cooking_styles_input)
         
-    for k in cuisines:
+    for i in cuisines:
         recipe_creation_cuisines_sql = "INSERT INTO cuisine_lists (recipe_id,cuisine_id) VALUES (%s,%s);"
-        recipe_creation_cuisines_input = (lastest_recipe_id,int(k))
+        recipe_creation_cuisines_input = (lastest_recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_cuisines_sql,recipe_creation_cuisines_input)
         
-    for l in diet_health_types:
+    for i in diet_health_types:
         recipe_creation_diet_health_types_sql = "INSERT INTO diet_health_type_lists (recipe_id,diet_health_type_id) VALUES (%s,%s);"
-        recipe_creation_diet_health_types_input = (lastest_recipe_id,int(l))
+        recipe_creation_diet_health_types_input = (lastest_recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_diet_health_types_sql,recipe_creation_diet_health_types_input)
         
-    for m in dish_types:
+    for i in dish_types:
         recipe_creation_dish_types_sql = "INSERT INTO dish_type_lists (recipe_id,dish_type_id) VALUES (%s,%s);"
-        recipe_creation_dish_types_input = (lastest_recipe_id,int(m))
+        recipe_creation_dish_types_input = (lastest_recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_dish_types_sql,recipe_creation_dish_types_input)
         
-    for n in meal_types:
+    for i in meal_types:
         recipe_creation_meal_types_sql = "INSERT INTO meal_type_lists (recipe_id,meal_type_id) VALUES (%s,%s);"
-        recipe_creation_meal_types_input = (lastest_recipe_id,int(n))
+        recipe_creation_meal_types_input = (lastest_recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_meal_types_sql,recipe_creation_meal_types_input)
     
+    for i in packed_ingredient_array:
+        ingredient_list_sql = "INSERT INTO `ingredient_lists`(`recipe_id`, `ingredient_id`, `ingredient_amount`, `measurement_type`, `extra_information`) VALUES (%s,%s,%s,%s,%s);"
+        ingredient_list_input = (lastest_recipe_id,i[0],i[1],i[2],i[3])
+        pymysql_cursor.execute(ingredient_list_sql,ingredient_list_input)
+        
     pymysql_connection.commit()
     
     return True
 
-def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,recipe_id,change_photo_indicator):
+def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,recipe_id,change_photo_indicator,packed_ingredient_array):
     final_recipe_procedure_result = ""
     for i in recipe_procedure:
         if(i[len(i)-1]=="."):
@@ -575,42 +561,51 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,s
     cooking_style_list_deletion_sql = "DELETE FROM `cooking_style_lists` WHERE cooking_style_lists.recipe_id = %s;"
     pymysql_cursor.execute(cooking_style_list_deletion_sql,deletion_recipe_id)
     
-    for j in cooking_styles:
+    for i in cooking_styles:
         recipe_creation_cooking_styles_sql = "INSERT INTO cooking_style_lists (recipe_id,cooking_style_id) VALUES (%s,%s);"
-        recipe_creation_cooking_styles_input = (recipe_id,int(j))
+        recipe_creation_cooking_styles_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_cooking_styles_sql,recipe_creation_cooking_styles_input)
     
     cuisine_list_deletion_sql = "DELETE FROM `cuisine_lists` WHERE cuisine_lists.recipe_id = %s;"    
     pymysql_cursor.execute(cuisine_list_deletion_sql,deletion_recipe_id)
     
-    for k in cuisines:
+    for i in cuisines:
         recipe_creation_cuisines_sql = "INSERT INTO cuisine_lists (recipe_id,cuisine_id) VALUES (%s,%s);"
-        recipe_creation_cuisines_input = (recipe_id,int(k))
+        recipe_creation_cuisines_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_cuisines_sql,recipe_creation_cuisines_input)
     
     diet_health_type_list_deletion_sql = "DELETE FROM `diet_health_type_lists` WHERE diet_health_type_lists.recipe_id = %s;"    
     pymysql_cursor.execute(diet_health_type_list_deletion_sql,deletion_recipe_id)
     
-    for l in diet_health_types:
+    for i in diet_health_types:
         recipe_creation_diet_health_types_sql = "INSERT INTO diet_health_type_lists (recipe_id,diet_health_type_id) VALUES (%s,%s);"
-        recipe_creation_diet_health_types_input = (recipe_id,int(l))
+        recipe_creation_diet_health_types_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_diet_health_types_sql,recipe_creation_diet_health_types_input)
     
     dish_type_list_deletion_sql = "DELETE FROM `dish_type_lists` WHERE dish_type_lists.recipe_id = %s;"    
     pymysql_cursor.execute(dish_type_list_deletion_sql,deletion_recipe_id)
     
-    for m in dish_types:
+    for i in dish_types:
         recipe_creation_dish_types_sql = "INSERT INTO dish_type_lists (recipe_id,dish_type_id) VALUES (%s,%s);"
-        recipe_creation_dish_types_input = (recipe_id,int(m))
+        recipe_creation_dish_types_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_dish_types_sql,recipe_creation_dish_types_input)
     
     meal_type_list_deletion_sql = "DELETE FROM `meal_type_lists` WHERE meal_type_lists.recipe_id = %s;"    
     pymysql_cursor.execute(meal_type_list_deletion_sql,deletion_recipe_id)
     
-    for n in meal_types:
+    for i in meal_types:
         recipe_creation_meal_types_sql = "INSERT INTO meal_type_lists (recipe_id,meal_type_id) VALUES (%s,%s);"
-        recipe_creation_meal_types_input = (recipe_id,int(n))
+        recipe_creation_meal_types_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_meal_types_sql,recipe_creation_meal_types_input)
+    
+    
+    ingredient_list_deletion_sql = "DELETE FROM `ingredient_lists` WHERE `ingredient_lists`.recipe_id = %s"
+    pymysql_cursor.execute(ingredient_list_deletion_sql,deletion_recipe_id)
+    
+    for i in packed_ingredient_array:
+        ingredient_list_sql = "INSERT INTO `ingredient_lists`(`recipe_id`, `ingredient_id`, `ingredient_amount`, `measurement_type`, `extra_information`) VALUES (%s,%s,%s,%s,%s);"
+        ingredient_list_input = (recipe_id,i[0],i[1],i[2],i[3])
+        pymysql_cursor.execute(ingredient_list_sql,ingredient_list_input)
     
     pymysql_connection.commit()
     
@@ -649,6 +644,45 @@ def user_to_author_function(user_id):
     pymysql_connection.commit()
     return True
 
+def get_top_post_ids():
+    get_top_post_sql = "SELECT posts.id FROM `posts` ORDER BY number_of_views DESC LIMIT 5"
+    pymysql_cursor.execute(get_top_post_sql)
+    result = list(pymysql_cursor.fetchall())
+    post_list = []
+    for i in result:
+        post_list.append(i["id"])
+    return post_list
+
+def post_view_counter_function(post_id):
+    post_view_counter_sql = "SELECT number_of_views FROM `posts` WHERE `posts`.id = %s"
+    post_view_counter_input = (post_id)
+    pymysql_cursor.execute(post_view_counter_sql,post_view_counter_input)
+    number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
+    
+    return number_of_views
+    
+def post_view_adder_function(post_id):
+    new_number_of_views = post_view_counter_function(post_id) + 1
+    post_view_update_sql = "UPDATE `posts` SET `number_of_views`= %s WHERE `posts`.id = %s"
+    post_view_update_input = (new_number_of_views,post_id)
+    pymysql_cursor.execute(post_view_update_sql,post_view_update_input)
+
+def check_if_post_exist(post_id):
+    check_if_post_exist_sql = "SELECT recipe_id FROM `posts` WHERE id=%s"
+    check_if_post_exist_input = (post_id)
+    pymysql_cursor.execute(check_if_post_exist_sql,check_if_post_exist_input)
+    post = pymysql_cursor.fetchone()
+    
+    return post
+
+def check_if_user_exist(user_id):
+    check_if_user_exist_sql = "SELECT username FROM `users` WHERE id=%s"
+    check_if_user_exist_input = (user_id)
+    pymysql_cursor.execute(check_if_user_exist_sql,check_if_user_exist_input)
+    username = pymysql_cursor.fetchone()
+    
+    return username
+    
 @app.route("/")
 def init():
     return render_template("index.html",session=session)
@@ -747,7 +781,11 @@ def recipes():
             ready_in_time = request.form["ready_in_time"]
             serves_number = request.form["serves_number"]
             recipe_procedure = request.form.getlist("recipe_procedure")
-            
+            ingredient_list_amount = request.form.getlist("ingredient_list_amount")
+            ingredient_list_measurement = request.form.getlist("ingredient_list_measurement")
+            ingredient_list_ingredient = request.form.getlist("ingredient_list_ingredient")
+            ingredient_list_special = request.form.getlist("ingredient_list_special")
+            ingredient_list_array=[ingredient_list_ingredient,ingredient_list_amount,ingredient_list_measurement,ingredient_list_special]
             allergens = request.form.getlist("allergens")
             cooking_styles = request.form.getlist("cooking_styles")
             cuisines = request.form.getlist("cuisines")
@@ -755,7 +793,8 @@ def recipes():
             dish_types = request.form.getlist("dish_types")
             meal_types = request.form.getlist("meal_types")
             
-            creation_result = recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types)
+            packed_ingredient_array = ingredient_list_packing_function(ingredient_list_array)
+            creation_result = recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array)
             if creation_result == True:
                 flash("The recipe has been successfully created!", "message")
                 return redirect(url_for("recipes"))
@@ -819,75 +858,117 @@ def recipe_list():
     
 @app.route("/single/<post_id>")
 def post(post_id):
-    data = get_post_details(post_id)
-    categories = get_post_categories(post_id)
-    return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5])
-
+    if check_if_post_exist(post_id):
+        data = get_post_details(post_id)
+        categories = get_post_categories(post_id)
+        post_view_adder_function(post_id)
+        return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5])
+    else:
+        return abort(404)
+    
 @app.route("/single/<post_id>/editor",methods=["GET","POST"])
 def recipe_editor(post_id):
     if session:
-        current_user_id = session["user_id"]
-        if check_if_the_user_is_the_current_posts_author(current_user_id,post_id) == True:
-            if request.method == "GET":
-                editor_data = get_recipe_details_for_recipe_editor(post_id)
-                return render_template("recipe_editor.html",recipe_details=editor_data["current_post_details"],current_post_categories=editor_data["current_post_categories"],all_available_categories=editor_data["all_available_categories"])
-            else:
-                recipe_picture_uri = "null"
-                change_photo_indicator=False
-                if request.files:
-                    recipe_photo = request.files["recipe_photo"]
-                    if recipe_photo.filename == '':
-                        pass
-                    else:
-                        f = os.path.join(app.config['RECIPE_PICTURE_UPLOAD_FOLDER'], recipe_photo.filename)
-                        recipe_photo.save(f)
-                        recipe_picture_uri=str(recipe_photo.filename)
-                        change_photo_indicator = True
-                        
-                recipe_title = request.form["recipe_title"]
-                prep_time = request.form["prep_time"]
-                cook_time = request.form["cook_time"]
-                ready_in_time = request.form["ready_in_time"]
-                serves_number = request.form["serves_number"]
-                recipe_procedure = request.form.getlist("recipe_procedure")
-                
-                allergens = request.form.getlist("allergens")
-                cooking_styles = request.form.getlist("cooking_styles")
-                cuisines = request.form.getlist("cuisines")
-                diet_health_types = request.form.getlist("diet_health_types")
-                dish_types = request.form.getlist("dish_types")
-                meal_types = request.form.getlist("meal_types")
-                
-                updater_result = recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,post_id,change_photo_indicator)
-                if updater_result == True:
-                    flash("The recipe has been successfully updated!", "message")
-                    return redirect(url_for("recipes"))
+        if check_if_post_exist(post_id):
+            current_user_id = session["user_id"]
+            if check_if_the_user_is_the_current_posts_author(current_user_id,post_id) == True:
+                if request.method == "GET":
+                    editor_data = get_recipe_details_for_recipe_editor(post_id)
+                    return render_template("recipe_editor.html",recipe_details=editor_data["current_post_details"],current_post_categories=editor_data["current_post_categories"],all_available_categories=editor_data["all_available_categories"],all_available_ingredients=editor_data["all_available_ingredients"])
                 else:
-                    flash("Something went wrong during recipe editing!", "error")
-                    return redirect(url_for("recipes"))
+                    recipe_picture_uri = "null"
+                    change_photo_indicator=False
+                    if request.files:
+                        recipe_photo = request.files["recipe_photo"]
+                        if recipe_photo.filename == '':
+                            pass
+                        else:
+                            f = os.path.join(app.config['RECIPE_PICTURE_UPLOAD_FOLDER'], recipe_photo.filename)
+                            recipe_photo.save(f)
+                            recipe_picture_uri=str(recipe_photo.filename)
+                            change_photo_indicator = True
+                            
+                    recipe_title = request.form["recipe_title"]
+                    prep_time = request.form["prep_time"]
+                    cook_time = request.form["cook_time"]
+                    ready_in_time = request.form["ready_in_time"]
+                    serves_number = request.form["serves_number"]
+                    recipe_procedure = request.form.getlist("recipe_procedure")
+                    allergens = request.form.getlist("allergens")
+                    cooking_styles = request.form.getlist("cooking_styles")
+                    cuisines = request.form.getlist("cuisines")
+                    diet_health_types = request.form.getlist("diet_health_types")
+                    dish_types = request.form.getlist("dish_types")
+                    meal_types = request.form.getlist("meal_types")
+                    ingredient_list_amount = request.form.getlist("ingredient_list_amount")
+                    ingredient_list_measurement = request.form.getlist("ingredient_list_measurement")
+                    ingredient_list_ingredient = request.form.getlist("ingredient_list_ingredient")
+                    ingredient_list_special = request.form.getlist("ingredient_list_special")
+                    ingredient_list_array=[ingredient_list_ingredient,ingredient_list_amount,ingredient_list_measurement,ingredient_list_special]
+                    packed_ingredient_array = ingredient_list_packing_function(ingredient_list_array)
+                    updater_result = recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,post_id,change_photo_indicator,packed_ingredient_array)
+                    
+                    if updater_result == True:
+                        flash("The recipe has been successfully updated!", "message")
+                        return redirect(url_for("recipes"))
+                    else:
+                        flash("Something went wrong during recipe editing!", "error")
+                        return redirect(url_for("recipes"))
+            else:
+                flash("You are not the author of this recipe!", "error")
+                return redirect(url_for("recipes"))
         else:
-            flash("You are not the author of this recipe!", "error")
+            flash("This recipe does not exist!", "error")
             return redirect(url_for("recipes"))
     else:
         return redirect(url_for("init"))
             
 @app.route("/delete-post/<post_id>")
 def delete_post(post_id):
-    if(delete_post_function(post_id) is True):
-        flash("The recipe has been successfully deleted!", "message")
-        return redirect(url_for("recipes"))
+    if session:
+        if check_if_post_exist(post_id):
+            current_user_id = session["user_id"]
+            if check_if_the_user_is_the_current_posts_author(current_user_id,post_id) == True:
+                if(delete_post_function(post_id) is True):
+                    flash("The recipe has been successfully deleted!", "message")
+                    return redirect(url_for("recipes"))
+                else:
+                    flash("Something went wrong during the deletion process!", "error")
+                    return redirect(url_for("recipes"))
+            else:
+                flash("You are not the author of this recipe!", "error")
+                return redirect(url_for("recipes"))
+        else:
+            flash("This recipe does not exist!", "error")
+            return redirect(url_for("recipes"))
+    else:
+        return redirect(url_for("init"))
 
 @app.route("/delete-user/<user_id>")
 def delete_user(user_id):
-    if(delete_user_function(user_id) is True):
-        flash("The account has been successfully deleted!", "message")
-        return redirect(url_for("init"))    
+    if check_if_user_exist(user_id):
+        if(delete_user_function(user_id) is True):
+            flash("The account has been successfully deleted!", "message")
+            return redirect(url_for("init"))
+        else:
+            flash("Something went wrong!", "message")
+            return redirect(url_for("init"))
+    else:
+        flash("This user does not exist!", "error")
+        return redirect(url_for("init"))
 
 @app.route("/become-an-author/<user_id>")
 def become_an_author(user_id):
-    if user_to_author_function(user_id) is True:
-        flash("You are now an autho!", "message")
-        return redirect(url_for("user_dashboard"))
+    if check_if_user_exist(user_id):
+        if user_to_author_function(user_id) is True:
+            flash("You are now an author!", "message")
+            return redirect(url_for("user_dashboard"))
+        else:
+            flash("Something went wrong!", "message")
+            return redirect(url_for("init"))
+    else:
+        flash("This user does not exist!", "error")
+        return redirect(url_for("init"))
 
 @app.errorhandler(404)
 def page_not_found(e):

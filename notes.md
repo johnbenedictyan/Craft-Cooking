@@ -7,18 +7,16 @@
 # Things needed to be done:
 
 ## Code Red
-- Recipe creator and updater need to have the ingredients be implemented.
 - Single page for all of the categories with a description of each of them and then a recipe_list with a preset search term.
-- Allow the user to enter the ingredients list in the recipe creator and change it in the recipe editor.
 
 ## Code Yellow
-
  - Form validation so that the users cannot send empty form, preferably the form validation should be on the client side. Also ban the use of unique characters in password to prevent SQL injects.
  - Change the seconds into seconds and minutes in each articles.
  - Add in more recipes into the database and populate the front page
+ - Check if the user has entered a valid post_id for all for the functions that require it. Pass None out, so that the route can check if the result is none can return abort.
+
 
 ## Code Green
-
  - Change the upload folder to an external server ssh thingy thingy.
  - The user dashboard navigation should be at the top for mobile devices and tablets.
  - Add a description section to each recipe and show that on the featured post.
@@ -34,13 +32,6 @@
  1. Get a featured post list where a sql query is set to return a list of the top 5 highest viewed recipes. Put those on the main page.
  2. What is the relationship between users and reviews and recipes. One to many or many to many.
 
-## Messages that need to be flashed
- 1. User Creation Success/Error
- 2. Recipe Creation Success/Error
- 3. Recipe Editor Success/Error/Not the author error
- 4. Post delete success/error
- 5. User delete success/error
- 6. Update User details success/error/which one was updated
 
 # PROJECT LOGS:
 ## 4 May:
@@ -85,6 +76,8 @@
 ## 23 May
 - New Feature: Message Flashing
 - Bug Fix: The bug where the updated password wasn't being hashed.
+- New Feature: Recipe Creator and Editor now have access to the ingredient list.
+- Bug Fix: Added checks to see if users would enter fake user_id and post_id into the urls and placed errors for them.
 
 ## USEFUL LINKS
 **Stock profile pictures**
@@ -118,3 +111,4 @@ therefore the checkpasswordhash function would not work.
 2. Fixed the user profile picture delivery system with a custom function which returns a send from directory of the picture.
 3. Jquery onclick only works for static buttons whereas the on function works for dynamically added buttons. Thats how i solved the bug of the recipe procedure not working.
 4. To make all of the recipes in the recipe list to be of the same height. If the number of categories was above 5, i would randomly chooose one from each type of category to display. This however did not affect the search functionality.
+5. Select picker wasn't showing up when I added them dynamically, add the selectpicker refresh function to run each time they were added and then it worked.
