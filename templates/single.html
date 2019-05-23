@@ -22,7 +22,12 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 order-lg-last ftco-animate">
-                <div class="row mb-3">
+                <div class="row mt-2">
+                    <blockquote class="blockquote text-center">
+                        <h3 class="mb-0 font-weight-bold">{{recipe_details.description}}</h3>
+                    </blockquote>
+                </div>
+                <div class="row my-4">
                     <div class="col text-center">
                         <span class="icon icon-hourglass-2 post_icon mb-4"></span>
                         <h5><strong>Preparation Time</strong></h5>
@@ -44,63 +49,78 @@
                         <p>{{recipe_details.serves}}</p>
                     </div>
                 </div>
-                <h2 class="mb-3">Ingredients</h2>
-                <ul>
-                    {% for i in ingredient_details %}
-                    {% if i.measurement_type == "no units" and i.extra_information == "None" %}
-                    <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}}</li>
-                    {% elif i.measurement_type == "no units" %}
-                    <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
-                    {% elif i.extra_information == "None" %}
-                    <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}}</li>
-                    {% else %}
-                    <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
-                <h2 class="mb-3 mt-5">Instructions</h2>
-                <ol>
-                    {% for j in recipe_procedure_list %}
-                    <li>{{j}}.</li>
-                    {% endfor %}
-                </ol>
-                <h2 class="mb-3 mt-5">Allergens</h2>
-                <ul>
-                    {% for l in allergens %}
-                    <li>{{l.allergen_name |title}}</li>
-                    {% endfor %}
-                </ul>
-                <div class="tag-widget post-tag-container mb-5 mt-5">
-                    <div class="tagcloud">
-                        {% for m in cooking_styles %}
-                        <a href="#" class="tag-cloud-link">{{m.cooking_style_name}}</a> 
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-3">Ingredients</h2>
+                    </div>
+                    <div class="col-12">
+                        <ul>
+                            {% for i in ingredient_details %}
+                            {% if i.measurement_type == "no units" and i.extra_information == "None" %}
+                            <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}}</li>
+                            {% elif i.measurement_type == "no units" %}
+                            <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
+                            {% elif i.extra_information == "None" %}
+                            <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}}</li>
+                            {% else %}
+                            <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <h2 class="mb-3 mt-5">Instructions</h2>
+                    <ol>
+                        {% for j in recipe_procedure_list %}
+                        <li>{{j}}.</li>
                         {% endfor %}
-                        {% for n in cuisines %}
-                        <a href="#" class="tag-cloud-link">{{n.cuisine_name}}</a> 
-                        {% endfor %} 
-                        {% for o in diet_health_types %}
-                        <a href="#" class="tag-cloud-link">{{o.diet_health_type_name}}</a> 
-                        {% endfor %} 
-                        {% for p in dish_types %}
-                        <a href="#" class="tag-cloud-link">{{p.dish_type_name}}</a> 
-                        {% endfor %} 
-                        {% for q in meal_types %}
-                        <a href="#" class="tag-cloud-link">{{q.meal_type_name}}</a> 
-                        {% endfor %} 
+                    </ol>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-3 mt-5">Allergens</h2>
+                    </div>
+                    <div class="col-12">
+                        <ul>
+                        {% for l in allergens %}
+                        <li>{{l.allergen_name |title}}</li>
+                        {% endfor %}
+                        </ul>
                     </div>
                 </div>
-
-                <div class="about-author d-flex p-4 bg-light">
-                    <div class="bio mr-5">
-                        <img src="{{ url_for('profile_picture', filename='{}'.format(author_details.profile_picture_uri)) }}" alt="Image placeholder" class="img-fluid mb-4">
-                    </div>
-                    <div class="desc">
-                        <h3>{{author_details.username}}</h3>
-                        <p>{{author_details.bio}}</p>
+                <div class="row">
+                    <div class="tag-widget post-tag-container mb-5 mt-5">
+                        <div class="tagcloud">
+                            {% for m in cooking_styles %}
+                            <a href="#" class="tag-cloud-link">{{m.cooking_style_name}}</a> 
+                            {% endfor %}
+                            {% for n in cuisines %}
+                            <a href="#" class="tag-cloud-link">{{n.cuisine_name}}</a> 
+                            {% endfor %} 
+                            {% for o in diet_health_types %}
+                            <a href="#" class="tag-cloud-link">{{o.diet_health_type_name}}</a> 
+                            {% endfor %} 
+                            {% for p in dish_types %}
+                            <a href="#" class="tag-cloud-link">{{p.dish_type_name}}</a> 
+                            {% endfor %} 
+                            {% for q in meal_types %}
+                            <a href="#" class="tag-cloud-link">{{q.meal_type_name}}</a> 
+                            {% endfor %} 
+                        </div>
                     </div>
                 </div>
-
-
+                <div class="row">
+                    <div class="about-author d-flex p-4 bg-light">
+                        <div class="bio mr-5">
+                            <img src="{{ url_for('profile_picture', filename='{}'.format(author_details.profile_picture_uri)) }}" alt="Image placeholder" class="img-fluid mb-4">
+                        </div>
+                        <div class="desc">
+                            <h3>{{author_details.username}}</h3>
+                            <p>{{author_details.bio}}</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="pt-5 mt-5">
                     <h3 class="mb-5">6 Comments</h3>
                     <ul class="comment-list">

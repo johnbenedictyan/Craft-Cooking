@@ -110,15 +110,10 @@ def get_post_details(post_id):
     pymysql_cursor.execute(get_author_details_sql,get_author_details_input)
     author_details=pymysql_cursor.fetchone()
 
-    get_recipe_details_sql = "SELECT recipes.serves,recipes.name,recipes.recipe_procedure FROM `recipes` WHERE recipes.id = %s"
+    get_recipe_details_sql = "SELECT * FROM `recipes` WHERE recipes.id = %s"
     get_recipe_details_input = (post_id)
     pymysql_cursor.execute(get_recipe_details_sql,get_recipe_details_input)
     recipe_details=pymysql_cursor.fetchone()
-    
-    get_recipe_time_details_sql = "SELECT recipes.ready_in_duration_seconds,recipes.prep_duration_seconds,recipes.cook_duration_seconds FROM `recipes` WHERE recipes.id = %s"
-    get_recipe_time_details_input = (post_id)
-    pymysql_cursor.execute(get_recipe_time_details_sql,get_recipe_time_details_input)
-    recipe_time_details=pymysql_cursor.fetchone()
     
     get_photo_lists_sql = "SELECT `uri` FROM `recipe_photos` JOIN `recipes` ON recipe_photos.recipe_id = recipes.id WHERE recipes.id = %s"
     get_photo_lists_input = (post_id)
@@ -138,7 +133,7 @@ def get_post_details(post_id):
         else:
             pass
     
-    recipe_time_details_list = [recipe_time_details["prep_duration_seconds"],recipe_time_details["cook_duration_seconds"],recipe_time_details["ready_in_duration_seconds"]]
+    recipe_time_details_list = [recipe_details["prep_duration_seconds"],recipe_details["cook_duration_seconds"],recipe_details["ready_in_duration_seconds"]]
     
     photo_uri = photo_details["uri"]
     
@@ -463,7 +458,7 @@ def ingredient_list_packing_function(unpacked_ingredient_list_array):
         result_array.append([unpacked_ingredient_list_array[0][i],unpacked_ingredient_list_array[1][i],unpacked_ingredient_list_array[2][i],unpacked_ingredient_list_array[3][i]])
     return result_array
     
-def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array):
+def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array,recipe_description):
     final_recipe_procedure_result = ""
     for i in recipe_procedure:
         if(i[len(i)-1]=="."):
@@ -472,8 +467,8 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready
             i += "."
             final_recipe_procedure_result+=i
             
-    recipe_creation_sql = "INSERT INTO recipes (id,name,author_id,prep_duration_seconds,cook_duration_seconds,ready_in_duration_seconds,serves,recipe_procedure) VALUES (%s,%s,%s,%s,%s,%s,%s,%s);"
-    recipe_creation_input = (None,recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,final_recipe_procedure_result)
+    recipe_creation_sql = "INSERT INTO recipes (id,name,author_id,prep_duration_seconds,cook_duration_seconds,ready_in_duration_seconds,serves,recipe_procedure,description) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+    recipe_creation_input = (None,recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,final_recipe_procedure_result,recipe_description)
     pymysql_cursor.execute(recipe_creation_sql,recipe_creation_input)
     pymysql_connection.commit()
     
@@ -528,7 +523,7 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready
     
     return True
 
-def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,recipe_id,change_photo_indicator,packed_ingredient_array):
+def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,recipe_id,change_photo_indicator,packed_ingredient_array,recipe_description):
     final_recipe_procedure_result = ""
     for i in recipe_procedure:
         if(i[len(i)-1]=="."):
@@ -539,8 +534,8 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,s
     
     deletion_recipe_id = (recipe_id)
     
-    recipe_update_sql = "UPDATE recipes SET name=%s,prep_duration_seconds=%s,cook_duration_seconds=%s,ready_in_duration_seconds=%s,serves=%s,recipe_procedure=%s WHERE recipes.id=%s;"
-    recipe_update_input = (recipe_title,prep_time,cook_time,ready_in_time,serves_number,final_recipe_procedure_result,recipe_id)
+    recipe_update_sql = "UPDATE recipes SET name=%s,prep_duration_seconds=%s,cook_duration_seconds=%s,ready_in_duration_seconds=%s,serves=%s,recipe_procedure=%s,description=%s WHERE recipes.id=%s;"
+    recipe_update_input = (recipe_title,prep_time,cook_time,ready_in_time,serves_number,final_recipe_procedure_result,recipe_description,recipe_id)
     pymysql_cursor.execute(recipe_update_sql,recipe_update_input)
     pymysql_connection.commit()
     
@@ -644,14 +639,11 @@ def user_to_author_function(user_id):
     pymysql_connection.commit()
     return True
 
-def get_top_post_ids():
-    get_top_post_sql = "SELECT posts.id FROM `posts` ORDER BY number_of_views DESC LIMIT 5"
-    pymysql_cursor.execute(get_top_post_sql)
-    result = list(pymysql_cursor.fetchall())
-    post_list = []
-    for i in result:
-        post_list.append(i["id"])
-    return post_list
+def get_top_recipe_lists_post_list_details():
+    top_recipe_lists_details_sql = "SELECT recipes.name AS post_recipe_name,recipe_photos.uri AS post_photo_uri,posts.id AS post_id,recipes.description AS post_recipe_description FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id ORDER BY `posts`.`number_of_views` DESC LIMIT 5"
+    pymysql_cursor.execute(top_recipe_lists_details_sql)
+    top_recipe_lists_post_list_details=pymysql_cursor.fetchall()
+    return top_recipe_lists_post_list_details
 
 def post_view_counter_function(post_id):
     post_view_counter_sql = "SELECT number_of_views FROM `posts` WHERE `posts`.id = %s"
@@ -685,7 +677,8 @@ def check_if_user_exist(user_id):
     
 @app.route("/")
 def init():
-    return render_template("index.html",session=session)
+    top_recipe_list = get_top_recipe_lists_post_list_details()
+    return render_template("index.html",session=session,top_recipes=top_recipe_list)
 
 @app.route("/login",methods=["GET","POST"])
 def login():
@@ -780,6 +773,7 @@ def recipes():
             cook_time = request.form["cook_time"]
             ready_in_time = request.form["ready_in_time"]
             serves_number = request.form["serves_number"]
+            recipe_description = request.form["recipe_description"]
             recipe_procedure = request.form.getlist("recipe_procedure")
             ingredient_list_amount = request.form.getlist("ingredient_list_amount")
             ingredient_list_measurement = request.form.getlist("ingredient_list_measurement")
@@ -794,7 +788,7 @@ def recipes():
             meal_types = request.form.getlist("meal_types")
             
             packed_ingredient_array = ingredient_list_packing_function(ingredient_list_array)
-            creation_result = recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array)
+            creation_result = recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array,recipe_description)
             if creation_result == True:
                 flash("The recipe has been successfully created!", "message")
                 return redirect(url_for("recipes"))
@@ -893,6 +887,7 @@ def recipe_editor(post_id):
                     cook_time = request.form["cook_time"]
                     ready_in_time = request.form["ready_in_time"]
                     serves_number = request.form["serves_number"]
+                    recipe_description = request.form["recipe_description"]
                     recipe_procedure = request.form.getlist("recipe_procedure")
                     allergens = request.form.getlist("allergens")
                     cooking_styles = request.form.getlist("cooking_styles")
@@ -906,7 +901,7 @@ def recipe_editor(post_id):
                     ingredient_list_special = request.form.getlist("ingredient_list_special")
                     ingredient_list_array=[ingredient_list_ingredient,ingredient_list_amount,ingredient_list_measurement,ingredient_list_special]
                     packed_ingredient_array = ingredient_list_packing_function(ingredient_list_array)
-                    updater_result = recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,post_id,change_photo_indicator,packed_ingredient_array)
+                    updater_result = recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,post_id,change_photo_indicator,packed_ingredient_array,recipe_description)
                     
                     if updater_result == True:
                         flash("The recipe has been successfully updated!", "message")

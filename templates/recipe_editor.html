@@ -36,6 +36,18 @@
                                 </div>
                             </div>
                             <div class="form-row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="recipe_description">Recipe Description</label>
+                                        {% if recipe_details[0]['description'] is sameas None %}
+                                        <input type="text" class="form-control" name="recipe_description">
+                                        {% else %}
+                                        <input type="text" class="form-control" name="recipe_description" value="{{recipe_details[0]['description'] | title}}">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
                                 <div class="col-12 col-md-6 col-lg-3">
                                     <div class="form-group">
                                         <label for="prep_time">Total Preparation Time:</label>

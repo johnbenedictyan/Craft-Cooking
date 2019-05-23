@@ -13,13 +13,11 @@
  - Form validation so that the users cannot send empty form, preferably the form validation should be on the client side. Also ban the use of unique characters in password to prevent SQL injects.
  - Change the seconds into seconds and minutes in each articles.
  - Add in more recipes into the database and populate the front page
- - Check if the user has entered a valid post_id for all for the functions that require it. Pass None out, so that the route can check if the result is none can return abort.
 
 
 ## Code Green
  - Change the upload folder to an external server ssh thingy thingy.
  - The user dashboard navigation should be at the top for mobile devices and tablets.
- - Add a description section to each recipe and show that on the featured post.
 
 
 ## Things that don't work
@@ -78,6 +76,10 @@
 - Bug Fix: The bug where the updated password wasn't being hashed.
 - New Feature: Recipe Creator and Editor now have access to the ingredient list.
 - Bug Fix: Added checks to see if users would enter fake user_id and post_id into the urls and placed errors for them.
+
+## 24 May
+- New Feature: Each recipe has its own description.
+- New Feature: Top five post in terms of number of view show up as the feature posts. Added a function to auto increment the number of views when a post is visited.
 
 ## USEFUL LINKS
 **Stock profile pictures**
