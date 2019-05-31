@@ -3,7 +3,8 @@ from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
 from bson import ObjectId
-import pymongo,os,pymysql,random,env,config,boto3
+import pymongo,os,pymysql,random,config,boto3
+# import env
 db_url = "mongodb://dbuser:asd123@cluster0-shard-00-00-6c1o3.mongodb.net:27017,cluster0-shard-00-01-6c1o3.mongodb.net:27017,cluster0-shard-00-02-6c1o3.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongo_connection = pymongo.MongoClient(db_url)
 
