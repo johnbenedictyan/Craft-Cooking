@@ -1,7 +1,7 @@
 import os
 # import env
-FLASKS3_BUCKET_NAME='tgc-ci-project3'
-AWS_S3_REGION_NAME='ap-southeast-1'
+FLASKS3_BUCKET_NAME = os.environ.get("FLASKS3_BUCKET_NAME")
+AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_SECRET_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 FLASKS3_HEADERS = {'Expires': 'Thu, 31 Dec 2099 20:00:00 GMT','CacheControl': 'max-age=9460800'}
