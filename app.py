@@ -6,13 +6,15 @@ import os
 import pymysql
 from bson import ObjectId
 import random
+import env
 db_url = "mongodb://dbuser:asd123@cluster0-shard-00-00-6c1o3.mongodb.net:27017,cluster0-shard-00-01-6c1o3.mongodb.net:27017,cluster0-shard-00-02-6c1o3.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongo_connection = pymongo.MongoClient(db_url)
 
-pymysql_connection = pymysql.connect(host="localhost",
-                             user = "johnbenedict",
-                             password="",
-                             db="craft_cooking")
+pymysql_connection = pymysql.connect(host="remotemysql.com",
+                             user = os.environ.get("remotemysql_username"),
+                             password = os.environ.get("remotemysql_password"),
+                             db = os.environ.get("remotemysql_db_name"))
+                             
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
