@@ -28,22 +28,22 @@
                     </blockquote>
                 </div>
                 <div class="row my-4">
-                    <div class="col text-center">
+                    <div class="col-sm-12 col-md-6 col-lg-4 text-center">
                         <span class="icon icon-hourglass-2 post_icon mb-4"></span>
                         <h5><strong>Preparation Time</strong></h5>
                         <p>{{recipe_time_details_list[0]}}</p>
                     </div>
-                    <div class="col text-center">
+                    <div class="col-sm-12 col-md-6 col-lg-4  text-center">
                         <span class="icon icon-hourglass-2 post_icon mb-4"></span>
                         <h5><strong>Cooking Time</strong></h5>
                         <p>{{recipe_time_details_list[1]}}</p>
                     </div>
-                    <div class="col text-center">
+                    <div class="col-sm-12 col-md-6 col-lg-4  text-center">
                         <span class="icon icon-hourglass-2 post_icon mb-4"></span>
                         <h5><strong>Ready In</strong></h5>
                         <p>{{recipe_time_details_list[2]}}</p>
                     </div>
-                    <div class="col text-center">
+                    <div class="col-sm-12 col-md-6 col-lg-4  text-center">
                         <span class="icon icon-spoon post_icon mb-4"></span>
                         <h5><strong>Serves</strong></h5>
                         <p>{{recipe_details.serves}}</p>
@@ -90,34 +90,38 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="tag-widget post-tag-container mb-5 mt-5">
-                        <div class="tagcloud">
-                            {% for m in cooking_styles %}
-                            <a href="#" class="tag-cloud-link">{{m.cooking_style_name}}</a> 
-                            {% endfor %}
-                            {% for n in cuisines %}
-                            <a href="#" class="tag-cloud-link">{{n.cuisine_name}}</a> 
-                            {% endfor %} 
-                            {% for o in diet_health_types %}
-                            <a href="#" class="tag-cloud-link">{{o.diet_health_type_name}}</a> 
-                            {% endfor %} 
-                            {% for p in dish_types %}
-                            <a href="#" class="tag-cloud-link">{{p.dish_type_name}}</a> 
-                            {% endfor %} 
-                            {% for q in meal_types %}
-                            <a href="#" class="tag-cloud-link">{{q.meal_type_name}}</a> 
-                            {% endfor %} 
+                    <div class="col">
+                        <div class="tag-widget post-tag-container mb-5 mt-5">
+                            <div class="tagcloud">
+                                {% for m in cooking_styles %}
+                                <a href="#" class="tag-cloud-link">{{m.cooking_style_name}}</a> 
+                                {% endfor %}
+                                {% for n in cuisines %}
+                                <a href="#" class="tag-cloud-link">{{n.cuisine_name}}</a> 
+                                {% endfor %} 
+                                {% for o in diet_health_types %}
+                                <a href="#" class="tag-cloud-link">{{o.diet_health_type_name}}</a> 
+                                {% endfor %} 
+                                {% for p in dish_types %}
+                                <a href="#" class="tag-cloud-link">{{p.dish_type_name}}</a> 
+                                {% endfor %} 
+                                {% for q in meal_types %}
+                                <a href="#" class="tag-cloud-link">{{q.meal_type_name}}</a> 
+                                {% endfor %} 
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="about-author d-flex p-4 bg-light">
-                        <div class="bio mr-5">
-                            <img src="{{ url_for('profile_picture', filename='{}'.format(author_details.profile_picture_uri)) }}" alt="Image placeholder" class="img-fluid mb-4">
-                        </div>
-                        <div class="desc">
-                            <h3>{{author_details.username}}</h3>
-                            <p>{{author_details.bio}}</p>
+                    <div class="col">
+                        <div class="about-author d-flex p-4 bg-light">
+                            <div class="bio mr-5">
+                                <img src="{{ url_for('profile_picture', filename='{}'.format(author_details.profile_picture_uri)) }}" alt="Image placeholder" class="img-fluid mb-4">
+                            </div>
+                            <div class="desc">
+                                <h3>{{author_details.username}}</h3>
+                                <p>{{author_details.bio}}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

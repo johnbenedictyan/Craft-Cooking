@@ -1,12 +1,9 @@
 from flask import Flask,render_template,request,redirect,url_for,session,send_from_directory,session,flash,abort
 from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
+from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
-import pymongo
-import os
-import pymysql
 from bson import ObjectId
-import random
-import env
+import pymongo,os,pymysql,random,env,config,boto3
 db_url = "mongodb://dbuser:asd123@cluster0-shard-00-00-6c1o3.mongodb.net:27017,cluster0-shard-00-01-6c1o3.mongodb.net:27017,cluster0-shard-00-02-6c1o3.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongo_connection = pymongo.MongoClient(db_url)
 
@@ -14,29 +11,52 @@ pymysql_connection = pymysql.connect(host="remotemysql.com",
                              user = os.environ.get("remotemysql_username"),
                              password = os.environ.get("remotemysql_password"),
                              db = os.environ.get("remotemysql_db_name"))
-                             
-app = Flask(__name__)
+
+s3 = FlaskS3()
+custom_s3 = boto3.client("s3",aws_access_key_id=os.environ.get("AWS_SECRET_KEY_ID"),aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"))
+
+def start_app():
+    app = Flask(__name__)
+    app.config.from_pyfile('config.py')
+    s3.init_app(app)
+    return app
+
+app = start_app()    
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
 
-PROFILE_PICTURE_UPLOAD_FOLDER = './uploads/profile-pictures/'
-app.config['PROFILE_PICTURE_UPLOAD_FOLDER'] = PROFILE_PICTURE_UPLOAD_FOLDER
-
-RECIPE_PICTURE_UPLOAD_FOLDER = './uploads/recipe-pictures/'
-app.config['RECIPE_PICTURE_UPLOAD_FOLDER'] = RECIPE_PICTURE_UPLOAD_FOLDER
-
-def profile_picture_provider(filename):
-    return send_from_directory('uploads/profile-pictures/', filename)
-    
-def recipe_picture_provider(filename):
-    return send_from_directory('uploads/recipe-pictures/', filename)
-    
-app.add_url_rule('/uploads/profile-pictures/<path:filename>', endpoint='profile_picture', view_func=profile_picture_provider)
-
-app.add_url_rule('/uploads/recipe-pictures/<path:filename>', endpoint='recipe_picture', view_func=recipe_picture_provider)
+ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
 
 pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
+def upload_picture_to_s3(file, bucket_name, is_profile_picture, acl="public-read"):
+    #if is_profile_picture then the file is a profile picture, otherwise it is a recipe picture
+    try:
+        if is_profile_picture == True:
+            filename = "uploads/profile-pictures/{}".format(file.filename)
+        else:
+            filename = "uploads/recipe-pictures/{}".format(file.filename)
+            
+        custom_s3.upload_fileobj(
+            file,
+            bucket_name,
+            filename,
+            ExtraArgs={
+                "ACL": acl,
+                "ContentType": file.content_type
+            }
+        )
+
+    except Exception as e:
+        print("Upload Failed!", e)
+        return e
+
+    return "{}{}".format(app.config["UPLOAD_LOCATION"], filename)
+
+def check_if_file_is_allow(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_FILE_EXTENSIONS
+           
 def check_login_details(username_input,password_input):
     check_sql = "SELECT id,password FROM users WHERE `username` = %s"
     check_input = (username_input)
@@ -680,7 +700,7 @@ def check_if_user_exist(user_id):
 @app.route("/")
 def init():
     top_recipe_list = get_top_recipe_lists_post_list_details()
-    return render_template("index.html",session=session,top_recipes=top_recipe_list)
+    return render_template("index.html",session=session,top_recipes=top_recipe_list,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
 
 @app.route("/login",methods=["GET","POST"])
 def login():
@@ -752,10 +772,10 @@ def recipes():
             search_terms = request.args.get("search")
             if search_terms:
                 searched_user_recipe_lists_post_list_details = user_recipe_list_search_function(current_user_id,search_terms)
-                return render_template("recipes.html",current_user_id=current_user_id,user_recipe_list=searched_user_recipe_lists_post_list_details,recipe_creator_form_details=recipe_creator_form_details)
+                return render_template("recipes.html",current_user_id=current_user_id,user_recipe_list=searched_user_recipe_lists_post_list_details,recipe_creator_form_details=recipe_creator_form_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
             else:
                 user_recipe_lists_post_list_details = get_user_recipe_lists_post_list_details(current_user_id)
-                return render_template("recipes.html",current_user_id=current_user_id,user_recipe_list=user_recipe_lists_post_list_details,user_is_an_author=user_is_an_author,recipe_creator_form_details=recipe_creator_form_details)
+                return render_template("recipes.html",current_user_id=current_user_id,user_recipe_list=user_recipe_lists_post_list_details,user_is_an_author=user_is_an_author,recipe_creator_form_details=recipe_creator_form_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
             
         else:
             recipe_picture_uri = "null"
@@ -765,9 +785,13 @@ def recipes():
                     flash("A recipe photo is required!", "error")
                     return redirect(url_for("recipes"))
                 else:
-                    f = os.path.join(app.config['RECIPE_PICTURE_UPLOAD_FOLDER'], recipe_photo.filename)
-                    recipe_photo.save(f)
-                    recipe_picture_uri=str(recipe_photo.filename)
+                    if check_if_file_is_allow(recipe_photo.filename):
+                        recipe_photo.filename = secure_filename(recipe_photo.filename)
+                        upload_picture_to_s3(recipe_photo, app.config["FLASKS3_BUCKET_NAME"],False)
+                        recipe_picture_uri=str(recipe_photo.filename)
+                    else:
+                        flash("That image extension is not allowed!","error")
+                        return redirect(url_for("recipes"))
                     
             author_id = check_if_user_is_an_author(current_user_id)
             recipe_title = request.form["recipe_title"]
@@ -808,7 +832,7 @@ def user_dashboard():
             data = get_user_dashboard_details(current_user_id)
             user_details = data[0]
             user_recipe_list = data[1]
-            return render_template("user_dashboard.html",user_details=user_details,user_recipe_list=user_recipe_list)
+            return render_template("user_dashboard.html",user_details=user_details,user_recipe_list=user_recipe_list,profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'])
         else:
             email_input = request.form["email_input"]
             password_input = request.form["password_input"]
@@ -828,14 +852,18 @@ def user_dashboard():
                 if uploaded_image.filename == '':
                     pass
                 else:
-                    f = os.path.join(app.config['PROFILE_PICTURE_UPLOAD_FOLDER'], uploaded_image.filename)
-                    uploaded_image.save(f)
-                    profile_picture_uri=str(uploaded_image.filename)
-                    update_user_photo_sql = "UPDATE users SET profile_picture_uri = %s WHERE id = %s"
-                    update_user_photo_input = (profile_picture_uri,current_user_id)
-                    
-                    pymysql_cursor.execute(update_user_photo_sql,update_user_photo_input)
-            
+                    if check_if_file_is_allow(uploaded_image.filename):
+                        uploaded_image.filename = secure_filename(uploaded_image.filename)
+                        upload_picture_to_s3(uploaded_image, app.config["FLASKS3_BUCKET_NAME"],True)
+                        profile_picture_uri=str(uploaded_image.filename)
+                        update_user_photo_sql = "UPDATE users SET profile_picture_uri = %s WHERE id = %s"
+                        update_user_photo_input = (profile_picture_uri,current_user_id)
+                        
+                        pymysql_cursor.execute(update_user_photo_sql,update_user_photo_input)
+                    else:
+                        flash("That image extension is not allowed!","error")
+                        return redirect(url_for("user_dashboard"))
+                        
             pymysql_connection.commit()
             flash("Your account details have successfully been updated!","message")
             return redirect(url_for("user_dashboard"))
@@ -847,10 +875,10 @@ def recipe_list():
     if request.args.get("search"):
         search_terms = request.args.get("search")
         searched_recipe_lists_post_list_details = recipe_list_search_function(search_terms)
-        return render_template("recipe_list.html",recipe_list=searched_recipe_lists_post_list_details)
+        return render_template("recipe_list.html",recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
     else:
         recipe_lists_post_list_details = get_recipe_lists_post_list_details()
-        return render_template("recipe_list.html",recipe_list=recipe_lists_post_list_details)
+        return render_template("recipe_list.html",recipe_list=recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
     
 @app.route("/single/<post_id>")
 def post(post_id):
@@ -858,7 +886,7 @@ def post(post_id):
         data = get_post_details(post_id)
         categories = get_post_categories(post_id)
         post_view_adder_function(post_id)
-        return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5])
+        return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
     else:
         return abort(404)
     
@@ -879,10 +907,14 @@ def recipe_editor(post_id):
                         if recipe_photo.filename == '':
                             pass
                         else:
-                            f = os.path.join(app.config['RECIPE_PICTURE_UPLOAD_FOLDER'], recipe_photo.filename)
-                            recipe_photo.save(f)
-                            recipe_picture_uri=str(recipe_photo.filename)
-                            change_photo_indicator = True
+                            if check_if_file_is_allow(recipe_photo.filename):
+                                recipe_photo.filename = secure_filename(recipe_photo.filename)
+                                upload_picture_to_s3(recipe_photo, app.config["FLASKS3_BUCKET_NAME"],False)
+                                recipe_picture_uri=str(recipe_photo.filename)
+                                change_photo_indicator = True
+                            else:
+                                flash("That image extension is not allowed!","error")
+                                return redirect(url_for("recipes"))
                             
                     recipe_title = request.form["recipe_title"]
                     prep_time = request.form["prep_time"]

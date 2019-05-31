@@ -32,7 +32,7 @@
                     <div class="col-md-4 ftco-animate">
                         <div class="blog-entry">
                             <div class="img-2-wrapper">
-                            <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{ url_for('recipe_picture', filename='{}'.format(i.post_photo_uri)) }})"></a>
+                            <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{recipe_picture_url~i.post_photo_uri}})"></a>
                             </div>
                             <div class="text pt-3">
                                 <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
