@@ -1,5 +1,5 @@
 import os
-# import env
+import env
 # only comment the 'import env' out when deploying to heroku
 FLASKS3_BUCKET_NAME = os.environ.get("FLASKS3_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")

@@ -114,3 +114,6 @@ therefore the checkpasswordhash function would not work.
 3. Jquery onclick only works for static buttons whereas the on function works for dynamically added buttons. Thats how i solved the bug of the recipe procedure not working.
 4. To make all of the recipes in the recipe list to be of the same height. If the number of categories was above 5, i would randomly chooose one from each type of category to display. This however did not affect the search functionality.
 5. Select picker wasn't showing up when I added them dynamically, add the selectpicker refresh function to run each time they were added and then it worked.
+
+Things Used
+Select picker

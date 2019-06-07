@@ -4,9 +4,10 @@ from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
 from bson import ObjectId
 import pymongo,os,pymysql,random,config,boto3,botocore
-# import env
+from datetime import datetime
+import env
 # only comment the 'import env' out when deploying to heroku
-db_url = "mongodb://dbuser:asd123@cluster0-shard-00-00-6c1o3.mongodb.net:27017,cluster0-shard-00-01-6c1o3.mongodb.net:27017,cluster0-shard-00-02-6c1o3.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+db_url = "mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),os.environ.get("MONGO_DB_PASSWORD"))
 mongo_connection = pymongo.MongoClient(db_url)
 
 pymysql_connection = pymysql.connect(host="remotemysql.com",
@@ -633,7 +634,56 @@ def check_if_user_exist(user_id):
     username = pymysql_cursor.fetchone()
     pymysql_cursor.close()
     return username
+
+def get_comments(post_id):
+    comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
+    comment_query = { "parent_post_id": ObjectId(post_id) }
+    sort = {'timestamp': -1}
+    comment_list = comments.find(comment_query).sort(sort)
+    print(comment_list)
+    return None
+
+def comment_packaging_function(comment_array):
+    result_array = []
+    for i in comment_array:
+        if i["parent_comment_id"] == None:
+            
+            pass
+            #ENTER SORTING FUNCTION AND CASCADING FUNCTION HERE
+        else:
+            pass
+            #THESE ARE FRESH COMMENTS
+    return None    
     
+def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment):
+    comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
+    if parent_object == "post":
+        new_comment = {
+            "user_id":ObjectId(current_user_id),
+            "parent_post_id":ObjectId(parent_post_id),
+            "parent_comment_id":None,
+            "date_time_created":datetime.utcnow(),
+            "comment":comment
+        }
+        inserted_comment = comments.insert_one(new_comment)
+        return inserted_comment.inserted_id
+    else:
+        new_comment = {
+            "user_id":ObjectId(current_user_id),
+            "parent_post_id":ObjectId(parent_post_id),
+            "parent_comment_id":ObjectId(parent_object_id),
+            "comment":comment
+        }
+        inserted_comment = comments.insert_one(new_comment)
+        return inserted_comment.inserted_id
+        
+def edit_comment(comment_id,comment):
+    comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
+    comment_query = { "_id": ObjectId(comment_id) }
+    new_comment = { "$set": { "comment": comment } }
+    updated_comment = comments.update_one(comment_query, new_comment)
+    return updated_comment
+
 @app.route("/")
 def init():
     top_recipe_list = get_top_recipe_lists_post_list_details()
@@ -824,13 +874,24 @@ def recipe_list():
         recipe_lists_post_list_details = get_recipe_lists_post_list_details()
         return render_template("recipe_list.html",recipe_list=recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
     
-@app.route("/single/<post_id>")
+@app.route("/single/<post_id>",methods=["GET","POST"])
 def post(post_id):
     if check_if_post_exist(post_id):
-        data = get_post_details(post_id)
-        categories = get_post_categories(post_id)
-        post_view_adder_function(post_id)
-        return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
+        if session:
+            if request.method=="GET":
+                data = get_post_details(post_id)
+                categories = get_post_categories(post_id)
+                post_view_adder_function(post_id)
+                return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],user_is_login=True)
+            else:
+                comment = request.form["comment_input"]
+                print(comment)
+                return redirect(url_for("post",post_id=post_id))
+        else:
+            data = get_post_details(post_id)
+            categories = get_post_categories(post_id)
+            post_view_adder_function(post_id)
+            return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'])
     else:
         return abort(404)
     

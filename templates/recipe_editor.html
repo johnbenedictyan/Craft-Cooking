@@ -443,15 +443,6 @@
             event.preventDefault();
             $(this).parent().parent().remove();
         });
-        $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
-           let button = $(event.relatedTarget);
-           let recipe_id = parseInt(button.data("delete-button-recipe-id"), 10);
-           let recipe_name = button.data("delete-button-recipe-name");
-           let modal = $(this);
-           let delete_link = "/delete-post/"+recipe_id;
-           modal.find("#delete-modal-recipe-name").text(recipe_name);
-           modal.find("#delete-modal-delete-link").attr("href",delete_link);
-        });
     });
 </script>
 {% endblock %}

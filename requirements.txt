@@ -10,6 +10,7 @@ bcrypt==3.1.6
 boto3==1.9.159
 botocore==1.12.159
 cffi==1.12.3
+dnspython==1.16.0
 docutils==0.14
 gunicorn==19.9.0
 itsdangerous==1.1.0
