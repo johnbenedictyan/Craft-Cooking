@@ -1,3 +1,1 @@
-1. Cannot create user with special characters in it
-2. Can create user without password.
-3. Can use emojis for username and password.
+1. Can use emojis for username and password.

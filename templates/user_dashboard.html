@@ -173,8 +173,8 @@
         </div>
     </div>
 </section>
-{% endblock %} 
-{% block page_specific_css_section %} 
+{% endblock %}
+{% block page_specific_css_section %}
 <style>
     input[type="file"] {
     display: none;
@@ -239,6 +239,10 @@
 {% block jquery_script_section %}
 <script>
     /* global $ */
+    let email_input = document.getElementById('');
+    let username_input = document.getElementById('');
+    let password_input = document.getElementById('');
+    
     $(function() {
         $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
            let button = $(event.relatedTarget);
@@ -249,4 +253,4 @@
         });
     });
 </script>
-{% endblock %} 
+{% endblock %}

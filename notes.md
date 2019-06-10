@@ -9,6 +9,7 @@
 ## Code Red
 - Single page for all of the categories with a description of each of them and then a recipe_list with a preset search term.
 - Find out how to implement website testing
+- Implement Real Time Frontend form validation.
 
 ## Code Yellow
  - Form validation so that the users cannot send empty form, preferably the form validation should be on the client side. Also ban the use of unique characters in password to prevent SQL injects.
