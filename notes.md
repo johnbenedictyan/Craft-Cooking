@@ -8,6 +8,7 @@
 
 ## Code Red
 - Single page for all of the categories with a description of each of them and then a recipe_list with a preset search term.
+- Find out how to implement website testing
 
 ## Code Yellow
  - Form validation so that the users cannot send empty form, preferably the form validation should be on the client side. Also ban the use of unique characters in password to prevent SQL injects.
@@ -107,13 +108,10 @@
 - https://www.tutorialrepublic.com/codelab.php?topic=bootstrap&file=delete-confirmation-modal
 
 ## Funny things that happened along the way
-1. The error of my hashed passwords not matching might be due to the fact that i have limited the amount of characters on the 
+1. The error of my hashed passwords not matching might be due to the fact that i have limited the amount of characters on the
 password in the database to VARCHAR(30). Therefore the stored value would be a truncated version of the hashed password,
 therefore the checkpasswordhash function would not work.
 2. Fixed the user profile picture delivery system with a custom function which returns a send from directory of the picture.
 3. Jquery onclick only works for static buttons whereas the on function works for dynamically added buttons. Thats how i solved the bug of the recipe procedure not working.
-4. To make all of the recipes in the recipe list to be of the same height. If the number of categories was above 5, i would randomly chooose one from each type of category to display. This however did not affect the search functionality.
+4. To make all of the recipes in the recipe list to be of the same height. If the number of categories was above 5, i would randomly choose one from each type of category to display. This however did not affect the search functionality.
 5. Select picker wasn't showing up when I added them dynamically, add the selectpicker refresh function to run each time they were added and then it worked.
-
-Things Used
-Select picker

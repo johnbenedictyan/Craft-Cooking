@@ -3,7 +3,7 @@ from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
 from bson import ObjectId
-import pymongo,os,pymysql,random,config,boto3,botocore
+import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re
 from datetime import datetime
 import env_var
 # only comment the 'import env' out when deploying to heroku
@@ -18,13 +18,13 @@ pymysql_connection = pymysql.connect(host="remotemysql.com",
 s3 = FlaskS3()
 custom_s3 = boto3.client("s3",aws_access_key_id=os.environ.get("AWS_SECRET_KEY_ID"),aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"))
 
-def start_app():
+def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     s3.init_app(app)
     return app
 
-app = start_app()
+app = create_app()
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
 
@@ -54,6 +54,15 @@ def upload_picture_to_s3(file, bucket_name, is_profile_picture, acl="public-read
 def check_if_file_is_allow(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_FILE_EXTENSIONS
+
+def username_special_character_cleaner(username_input):
+    regex = re.compile("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
+    if(regex.search(username_input) == None):
+        ErrorFlag = False
+    else:
+        ErrorFlag = True
+        ErrorMessage = "Username has special characters"
+    return [ErrorFlag,ErrorMessage]
 
 def check_login_details(username_input,password_input):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -730,24 +739,33 @@ def user_creation():
         username_input = request.form["username_input"]
         password_input = request.form["password_input"]
         country_input = request.form["country_input"]
-        check_if_user_exists_sql = "SELECT * FROM users WHERE username = %s"
-        check_if_user_exists_input = (username_input)
-        pymysql_cursor.execute(check_if_user_exists_sql,check_if_user_exists_input)
-        existing_user_check = pymysql_cursor.fetchone()
-        if(existing_user_check is None):
-            hashed_password = bcrypt.generate_password_hash(password_input).decode('utf-8')
-            default_profile_picture = "default-profile-picture.png"
-            user_creation_sql = "INSERT INTO users (username,password,email,country_of_origin_id,profile_picture_uri) VALUES (%s,%s,%s,%s,%s)"
-            user_creation_input = (username_input,hashed_password,email_input,country_input,default_profile_picture)
-            pymysql_cursor.execute(user_creation_sql,user_creation_input)
-            pymysql_connection.commit()
-            pymysql_cursor.close()
-            flash("Your account has been created!", "message")
-            return redirect(url_for('logout'))
-        else:
-            pymysql_cursor.close()
-            flash("This username has been taken!", "error")
+        if username_input == None or password_input == None:
+            if username_input == None:
+                flash("Username is blank","error")
+            if password_input == None:
+                flash("Password is blank","error")
             return redirect(url_for('user_creation'))
+        else:
+            if (username_special_character_cleaner(username_input)[0]==False):
+                if(check_if_user_exist(username_input) is None):
+                    hashed_password = bcrypt.generate_password_hash(password_input).decode('utf-8')
+                    default_profile_picture = "default-profile-picture.png"
+                    user_creation_sql = "INSERT INTO users (username,password,email,country_of_origin_id,profile_picture_uri) VALUES (%s,%s,%s,%s,%s)"
+                    user_creation_input = (username_input,hashed_password,email_input,country_input,default_profile_picture)
+                    pymysql_cursor.execute(user_creation_sql,user_creation_input)
+                    pymysql_connection.commit()
+                    pymysql_cursor.close()
+                    flash("Your account has been created!", "message")
+                    return redirect(url_for('logout'))
+                else:
+                    pymysql_cursor.close()
+                    flash("This username has been taken!", "error")
+                    return redirect(url_for('user_creation'))
+            else:
+                if(username_special_character_cleaner(username_input)[1]=="Username has special characters"):
+                    flash("Invalid Username","error")
+                    return redirect(url_for('user_creation'))
+
 
 @app.route("/user/recipes",methods=["GET","POST"])
 def recipes():
