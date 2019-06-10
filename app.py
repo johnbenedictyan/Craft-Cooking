@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from bson import ObjectId
 import pymongo,os,pymysql,random,config,boto3,botocore
 from datetime import datetime
-# import env
+import env_var
 # only comment the 'import env' out when deploying to heroku
 db_url = "mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),os.environ.get("MONGO_DB_PASSWORD"))
 mongo_connection = pymongo.MongoClient(db_url)
@@ -24,7 +24,7 @@ def start_app():
     s3.init_app(app)
     return app
 
-app = start_app()    
+app = start_app()
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
 
@@ -54,7 +54,7 @@ def upload_picture_to_s3(file, bucket_name, is_profile_picture, acl="public-read
 def check_if_file_is_allow(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_FILE_EXTENSIONS
-           
+
 def check_login_details(username_input,password_input):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     check_sql = "SELECT id,password FROM users WHERE `username` = %s"
@@ -70,7 +70,7 @@ def get_user_recipe_details(current_user_id,pymysql_cursor):
     pymysql_cursor.execute(recipe_details_sql,recipe_details_input)
     user_recipe_list=pymysql_cursor.fetchall()
     return user_recipe_list
-    
+
 def get_user_dashboard_details(current_user_id,pymysql_cursor):
     user_details_sql="SELECT users.id,users.username,users.email,users.bio,users.profile_picture_uri,countries.country_name,countries.id,authors.user_to_author_date FROM users JOIN countries ON users.country_of_origin_id = countries.id LEFT JOIN authors ON users.id = authors.user_id WHERE `users`.`id` = %s"
     user_details_input=(current_user_id)
@@ -224,7 +224,7 @@ def get_recipe_details_for_recipe_editor_helper_function(post_id):
     photo_uri=pymysql_cursor.fetchone()
     pymysql_cursor.close()
     return [recipe_details,recipe_time_details,ingredient_details,photo_uri]
-    
+
 def get_recipe_details_for_recipe_editor(post_id):
     helper_function_result = get_recipe_details_for_recipe_editor_helper_function(post_id)
     recipe_details = helper_function_result[0]
@@ -250,7 +250,7 @@ def get_recipe_details_for_recipe_editor(post_id):
         "all_available_ingredients":all_ingredients_list
     }
     return result
-    
+
 def recipe_list_helper_function(recipe_lists_post_list_details):
     for i in recipe_lists_post_list_details:
         categories = get_post_categories(int(i['post_id']))
@@ -284,10 +284,10 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
                 random.choice(categories[5])
                 ]
     return recipe_lists_post_list_details
-    
-def get_recipe_lists_post_list_details(): 
+
+def get_recipe_lists_post_list_details():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views, 
+    recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
     recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id"""
     pymysql_cursor.execute(recipe_lists_details_sql)
     recipe_lists_post_list_details=pymysql_cursor.fetchall()
@@ -295,10 +295,10 @@ def get_recipe_lists_post_list_details():
     pymysql_cursor.close()
     return result
 
-def get_user_recipe_lists_post_list_details(current_user_id): 
+def get_user_recipe_lists_post_list_details(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     recipe_lists_details_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri,
-    posts.number_of_views AS post_number_of_views,recipes.id AS post_recipe_id, posts.id AS post_id  FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id 
+    posts.number_of_views AS post_number_of_views,recipes.id AS post_recipe_id, posts.id AS post_id  FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id
     JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id WHERE authors.user_id = %s """
     recipe_lists_details_input = (current_user_id)
     pymysql_cursor.execute(recipe_lists_details_sql,recipe_lists_details_input)
@@ -306,8 +306,8 @@ def get_user_recipe_lists_post_list_details(current_user_id):
     result = recipe_list_helper_function(recipe_lists_post_list_details)
     pymysql_cursor.close()
     return result
-    
-def recipe_list_search_function(search_terms): 
+
+def recipe_list_search_function(search_terms):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
     recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id WHERE recipes.id = %s
@@ -347,8 +347,8 @@ def recipe_list_search_function(search_terms):
     result=recipe_list_helper_function(final_recipe_list_result)
     pymysql_cursor.close()
     return result
-    
-def user_recipe_list_search_function(current_user_id,search_terms): 
+
+def user_recipe_list_search_function(current_user_id,search_terms):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
     recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id JOIN `authors` ON recipes.author_id = authors.id WHERE recipes.id = %s AND authors.user_id = %s
@@ -435,7 +435,7 @@ def ingredient_list_packing_function(unpacked_ingredient_list_array):
     for i in range(len(unpacked_ingredient_list_array[0])):
         result_array.append([unpacked_ingredient_list_array[0][i],unpacked_ingredient_list_array[1][i],unpacked_ingredient_list_array[2][i],unpacked_ingredient_list_array[3][i]])
     return result_array
-    
+
 def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array,recipe_description):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     final_recipe_procedure_result = ""
@@ -520,25 +520,25 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,s
         recipe_creation_cooking_styles_sql = "INSERT INTO cooking_style_lists (recipe_id,cooking_style_id) VALUES (%s,%s);"
         recipe_creation_cooking_styles_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_cooking_styles_sql,recipe_creation_cooking_styles_input)
-    cuisine_list_deletion_sql = "DELETE FROM `cuisine_lists` WHERE cuisine_lists.recipe_id = %s;"    
+    cuisine_list_deletion_sql = "DELETE FROM `cuisine_lists` WHERE cuisine_lists.recipe_id = %s;"
     pymysql_cursor.execute(cuisine_list_deletion_sql,deletion_recipe_id)
     for i in cuisines:
         recipe_creation_cuisines_sql = "INSERT INTO cuisine_lists (recipe_id,cuisine_id) VALUES (%s,%s);"
         recipe_creation_cuisines_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_cuisines_sql,recipe_creation_cuisines_input)
-    diet_health_type_list_deletion_sql = "DELETE FROM `diet_health_type_lists` WHERE diet_health_type_lists.recipe_id = %s;"    
+    diet_health_type_list_deletion_sql = "DELETE FROM `diet_health_type_lists` WHERE diet_health_type_lists.recipe_id = %s;"
     pymysql_cursor.execute(diet_health_type_list_deletion_sql,deletion_recipe_id)
     for i in diet_health_types:
         recipe_creation_diet_health_types_sql = "INSERT INTO diet_health_type_lists (recipe_id,diet_health_type_id) VALUES (%s,%s);"
         recipe_creation_diet_health_types_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_diet_health_types_sql,recipe_creation_diet_health_types_input)
-    dish_type_list_deletion_sql = "DELETE FROM `dish_type_lists` WHERE dish_type_lists.recipe_id = %s;"    
+    dish_type_list_deletion_sql = "DELETE FROM `dish_type_lists` WHERE dish_type_lists.recipe_id = %s;"
     pymysql_cursor.execute(dish_type_list_deletion_sql,deletion_recipe_id)
     for i in dish_types:
         recipe_creation_dish_types_sql = "INSERT INTO dish_type_lists (recipe_id,dish_type_id) VALUES (%s,%s);"
         recipe_creation_dish_types_input = (recipe_id,int(i))
         pymysql_cursor.execute(recipe_creation_dish_types_sql,recipe_creation_dish_types_input)
-    meal_type_list_deletion_sql = "DELETE FROM `meal_type_lists` WHERE meal_type_lists.recipe_id = %s;"    
+    meal_type_list_deletion_sql = "DELETE FROM `meal_type_lists` WHERE meal_type_lists.recipe_id = %s;"
     pymysql_cursor.execute(meal_type_list_deletion_sql,deletion_recipe_id)
     for i in meal_types:
         recipe_creation_meal_types_sql = "INSERT INTO meal_type_lists (recipe_id,meal_type_id) VALUES (%s,%s);"
@@ -608,7 +608,7 @@ def post_view_counter_function(post_id,pymysql_cursor):
     pymysql_cursor.execute(post_view_counter_sql,post_view_counter_input)
     number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
     return number_of_views
-    
+
 def post_view_adder_function(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     new_number_of_views = post_view_counter_function(post_id,pymysql_cursor) + 1
@@ -647,14 +647,14 @@ def comment_packaging_function(comment_array):
     result_array = []
     for i in comment_array:
         if i["parent_comment_id"] == None:
-            
+
             pass
             #ENTER SORTING FUNCTION AND CASCADING FUNCTION HERE
         else:
             pass
             #THESE ARE FRESH COMMENTS
-    return None    
-    
+    return None
+
 def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
     if parent_object == "post":
@@ -676,7 +676,7 @@ def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,c
         }
         inserted_comment = comments.insert_one(new_comment)
         return inserted_comment.inserted_id
-        
+
 def edit_comment(comment_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
     comment_query = { "_id": ObjectId(comment_id) }
@@ -715,7 +715,7 @@ def logout():
     if 'username' in session:
         session.pop('username',None)
     return redirect(url_for("init"))
-    
+
 @app.route("/user_creation",methods=["GET","POST"])
 def user_creation():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -748,7 +748,7 @@ def user_creation():
             pymysql_cursor.close()
             flash("This username has been taken!", "error")
             return redirect(url_for('user_creation'))
-        
+
 @app.route("/user/recipes",methods=["GET","POST"])
 def recipes():
     if session:
@@ -757,9 +757,9 @@ def recipes():
             user_is_an_author = False
             if check_if_user_is_an_author(current_user_id):
                     user_is_an_author =True
-                    
+
             recipe_creator_form_details = get_recipe_creator_form_details()
-            
+
             search_terms = request.args.get("search")
             if search_terms:
                 searched_user_recipe_lists_post_list_details = user_recipe_list_search_function(current_user_id,search_terms)
@@ -767,7 +767,7 @@ def recipes():
             else:
                 user_recipe_lists_post_list_details = get_user_recipe_lists_post_list_details(current_user_id)
                 return render_template("recipes.html",current_user_id=current_user_id,user_recipe_list=user_recipe_lists_post_list_details,user_is_an_author=user_is_an_author,recipe_creator_form_details=recipe_creator_form_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
-            
+
         else:
             recipe_picture_uri = "null"
             if request.files:
@@ -783,7 +783,7 @@ def recipes():
                     else:
                         flash("That image extension is not allowed!","error")
                         return redirect(url_for("recipes"))
-                    
+
             author_id = check_if_user_is_an_author(current_user_id)
             recipe_title = request.form["recipe_title"]
             prep_time = request.form["prep_time"]
@@ -803,7 +803,7 @@ def recipes():
             diet_health_types = request.form.getlist("diet_health_types")
             dish_types = request.form.getlist("dish_types")
             meal_types = request.form.getlist("meal_types")
-            
+
             packed_ingredient_array = ingredient_list_packing_function(ingredient_list_array)
             creation_result = recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,packed_ingredient_array,recipe_description)
             if creation_result == True:
@@ -829,7 +829,7 @@ def user_dashboard():
             email_input = request.form["email_input"]
             password_input = request.form["password_input"]
             bio_input = request.form["bio_input"]
-            
+
             if password_input == "":
                 update_user_details_sql = "UPDATE `users` SET `email`=%s,`bio`=%s WHERE id = %s"
                 update_user_details_input=(email_input,bio_input,current_user_id)
@@ -838,7 +838,7 @@ def user_dashboard():
                 update_user_details_sql = "UPDATE `users` SET `password`=%s,`email`=%s,`bio`=%s WHERE id = %s"
                 update_user_details_input=(hashed_password,email_input,bio_input,current_user_id)
             pymysql_cursor.execute(update_user_details_sql,update_user_details_input)
-            
+
             if request.files:
                 uploaded_image = request.files["profile-picture-input"]
                 if uploaded_image.filename == '':
@@ -850,13 +850,13 @@ def user_dashboard():
                         profile_picture_uri=str(uploaded_image.filename)
                         update_user_photo_sql = "UPDATE users SET profile_picture_uri = %s WHERE id = %s"
                         update_user_photo_input = (profile_picture_uri,current_user_id)
-                        
+
                         pymysql_cursor.execute(update_user_photo_sql,update_user_photo_input)
                     else:
                         flash("That image extension is not allowed!","error")
                         pymysql_cursor.close()
                         return redirect(url_for("user_dashboard"))
-                        
+
             pymysql_connection.commit()
             pymysql_cursor.close()
             flash("Your account details have successfully been updated!","message")
@@ -873,7 +873,7 @@ def recipe_list():
     else:
         recipe_lists_post_list_details = get_recipe_lists_post_list_details()
         return render_template("recipe_list.html",recipe_list=recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
-    
+
 @app.route("/single/<post_id>",methods=["GET","POST"])
 def post(post_id):
     if check_if_post_exist(post_id):
@@ -894,7 +894,7 @@ def post(post_id):
             return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'])
     else:
         return abort(404)
-    
+
 @app.route("/single/<post_id>/editor",methods=["GET","POST"])
 def recipe_editor(post_id):
     if session:
@@ -920,7 +920,7 @@ def recipe_editor(post_id):
                             else:
                                 flash("That image extension is not allowed!","error")
                                 return redirect(url_for("recipes"))
-                            
+
                     recipe_title = request.form["recipe_title"]
                     prep_time = request.form["prep_time"]
                     cook_time = request.form["cook_time"]
@@ -941,7 +941,7 @@ def recipe_editor(post_id):
                     ingredient_list_array=[ingredient_list_ingredient,ingredient_list_amount,ingredient_list_measurement,ingredient_list_special]
                     packed_ingredient_array = ingredient_list_packing_function(ingredient_list_array)
                     updater_result = recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,post_id,change_photo_indicator,packed_ingredient_array,recipe_description)
-                    
+
                     if updater_result == True:
                         flash("The recipe has been successfully updated!", "message")
                         return redirect(url_for("recipes"))
@@ -956,7 +956,7 @@ def recipe_editor(post_id):
             return redirect(url_for("recipes"))
     else:
         return redirect(url_for("init"))
-            
+
 @app.route("/delete-post/<post_id>")
 def delete_post(post_id):
     if session:
@@ -1009,7 +1009,6 @@ def page_not_found(e):
     return render_template("404.html"), 404
 
 if __name__ == '__main__':
-    app.run(host=os.environ.get('IP'),
-            port=int(os.environ.get('PORT')),
+    app.run(host='0.0.0.0',
+            port=8080,
             debug=True)
-            
