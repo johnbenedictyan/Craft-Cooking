@@ -316,7 +316,7 @@ def get_user_recipe_lists_post_list_details(current_user_id):
     pymysql_cursor.close()
     return result
 
-def recipe_list_search_function(search_terms):
+def recipe_list_search_function(search_terms,categories_only):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     search_sql = """SELECT recipes.name AS post_recipe_name, posts.date_published AS post_date_published, recipe_photos.uri AS post_photo_uri, posts.number_of_views AS post_number_of_views,
     recipes.id AS post_recipe_id, posts.id AS post_id FROM `posts` JOIN `recipes` ON posts.recipe_id = recipes.id JOIN `recipe_photos` ON recipes.id = recipe_photos.recipe_id WHERE recipes.id = %s
@@ -328,8 +328,6 @@ def recipe_list_search_function(search_terms):
     sql_5 = "SELECT dish_type_lists.recipe_id FROM `dish_type_lists` JOIN `dish_types` ON dish_type_lists.dish_type_id = dish_types.id WHERE dish_types.name LIKE %s"
     sql_6 = "SELECT meal_type_lists.recipe_id FROM `meal_type_lists` JOIN `meal_types` ON meal_type_lists.meal_type_id = meal_types.id WHERE meal_types.name LIKE %s"
     search_input = ("%" + search_terms +"%")
-    pymysql_cursor.execute(sql_1,search_input)
-    result_1=pymysql_cursor.fetchall()
     pymysql_cursor.execute(sql_2,search_input)
     result_2=pymysql_cursor.fetchall()
     pymysql_cursor.execute(sql_3,search_input)
@@ -340,7 +338,12 @@ def recipe_list_search_function(search_terms):
     result_5=pymysql_cursor.fetchall()
     pymysql_cursor.execute(sql_6,search_input)
     result_6=pymysql_cursor.fetchall()
-    recipe_input_array = [result_1,result_2,result_3,result_4,result_5,result_6]
+    recipe_input_array = [result_2,result_3,result_4,result_5,result_6]
+    if categories_only != True:
+        pymysql_cursor.execute(sql_1,search_input)
+        result_1=pymysql_cursor.fetchall()
+        recipe_input_array.insert(0,result_1)
+
     recipe_result_array = []
     for i in recipe_input_array:
         if i is not tuple:
@@ -562,6 +565,14 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,s
     pymysql_connection.commit()
     pymysql_cursor.close()
     return True
+
+def category_id_to_category_name(category_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    sql = "SELECT name FROM `categories` WHERE id = %s"
+    pymysql_cursor.execute(sql,category_id)
+    category_name = pymysql_cursor.fetchone()["name"]
+    pymysql_cursor.close()
+    return category_name
 
 def check_if_the_user_is_the_current_posts_author(user_id,recipe_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -886,11 +897,17 @@ def user_dashboard():
 def recipe_list():
     if request.args.get("search"):
         search_terms = request.args.get("search")
-        searched_recipe_lists_post_list_details = recipe_list_search_function(search_terms)
+        searched_recipe_lists_post_list_details = recipe_list_search_function(search_terms,False)
         return render_template("recipe_list.html",recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
     else:
         recipe_lists_post_list_details = get_recipe_lists_post_list_details()
         return render_template("recipe_list.html",recipe_list=recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
+
+@app.route("/category/<category_id>")
+def single_category(category_id):
+    category_name = category_id_to_category_name(category_id)
+    searched_recipe_lists_post_list_details = recipe_list_search_function(category_name,True)
+    return render_template("single_category.html",category_name=category_name,recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
 
 @app.route("/single/<post_id>",methods=["GET","POST"])
 def post(post_id):
