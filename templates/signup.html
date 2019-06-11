@@ -16,33 +16,38 @@
         <div class="row">
             <div class="col heading-section ftco-animate">
                 <h2 class="mb-4"><span>Sign Up</span></h2>
-                <form method="POST">
+                <form id="signup_form" method="POST">
                     <div class="form-group">
-                        <input type="email" class="form-control" id="user_email" name="email_input" placeholder="Email Address">
+                        <input type="email" class="form-control form_input" id="user_email" name="email_input" placeholder="Email Address">
                         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                     </div>
                     <div class="row">
                         <div class="col">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="user_username" name="username_input" aria-describedby="user_username" placeholder="Choose A Username">
+                                <input type="text" class="form-control form_input" id="user_username" name="username_input" aria-describedby="user_username" placeholder="Choose A Username">
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <input type="password" class="form-control" id="user_password" name="password_input" placeholder="Password">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <select class="form-control" id="user_country" name="country_input">
+                                <select class="form-control form_input" id="user_country" name="country_input">
                                     {% for i in country_list %}
                                     <option value="{{i.id}}">{{i.country_name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                          <div class="form-group">
+                              <input type="password" class="form-control form_input" id="user_password_1" name="password_input_1" placeholder="Password">
+                          </div>
+                      </div>
+                      <div class="col">
+                          <div class="form-group">
+                              <input type="password" class="form-control form_input" id="user_password_2" name="password_input_2" placeholder="Confirm Password">
+                          </div>
+                      </div>
                     </div>
                     <div class="mt-2">
                         <button type="submit" class="btn btn-primary btn-lg">Sign Up</button>
@@ -56,14 +61,37 @@
         </div>
     </div>
 </section>
-{% endblock %} 
+{% endblock %}
 
 {% block jquery_script_section %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 <script>
     /* global $ */
     $(function() {
         $(".navbar-nav li").removeClass("active");
         $("#sign_up_nav_item").addClass("active");
+        $("#signup_form").validate({
+          rules:{
+            email_input:{
+              required:true,
+              email:true
+            },
+            username_input:{
+              required:true,
+              minlength:10
+            },
+            country_input:,
+            password_input_1:{
+              required:true,
+              minlength:10
+            },
+            password_input_2:{
+              required:true,
+              minlength:10,
+              equalTo:"#password_input_1"
+            }
+          }
+        })
     });
 </script>
 {% endblock %}

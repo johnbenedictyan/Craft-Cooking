@@ -3,12 +3,13 @@ from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
 from bson import ObjectId
-import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re
+import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi
 from datetime import datetime
 import env_var
 # only comment the 'import env' out when deploying to heroku
-db_url = "mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),os.environ.get("MONGO_DB_PASSWORD"))
-mongo_connection = pymongo.MongoClient(db_url)
+db_url = "mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),urllib.parse.quote(os.environ.get("MONGO_DB_PASSWORD")))
+ssl_cert = certifi.where()
+mongo_connection = pymongo.MongoClient(db_url,ssl=True,ssl_ca_certs=ssl_cert)
 
 pymysql_connection = pymysql.connect(host="remotemysql.com",
                              user = os.environ.get("remotemysql_username"),
@@ -667,20 +668,23 @@ def comment_packaging_function(comment_array):
     result_array = []
     for i in comment_array:
         if i["parent_comment_id"] == None:
-
-            pass
-            #ENTER SORTING FUNCTION AND CASCADING FUNCTION HERE
+            #THESE ARE FRESH/Parent COMMENTS
+            dump_dict = {
+            "id": 1
+            }
+            dump_array.append(i)
+            result_array.append(dump_array)
         else:
             pass
-            #THESE ARE FRESH COMMENTS
+            #ENTER SORTING FUNCTION AND CASCADING FUNCTION HERE
     return None
 
 def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
     if parent_object == "post":
         new_comment = {
-            "user_id":ObjectId(current_user_id),
-            "parent_post_id":ObjectId(parent_post_id),
+            "user_id":current_user_id,
+            "parent_post_id":parent_post_id,
             "parent_comment_id":None,
             "date_time_created":datetime.utcnow(),
             "comment":comment
@@ -689,9 +693,9 @@ def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,c
         return inserted_comment.inserted_id
     else:
         new_comment = {
-            "user_id":ObjectId(current_user_id),
-            "parent_post_id":ObjectId(parent_post_id),
-            "parent_comment_id":ObjectId(parent_object_id),
+            "user_id":current_user_id,
+            "parent_post_id":parent_post_id,
+            "parent_comment_id":parent_object_id,
             "comment":comment
         }
         inserted_comment = comments.insert_one(new_comment)
@@ -1043,6 +1047,15 @@ def become_an_author(user_id):
 def page_not_found(e):
     return render_template("404.html"), 404
 
+@app.route("/testingpage")
+def testing():
+    current_user_id = session["user_id"]
+    parent_object = "post"
+    parent_post_id = 1
+    parent_object_id=None
+    comment="This recipe is good."
+    post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment)
+    return redirect(url_for('init'))
 if __name__ == '__main__':
     app.run(host='0.0.0.0',
             port=8080,
