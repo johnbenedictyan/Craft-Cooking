@@ -287,6 +287,7 @@ def get_recipe_details_for_recipe_editor(post_id):
 def recipe_list_helper_function(recipe_lists_post_list_details):
     for i in recipe_lists_post_list_details:
         #Get post categories
+        pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
         post_id = int(i['post_id'])
         get_allergen_lists_sql = "SELECT allergens.id AS allergen_id,allergens.name AS allergen_name FROM `allergens` JOIN `allergen_lists` ON allergens.id = allergen_lists.allergen_id WHERE allergen_lists.recipe_id = %s"
         get_allergen_lists_input = (post_id)
@@ -352,6 +353,7 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
             i["meal_types"] = [
                 random.choice(categories[5])
                 ]
+
     return recipe_lists_post_list_details
 
 def get_recipe_lists_post_list_details():
@@ -682,16 +684,78 @@ def get_top_recipe_lists_post_list_details():
     pymysql_cursor.close()
     return top_recipe_lists_post_list_details
 
+def get_top_categories():
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    top_categories_sql = "SELECT id AS category_id,uri AS category_uri FROM `categories` ORDER BY `number_of_views` DESC LIMIT 5"
+    pymysql_cursor.execute(top_recipe_lists_details_sql)
+    top_categories_list=pymysql_cursor.fetchall()
+    pymysql_cursor.close()
+    return top_categories_list
+
+def categories_view_adder_from_posts_function(post_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    cooking_styles_match_sql = "SELECT categories.id AS category_id FROM posts JOIN recipes ON posts.recipe_id=recipes.id JOIN cooking_style_lists ON recipes.id=cooking_style_lists.recipe_id JOIN cooking_styles ON cooking_style_lists.cooking_style_id=cooking_styles.id JOIN categories ON cooking_styles.name=categories.name WHERE posts.id = %s"
+    pymysql_cursor.execute(cooking_styles_match_sql,post_id)
+    cat_cs=pymysql_cursor.fetchall()
+
+    diet_health_types_match_sql = "SELECT categories.id AS category_id FROM posts JOIN recipes ON posts.recipe_id=recipes.id JOIN diet_health_type_lists ON recipes.id=diet_health_type_lists.recipe_id JOIN diet_health_types ON diet_health_type_lists.diet_health_type_id=diet_health_types.id JOIN categories ON diet_health_types.name=categories.name WHERE posts.id = %s"
+    pymysql_cursor.execute(diet_health_types_match_sql,post_id)
+    cat_dht=pymysql_cursor.fetchall()
+
+    dish_types_match_sql = "SELECT categories.id AS category_id FROM posts JOIN recipes ON posts.recipe_id=recipes.id JOIN dish_type_lists ON recipes.id=dish_type_lists.recipe_id JOIN dish_types ON dish_type_lists.dish_type_id=dish_types.id JOIN categories ON dish_types.name=categories.name WHERE posts.id = %s"
+    pymysql_cursor.execute(dish_types_match_sql,post_id)
+    cat_dtm=pymysql_cursor.fetchall()
+
+    meal_types_match_sql = "SELECT categories.id AS category_id FROM posts JOIN recipes ON posts.recipe_id=recipes.id JOIN meal_type_lists ON recipes.id=meal_type_lists.recipe_id JOIN meal_types ON meal_type_lists.meal_type_id=meal_types.id JOIN categories ON meal_types.name=categories.name WHERE posts.id = %s"
+    pymysql_cursor.execute(meal_types_match_sql,post_id)
+    cat_mt=pymysql_cursor.fetchall()
+
+    cuisines_match_sql = "SELECT categories.id AS category_id FROM posts JOIN recipes ON posts.recipe_id=recipes.id JOIN cuisine_lists ON recipes.id=cuisine_lists.recipe_id JOIN cuisines ON cuisine_lists.cuisine_id=cuisines.id JOIN categories ON cuisines.name=categories.name WHERE posts.id = %s"
+    pymysql_cursor.execute(cuisines_match_sql,post_id)
+    cat_c=pymysql_cursor.fetchall()
+
+    def packing_function(input):
+        dump_array = []
+        for i in input:
+            dump_array.append(i["category_id"])
+        return dump_array
+
+    cat_array = packing_function(cat_cs) + packing_function(cat_dht) + packing_function(cat_dtm) + packing_function(cat_mt) + packing_function(cat_c)
+    categories_view_counter_sql = "SELECT `categories`.`number_of_views` FROM `categories` WHERE id = %s"
+    categories_update_counter_sql = "UPDATE `categories` SET `number_of_views`= %s WHERE `categories`.id = %s"
+    for i in cat_array:
+        pymysql_cursor.execute(categories_view_counter_sql,i)
+        number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
+        number_of_views += 1
+        categories_update_counter_input = (number_of_views,i)
+        pymysql_cursor.execute(categories_update_counter_sql,categories_update_counter_input)
+        pymysql_connection.commit()
+    pymysql_cursor.close()
+
+def categories_view_adder_function(category_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    categories_view_counter_sql = "SELECT number_of_views FROM `categories` WHERE `categories`.id = %s"
+    categories_view_counter_input = (category_id)
+    pymysql_cursor.execute(categories_view_counter_sql,categories_view_counter_input)
+    number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
+    new_number_of_views = number_of_views + 1
+    categories_view_update_sql = "UPDATE `categories` SET `number_of_views`= %s WHERE `categories`.id = %s"
+    categories_view_update_input = (new_number_of_views,category_id)
+    pymysql_cursor.execute(categories_view_update_sql,categories_view_update_input)
+    pymysql_connection.commit()
+    pymysql_cursor.close()
+
 def post_view_adder_function(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     post_view_counter_sql = "SELECT number_of_views FROM `posts` WHERE `posts`.id = %s"
     post_view_counter_input = (post_id)
     pymysql_cursor.execute(post_view_counter_sql,post_view_counter_input)
     number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
-    new_number_of_views = number_of_views + 1
+    number_of_views += 1
     post_view_update_sql = "UPDATE `posts` SET `number_of_views`= %s WHERE `posts`.id = %s"
-    post_view_update_input = (new_number_of_views,post_id)
+    post_view_update_input = (number_of_views,post_id)
     pymysql_cursor.execute(post_view_update_sql,post_view_update_input)
+    pymysql_connection.commit()
     pymysql_cursor.close()
 
 def check_if_post_exist(post_id):
@@ -794,6 +858,13 @@ def edit_comment(comment_id,comment):
     new_comment = { "$set": { "comment": comment } }
     updated_comment = comments.update_one(comment_query, new_comment)
     return updated_comment
+
+@app.template_filter('formatdatetime')
+def format_datetime(value, format="%d %b %Y"):
+    """Format a date time to: d Mon YYYY"""
+    if value is None:
+        return ""
+    return value.strftime(format)
 
 @app.route("/")
 def init():
@@ -1046,7 +1117,6 @@ def recipe_editor(post_id):
                     ingredient_list_array=[ingredient_list_ingredient,ingredient_list_amount,ingredient_list_measurement,ingredient_list_special]
                     packed_ingredient_array = ingredient_list_packing_function(ingredient_list_array)
                     updater_result = recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,cuisines,diet_health_types,dish_types,meal_types,post_id,change_photo_indicator,packed_ingredient_array,recipe_description)
-
                     if updater_result == True:
                         flash("The recipe has been successfully updated!", "message")
                         return redirect(url_for("recipes"))
@@ -1116,6 +1186,7 @@ def page_not_found(e):
 @app.route('/test')
 def testinggetcommens():
     get_comments(1)
+    categories_view_adder_from_posts_function(1)
     return redirect(url_for('init'))
 
 @app.route("/testingpage")
@@ -1127,6 +1198,7 @@ def testing():
     comment="This recipe is good."
     post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment)
     return redirect(url_for('init'))
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0',
             port=8080,

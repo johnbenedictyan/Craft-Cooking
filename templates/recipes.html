@@ -49,7 +49,7 @@
                                                 <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{recipe_picture_url~i.post_photo_uri}})"></a>
                                                 </div>
                                                 <div class="text pt-3">
-                                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
+                                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published|formatdatetime}}</span></p>
                                                     <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
                                                     <div class="tagcloud">
                                                         {% for j in i.cooking_styles %}

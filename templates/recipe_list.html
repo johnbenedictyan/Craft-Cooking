@@ -35,24 +35,24 @@
                             <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{recipe_picture_url~i.post_photo_uri}})"></a>
                             </div>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
+                                <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published|formatdatetime}}</span></p>
                                 <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
                                 <div class="tagcloud">
                                     {% for j in i.cooking_styles %}
-                                    <a href="#" class="tag-cloud-link">{{j.cooking_style_name}}</a> 
+                                    <a href="#" class="tag-cloud-link">{{j.cooking_style_name}}</a>
                                     {% endfor %}
                                     {% for k in i.cuisines %}
-                                    <a href="#" class="tag-cloud-link">{{k.cuisine_name}}</a> 
-                                    {% endfor %} 
+                                    <a href="#" class="tag-cloud-link">{{k.cuisine_name}}</a>
+                                    {% endfor %}
                                     {% for l in i.diet_health_types %}
-                                    <a href="#" class="tag-cloud-link">{{l.diet_health_type_name}}</a> 
-                                    {% endfor %} 
+                                    <a href="#" class="tag-cloud-link">{{l.diet_health_type_name}}</a>
+                                    {% endfor %}
                                     {% for m in i.dish_types %}
-                                    <a href="#" class="tag-cloud-link">{{m.dish_type_name}}</a> 
-                                    {% endfor %} 
+                                    <a href="#" class="tag-cloud-link">{{m.dish_type_name}}</a>
+                                    {% endfor %}
                                     {% for n in i.meal_types %}
-                                    <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a> 
-                                    {% endfor %} 
+                                    <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a>
+                                    {% endfor %}
                                 </div>
                                 <p class="mb-0 mt-2"><a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
@@ -123,7 +123,7 @@
 <style>
     .blog-entry .img-2-wrapper{
         height:250px;
-        overflow: hidden; 
+        overflow: hidden;
     }
     .blog-entry .img-2-wrapper .img-2 {
          height: 100%;
