@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  
+
   <!-- Boostrap 4 Select Picker Plugin -->
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
@@ -55,7 +55,7 @@
             </div>
           </li>
           {% else %}
-          <li id="log_in_nav_item" class="nav-item"><a href="{{url_for('login')}}" class="nav-link">Sign In</a></li>
+          <li id="log_in_nav_item" class="nav-item"><a href="{{url_for('sign_in')}}" class="nav-link">Sign In</a></li>
           <li id="sign_up_nav_item" class="nav-item"><a href="{{url_for('user_creation')}}" class="nav-link">Sign Up</a></li>
           {% endif %}
       </div>
@@ -64,70 +64,70 @@
   <!-- END nav -->
   {% block testing_block %}
   {% endblock %}
-  
-  {% block home_slider_section %} 
-  {% endblock %} 
-  
-  {% block new_recipes_section %} 
-  {% endblock %} 
-  
-  {% block featured_recipes_section %} 
+
+  {% block home_slider_section %}
   {% endblock %}
-  
-  {% block seasonal_recipes_section %} 
-  {% endblock %} 
-  
+
+  {% block new_recipes_section %}
+  {% endblock %}
+
+  {% block featured_recipes_section %}
+  {% endblock %}
+
+  {% block seasonal_recipes_section %}
+  {% endblock %}
+
   {% block recipe_list_hero_wrap_section %}
   {% endblock %}
-  
+
   {% block recipe_list_section %}
   {% endblock %}
-  
+
   {% block single_post_hero_wrap_section %}
   {% endblock %}
-  
+
   {% block single_post_main_content_section %}
   {% endblock %}
-  
-  {% block newsletter_section %} 
-  {% endblock %} 
-  
-  {% block login_hero_wrap_section %}
+
+  {% block newsletter_section %}
   {% endblock %}
-  
-  {% block login_form_section %} 
-  {% endblock %} 
-  
+
+  {% block sign_in_hero_wrap_section %}
+  {% endblock %}
+
+  {% block sign_in_form_section %}
+  {% endblock %}
+
   {% block sign_up_hero_wrap_section %}
   {% endblock %}
-  
-  {% block sign_up_form_section %} 
+
+  {% block sign_up_form_section %}
   {% endblock %}
-  
+
   {% block user_dashboard_hero_wrap_section %}
   {% endblock %}
-  
+
   {% block user_dashboard_section %}
   {% endblock %}
-  
+
   {% block recipe_creator_hero_wrap_section %}
   {% endblock %}
-  
+
   {% block recipe_creator_section %}
   {% endblock %}
-  
+
   {% block recipe_editor_hero_wrap_section %}
   {% endblock %}
-  
+
   {% block recipe_editor_section %}
   {% endblock %}
-  
+
   {% block confirm_delete_modal_section %}
   {% endblock %}
-  
+
   {% block page_not_found_main_content_section %}
   {% endblock %}
-  
+
   {% with messages = get_flashed_messages(category_filter=["message"]) %}
   {% if messages %}
   <div class="modal fade" id="flash_message_modal_messages" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_messages_label" aria-hidden="true">
@@ -171,7 +171,7 @@
   </div>
   {% endif %}
   {% endwith %}
-  
+
   {% with errors = get_flashed_messages(category_filter=["error"]) %}
   {% if errors %}
   <div class="modal fade" id="flash_message_modal_errors" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_errors_label" aria-hidden="true">
@@ -213,9 +213,9 @@
           </div>
       </div>
   </div>
-  {% endif %} 
+  {% endif %}
   {% endwith %}
-  
+
   <footer class="ftco-footer ftco-footer-2 ftco-section">
     <div class="container">
       <div class="row mb-5">

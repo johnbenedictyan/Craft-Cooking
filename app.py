@@ -65,7 +65,7 @@ def username_special_character_cleaner(username_input):
         ErrorMessage = "Username has special characters"
     return [ErrorFlag,ErrorMessage]
 
-def check_login_details(username_input,password_input):
+def check_sign_in_details(username_input,password_input):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     check_sql = "SELECT id,password FROM users WHERE `username` = %s"
     check_input = (username_input)
@@ -74,20 +74,22 @@ def check_login_details(username_input,password_input):
     pymysql_cursor.close()
     return user_details
 
-def get_user_recipe_details(current_user_id,pymysql_cursor):
+def get_user_recipe_details(current_user_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     recipe_details_sql="SELECT `recipes`.`id`,`recipes`.`name` FROM recipes JOIN authors ON `recipes`.`author_id` = `authors`.`id` WHERE `authors`.`user_id` = %s"
     recipe_details_input = (current_user_id)
     pymysql_cursor.execute(recipe_details_sql,recipe_details_input)
     user_recipe_list=pymysql_cursor.fetchall()
+    pymysql_cursor.close()
     return user_recipe_list
 
-def get_user_dashboard_details(current_user_id,pymysql_cursor):
+def get_user_details(current_user_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     user_details_sql="SELECT users.id,users.username,users.email,users.bio,users.profile_picture_uri,countries.country_name,countries.id,authors.user_to_author_date FROM users JOIN countries ON users.country_of_origin_id = countries.id LEFT JOIN authors ON users.id = authors.user_id WHERE `users`.`id` = %s"
     user_details_input=(current_user_id)
     pymysql_cursor.execute(user_details_sql,user_details_input)
     user_details=pymysql_cursor.fetchone()
-    user_recipe_list=get_user_recipe_details(current_user_id,pymysql_cursor)
-    return_array = [user_details,user_recipe_list]
+    pymysql_cursor.close()
     return return_array
 
 def get_post_categories(post_id):
@@ -159,8 +161,33 @@ def get_post_details(post_id):
         recipe_time_details_list[recipe_time_details_list.index(j)] = str(j)+" seconds"
     return [author_details,recipe_details,ingredient_list_details,recipe_procedure_list,recipe_time_details_list,photo_uri]
 
-def get_post_categories_for_recipe_editor(post_id):
+def get_recipe_details_for_recipe_editor(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    #Getting the recipe details
+    get_recipe_details_sql = "SELECT recipes.serves,recipes.name,recipes.recipe_procedure FROM `recipes` WHERE recipes.id = %s"
+    get_recipe_details_input = (post_id)
+    pymysql_cursor.execute(get_recipe_details_sql,get_recipe_details_input)
+    recipe_details=pymysql_cursor.fetchone()
+    get_recipe_time_details_sql = "SELECT recipes.ready_in_duration_seconds,recipes.prep_duration_seconds,recipes.cook_duration_seconds FROM `recipes` WHERE recipes.id = %s"
+    get_recipe_time_details_input = (post_id)
+    pymysql_cursor.execute(get_recipe_time_details_sql,get_recipe_time_details_input)
+    recipe_time_details=pymysql_cursor.fetchone()
+    get_ingredient_list_sql = "SELECT ingredient_id,ingredient_amount,measurement_type,extra_information,ingredients.name AS ingredient_name FROM `ingredient_lists` JOIN `ingredients` ON `ingredient_lists`.ingredient_id = `ingredients`.id WHERE `ingredient_lists`.recipe_id = %s"
+    get_ingredient_list_input = (post_id)
+    pymysql_cursor.execute(get_ingredient_list_sql,get_ingredient_list_input)
+    ingredient_details = list(pymysql_cursor.fetchall())
+    get_photo_sql = "SELECT `uri` FROM `recipe_photos` JOIN `recipes` ON recipe_photos.recipe_id = recipes.id WHERE recipes.id = %s"
+    get_photo_input = (post_id)
+    pymysql_cursor.execute(get_photo_sql,get_photo_input)
+    photo_uri=pymysql_cursor.fetchone()
+    pymysql_cursor.close()
+
+    recipe_details = helper_function_result[0]
+    recipe_time_details = helper_function_result[1]
+    ingredient_details = helper_function_result[2]
+    photo_uri = helper_function_result[3]
+
+    #Getting the post categories for the recipe editor
     cat_allergen = []
     get_allergen_lists_sql = "SELECT allergens.id AS allergen_id FROM `allergens` JOIN `allergen_lists` ON allergens.id = allergen_lists.allergen_id WHERE allergen_lists.recipe_id = %s"
     get_allergen_lists_input = (post_id)
@@ -204,7 +231,7 @@ def get_post_categories_for_recipe_editor(post_id):
     for i in meal_type_lists_details:
         cat_meal_type.append(i["meal_type_id"])
     pymysql_cursor.close()
-    category_lists_details = [
+    current_post_categories_list = [
         cat_allergen,
         cat_cooking_style,
         cat_cuisine,
@@ -212,39 +239,34 @@ def get_post_categories_for_recipe_editor(post_id):
         cat_dish_type,
         cat_meal_type
         ]
-    return category_lists_details
 
-def get_recipe_details_for_recipe_editor_helper_function(post_id):
-    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-    get_recipe_details_sql = "SELECT recipes.serves,recipes.name,recipes.recipe_procedure FROM `recipes` WHERE recipes.id = %s"
-    get_recipe_details_input = (post_id)
-    pymysql_cursor.execute(get_recipe_details_sql,get_recipe_details_input)
-    recipe_details=pymysql_cursor.fetchone()
-    get_recipe_time_details_sql = "SELECT recipes.ready_in_duration_seconds,recipes.prep_duration_seconds,recipes.cook_duration_seconds FROM `recipes` WHERE recipes.id = %s"
-    get_recipe_time_details_input = (post_id)
-    pymysql_cursor.execute(get_recipe_time_details_sql,get_recipe_time_details_input)
-    recipe_time_details=pymysql_cursor.fetchone()
-    get_ingredient_list_sql = "SELECT ingredient_id,ingredient_amount,measurement_type,extra_information,ingredients.name AS ingredient_name FROM `ingredient_lists` JOIN `ingredients` ON `ingredient_lists`.ingredient_id = `ingredients`.id WHERE `ingredient_lists`.recipe_id = %s"
-    get_ingredient_list_input = (post_id)
-    pymysql_cursor.execute(get_ingredient_list_sql,get_ingredient_list_input)
-    ingredient_details = list(pymysql_cursor.fetchall())
-    get_photo_sql = "SELECT `uri` FROM `recipe_photos` JOIN `recipes` ON recipe_photos.recipe_id = recipes.id WHERE recipes.id = %s"
-    get_photo_input = (post_id)
-    pymysql_cursor.execute(get_photo_sql,get_photo_input)
-    photo_uri=pymysql_cursor.fetchone()
-    pymysql_cursor.close()
-    return [recipe_details,recipe_time_details,ingredient_details,photo_uri]
+    #Getting the get recipe creator form details.
+    all_allergens_sql = "SELECT id,name FROM allergens"
+    pymysql_cursor.execute(all_allergens_sql)
+    allergens_form_list = pymysql_cursor.fetchall()
+    all_cooking_styles_sql = "SELECT id,name FROM cooking_styles"
+    pymysql_cursor.execute(all_cooking_styles_sql)
+    cooking_styles_form_list = pymysql_cursor.fetchall()
+    all_cuisines_sql = "SELECT id,name FROM cuisines"
+    pymysql_cursor.execute(all_cuisines_sql)
+    cuisines_form_list = pymysql_cursor.fetchall()
+    all_diet_health_types_sql = "SELECT id,name FROM diet_health_types"
+    pymysql_cursor.execute(all_diet_health_types_sql)
+    diet_health_types_form_list = pymysql_cursor.fetchall()
+    all_dish_types_sql = "SELECT id,name FROM dish_types"
+    pymysql_cursor.execute(all_dish_types_sql)
+    dish_types_form_list = pymysql_cursor.fetchall()
+    all_meal_types_sql = "SELECT id,name FROM meal_types"
+    pymysql_cursor.execute(all_meal_types_sql)
+    meal_types_form_list = pymysql_cursor.fetchall()
+    all_ingredient_sql = "SELECT id,name FROM ingredients"
+    pymysql_cursor.execute(all_ingredient_sql)
+    ingredient_list = pymysql_cursor.fetchall()
 
-def get_recipe_details_for_recipe_editor(post_id):
-    helper_function_result = get_recipe_details_for_recipe_editor_helper_function(post_id)
-    recipe_details = helper_function_result[0]
-    recipe_time_details = helper_function_result[1]
-    ingredient_details = helper_function_result[2]
-    photo_uri = helper_function_result[3]
-    current_post_categories_list = get_post_categories_for_recipe_editor(post_id)
-    data = get_recipe_creator_form_details()
-    all_categories_list = [data[1],data[2],data[3],data[4],data[5],data[6]]
-    all_ingredients_list = data[0]
+    all_categories_list = [allergens_form_list,cooking_styles_form_list,cuisines_form_list,diet_health_types_form_list,dish_types_form_list,meal_types_form_list]
+    all_ingredients_list = ingredient_list
+
+
     recipe_procedure = recipe_details["recipe_procedure"]
     recipe_procedure_list = recipe_procedure.split(".")
     for c,v in enumerate(recipe_procedure_list):
@@ -259,11 +281,48 @@ def get_recipe_details_for_recipe_editor(post_id):
         "all_available_categories":all_categories_list,
         "all_available_ingredients":all_ingredients_list
     }
+    pymysql_cursor.close()
     return result
 
 def recipe_list_helper_function(recipe_lists_post_list_details):
     for i in recipe_lists_post_list_details:
-        categories = get_post_categories(int(i['post_id']))
+        #Get post categories
+        post_id = int(i['post_id'])
+        get_allergen_lists_sql = "SELECT allergens.id AS allergen_id,allergens.name AS allergen_name FROM `allergens` JOIN `allergen_lists` ON allergens.id = allergen_lists.allergen_id WHERE allergen_lists.recipe_id = %s"
+        get_allergen_lists_input = (post_id)
+        pymysql_cursor.execute(get_allergen_lists_sql,get_allergen_lists_input)
+        allergen_lists_details=pymysql_cursor.fetchall()
+        get_cooking_style_lists_sql = "SELECT cooking_styles.id AS cooking_style_id,cooking_styles.name AS cooking_style_name FROM `cooking_styles` JOIN `cooking_style_lists` ON cooking_styles.id = cooking_style_lists.cooking_style_id WHERE cooking_style_lists.recipe_id = %s"
+        get_cooking_style_lists_input = (post_id)
+        pymysql_cursor.execute(get_cooking_style_lists_sql,get_cooking_style_lists_input)
+        cooking_style_lists_details=pymysql_cursor.fetchall()
+        get_cuisine_lists_sql = "SELECT cuisines.id AS cuisine_id,cuisines.name AS cuisine_name FROM `cuisines` JOIN `cuisine_lists` ON cuisines.id = cuisine_lists.cuisine_id WHERE cuisine_lists.recipe_id = %s"
+        get_cuisine_lists_input = (post_id)
+        pymysql_cursor.execute(get_cuisine_lists_sql,get_cuisine_lists_input)
+        cuisine_lists_details=pymysql_cursor.fetchall()
+        get_diet_health_type_lists_sql = "SELECT diet_health_types.id AS diet_health_type_id,diet_health_types.name AS diet_health_type_name FROM `diet_health_types` JOIN `diet_health_type_lists` ON diet_health_types.id = diet_health_type_lists.diet_health_type_id WHERE diet_health_type_lists.recipe_id = %s"
+        get_diet_health_type_lists_input = (post_id)
+        pymysql_cursor.execute(get_diet_health_type_lists_sql,get_diet_health_type_lists_input)
+        diet_health_type_lists_details=pymysql_cursor.fetchall()
+        get_dish_type_lists_sql = "SELECT dish_types.id AS dish_type_id,dish_types.name AS dish_type_name FROM `dish_types` JOIN `dish_type_lists` ON dish_types.id = dish_type_lists.dish_type_id WHERE dish_type_lists.recipe_id = %s"
+        get_dish_type_lists_input = (post_id)
+        pymysql_cursor.execute(get_dish_type_lists_sql,get_dish_type_lists_input)
+        dish_type_lists_details=pymysql_cursor.fetchall()
+        get_meal_type_lists_sql = "SELECT meal_types.id AS meal_type_id,meal_types.name AS meal_type_name FROM `meal_types` JOIN `meal_type_lists` ON meal_types.id = meal_type_lists.meal_type_id WHERE meal_type_lists.recipe_id = %s"
+        get_meal_type_lists_input = (post_id)
+        pymysql_cursor.execute(get_meal_type_lists_sql,get_meal_type_lists_input)
+        meal_type_lists_details=pymysql_cursor.fetchall()
+        pymysql_cursor.close()
+        category_lists_details = [
+            allergen_lists_details,
+            cooking_style_lists_details,
+            cuisine_lists_details,
+            diet_health_type_lists_details,
+            dish_type_lists_details,
+            meal_type_lists_details
+            ]
+        categories = category_lists_details
+
         total_number_of_categories = 0
         for j in categories:
             total_number_of_categories += len(j)
@@ -623,16 +682,13 @@ def get_top_recipe_lists_post_list_details():
     pymysql_cursor.close()
     return top_recipe_lists_post_list_details
 
-def post_view_counter_function(post_id,pymysql_cursor):
+def post_view_adder_function(post_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     post_view_counter_sql = "SELECT number_of_views FROM `posts` WHERE `posts`.id = %s"
     post_view_counter_input = (post_id)
     pymysql_cursor.execute(post_view_counter_sql,post_view_counter_input)
     number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
-    return number_of_views
-
-def post_view_adder_function(post_id):
-    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-    new_number_of_views = post_view_counter_function(post_id,pymysql_cursor) + 1
+    new_number_of_views = number_of_views + 1
     post_view_update_sql = "UPDATE `posts` SET `number_of_views`= %s WHERE `posts`.id = %s"
     post_view_update_input = (new_number_of_views,post_id)
     pymysql_cursor.execute(post_view_update_sql,post_view_update_input)
@@ -656,11 +712,42 @@ def check_if_user_exist(user_id):
     pymysql_cursor.close()
     return username
 
+def update_user_profile_photo(profile_picture_uri,current_user_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    try:
+        update_user_photo_sql = "UPDATE users SET profile_picture_uri = %s WHERE id = %s"
+        update_user_photo_input = (profile_picture_uri,current_user_id)
+        pymysql_cursor.execute(update_user_photo_sql,update_user_photo_input)
+        pymysql_connection.commit()
+    except:
+        error = "An error has occured in the update_user_profile_photo function."
+    finally:
+        pymysql_cursor.close()
+        return error
+
+def update_user_details(current_user_id,email_input,password_input,bio_input):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
+    if password_input == "":
+        update_user_details_sql = "UPDATE `users` SET `email`=%s,`bio`=%s WHERE id = %s"
+        update_user_details_input=(email_input,bio_input,current_user_id)
+    else:
+        hashed_password = bcrypt.generate_password_hash(password_input).decode('utf-8')
+        update_user_details_sql = "UPDATE `users` SET `password`=%s,`email`=%s,`bio`=%s WHERE id = %s"
+        update_user_details_input=(hashed_password,email_input,bio_input,current_user_id)
+    try:
+        pymysql_cursor.execute(update_user_details_sql,update_user_details_input)
+        pymysql_connection.commit()
+    except:
+        error = "An error has occured in the update_user_details function."
+    finally:
+        pymysql_cursor.close()
+        return error
+
 def get_comments(post_id):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
-    comment_query = { "parent_post_id": ObjectId(post_id) }
-    sort = {'timestamp': -1}
-    comment_list = comments.find(comment_query).sort(sort)
+    comment_query = { "parent_post_id": post_id }
+    sort = [('timestamp', -1)]
+    comment_list = list(comments.find(comment_query).sort(sort))
     print(comment_list)
     return None
 
@@ -713,14 +800,14 @@ def init():
     top_recipe_list = get_top_recipe_lists_post_list_details()
     return render_template("index.html",session=session,top_recipes=top_recipe_list,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
 
-@app.route("/login",methods=["GET","POST"])
-def login():
+@app.route("/sign_in",methods=["GET","POST"])
+def sign_in():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("sign_in.html")
     else:
         username_input = request.form["username_input"]
         password_input = request.form["password_input"]
-        user_details = check_login_details(username_input,password_input)
+        user_details = check_sign_in_details(username_input,password_input)
         if user_details is not None:
             stored_password = user_details["password"]
             if bcrypt.check_password_hash(stored_password,password_input):
@@ -729,10 +816,10 @@ def login():
                 return redirect(url_for("init"))
             else:
                 flash("Incorrect Password", "error")
-                return redirect(url_for("login"))
+                return redirect(url_for("sign_in"))
         else:
             flash("This account does not exist", "error")
-            return redirect(url_for("login"))
+            return redirect(url_for("sign_in"))
 
 @app.route("/logout")
 def logout():
@@ -740,7 +827,7 @@ def logout():
         session.pop('username',None)
     return redirect(url_for("init"))
 
-@app.route("/user_creation",methods=["GET","POST"])
+@app.route("/sign_up",methods=["GET","POST"])
 def user_creation():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     if request.method == "GET":
@@ -748,7 +835,7 @@ def user_creation():
         pymysql_cursor.execute(country_sql)
         country_list = pymysql_cursor.fetchall()
         pymysql_cursor.close()
-        return render_template("signup.html",country_list=country_list)
+        return render_template("sign_up.html",country_list=country_list)
     else:
         email_input = request.form["email_input"]
         username_input = request.form["username_input"]
@@ -781,7 +868,6 @@ def user_creation():
                     flash("Invalid Username","error")
                     return redirect(url_for('user_creation'))
 
-
 @app.route("/user/recipes",methods=["GET","POST"])
 def recipes():
     if session:
@@ -790,9 +876,7 @@ def recipes():
             user_is_an_author = False
             if check_if_user_is_an_author(current_user_id):
                     user_is_an_author =True
-
             recipe_creator_form_details = get_recipe_creator_form_details()
-
             search_terms = request.args.get("search")
             if search_terms:
                 searched_user_recipe_lists_post_list_details = user_recipe_list_search_function(current_user_id,search_terms)
@@ -851,27 +935,16 @@ def recipes():
 @app.route("/user",methods=["GET","POST"])
 def user_dashboard():
     if session:
-        pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
         current_user_id = session["user_id"]
         if request.method == "GET":
-            data = get_user_dashboard_details(current_user_id,pymysql_cursor)
-            user_details = data[0]
-            user_recipe_list = data[1]
+            user_details = get_user_details(current_user_id)
+            user_recipe_list = get_user_recipe_details(current_user_id)
             return render_template("user_dashboard.html",user_details=user_details,user_recipe_list=user_recipe_list,profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'])
         else:
             email_input = request.form["email_input"]
             password_input = request.form["password_input"]
             bio_input = request.form["bio_input"]
-
-            if password_input == "":
-                update_user_details_sql = "UPDATE `users` SET `email`=%s,`bio`=%s WHERE id = %s"
-                update_user_details_input=(email_input,bio_input,current_user_id)
-            else:
-                hashed_password = bcrypt.generate_password_hash(password_input).decode('utf-8')
-                update_user_details_sql = "UPDATE `users` SET `password`=%s,`email`=%s,`bio`=%s WHERE id = %s"
-                update_user_details_input=(hashed_password,email_input,bio_input,current_user_id)
-            pymysql_cursor.execute(update_user_details_sql,update_user_details_input)
-
+            update_user_details(current_user_id,email_input,password_input,bio_input)
             if request.files:
                 uploaded_image = request.files["profile-picture-input"]
                 if uploaded_image.filename == '':
@@ -881,17 +954,10 @@ def user_dashboard():
                         uploaded_image.filename = secure_filename(uploaded_image.filename)
                         upload_picture_to_s3(uploaded_image, app.config["FLASKS3_BUCKET_NAME"],True)
                         profile_picture_uri=str(uploaded_image.filename)
-                        update_user_photo_sql = "UPDATE users SET profile_picture_uri = %s WHERE id = %s"
-                        update_user_photo_input = (profile_picture_uri,current_user_id)
-
-                        pymysql_cursor.execute(update_user_photo_sql,update_user_photo_input)
+                        update_user_profile_photo(profile_picture_uri,current_user_id)
                     else:
                         flash("That image extension is not allowed!","error")
-                        pymysql_cursor.close()
                         return redirect(url_for("user_dashboard"))
-
-            pymysql_connection.commit()
-            pymysql_cursor.close()
             flash("Your account details have successfully been updated!","message")
             return redirect(url_for("user_dashboard"))
     else:
@@ -921,7 +987,7 @@ def post(post_id):
                 data = get_post_details(post_id)
                 categories = get_post_categories(post_id)
                 post_view_adder_function(post_id)
-                return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],user_is_login=True)
+                return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],user_is_sign_in=True)
             else:
                 comment = request.form["comment_input"]
                 print(comment)
@@ -1046,6 +1112,11 @@ def become_an_author(user_id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
+
+@app.route('/test')
+def testinggetcommens():
+    get_comments(1)
+    return redirect(url_for('init'))
 
 @app.route("/testingpage")
 def testing():
