@@ -686,8 +686,8 @@ def get_top_recipe_lists_post_list_details():
 
 def get_top_categories():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-    top_categories_sql = "SELECT id AS category_id,uri AS category_uri FROM `categories` ORDER BY `number_of_views` DESC LIMIT 5"
-    pymysql_cursor.execute(top_recipe_lists_details_sql)
+    top_categories_sql = "SELECT id AS category_id,bg_sm_uri AS category_uri,name AS category_name FROM `categories` ORDER BY `number_of_views` DESC LIMIT 5"
+    pymysql_cursor.execute(top_categories_sql)
     top_categories_list=pymysql_cursor.fetchall()
     pymysql_cursor.close()
     return top_categories_list
@@ -1039,10 +1039,12 @@ def recipe_list():
     if request.args.get("search"):
         search_terms = request.args.get("search")
         searched_recipe_lists_post_list_details = recipe_list_search_function(search_terms,False)
-        return render_template("recipe_list.html",recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
+        top_categories = get_top_categories()
+        return render_template("recipe_list.html",recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],top_categories=top_categories)
     else:
         recipe_lists_post_list_details = get_recipe_lists_post_list_details()
-        return render_template("recipe_list.html",recipe_list=recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
+        top_categories = get_top_categories()
+        return render_template("recipe_list.html",recipe_list=recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],top_categories=top_categories)
 
 @app.route("/category/<category_id>")
 def single_category(category_id):
