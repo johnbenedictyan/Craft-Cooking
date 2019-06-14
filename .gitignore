@@ -2,6 +2,7 @@ uploads/
 unprocessed_images/
 env_var.py
 static/
+notes.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

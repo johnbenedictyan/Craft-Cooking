@@ -869,7 +869,8 @@ def format_datetime(value, format="%d %b %Y"):
 @app.route("/")
 def init():
     top_recipe_list = get_top_recipe_lists_post_list_details()
-    return render_template("index.html",session=session,top_recipes=top_recipe_list,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
+    top_categories = get_top_categories()
+    return render_template("index.html",session=session,top_recipes=top_recipe_list,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],top_categories=top_categories)
 
 @app.route("/sign_in",methods=["GET","POST"])
 def sign_in():
