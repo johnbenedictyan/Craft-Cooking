@@ -5,13 +5,8 @@ from werkzeug.utils import secure_filename
 from bson import ObjectId
 import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 import env_var
 # only comment the 'import env' out when deploying to heroku
-db_url = "mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),urllib.parse.quote(os.environ.get("MONGO_DB_PASSWORD")))
-ssl_cert = certifi.where()
-mongo_connection = pymongo.MongoClient(db_url,ssl=True,ssl_ca_certs=ssl_cert)
-
 pymysql_connection = pymysql.connect(host="remotemysql.com",
                              user = os.environ.get("remotemysql_username"),
                              password = os.environ.get("remotemysql_password"),
@@ -29,7 +24,6 @@ def create_app():
 app = create_app()
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
-sql_alchemy_db = SQLAlchemy(app)
 
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
 
@@ -809,58 +803,6 @@ def update_user_details(current_user_id,email_input,password_input,bio_input):
         pymysql_cursor.close()
         return error
 
-def get_comments(post_id):
-    comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
-    comment_query = { "parent_post_id": post_id }
-    sort = [('timestamp', -1)]
-    comment_list = list(comments.find(comment_query).sort(sort))
-    print(comment_list)
-    return None
-
-def comment_packaging_function(comment_array):
-    result_array = []
-    for i in comment_array:
-        if i["parent_comment_id"] == None:
-            #THESE ARE FRESH/Parent COMMENTS
-            dump_dict = {
-            "id": 1
-            }
-            dump_array.append(i)
-            result_array.append(dump_array)
-        else:
-            pass
-            #ENTER SORTING FUNCTION AND CASCADING FUNCTION HERE
-    return None
-
-def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment):
-    comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
-    if parent_object == "post":
-        new_comment = {
-            "user_id":current_user_id,
-            "parent_post_id":parent_post_id,
-            "parent_comment_id":None,
-            "date_time_created":datetime.utcnow(),
-            "comment":comment
-        }
-        inserted_comment = comments.insert_one(new_comment)
-        return inserted_comment.inserted_id
-    else:
-        new_comment = {
-            "user_id":current_user_id,
-            "parent_post_id":parent_post_id,
-            "parent_comment_id":parent_object_id,
-            "comment":comment
-        }
-        inserted_comment = comments.insert_one(new_comment)
-        return inserted_comment.inserted_id
-
-def edit_comment(comment_id,comment):
-    comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
-    comment_query = { "_id": ObjectId(comment_id) }
-    new_comment = { "$set": { "comment": comment } }
-    updated_comment = comments.update_one(comment_query, new_comment)
-    return updated_comment
-
 @app.template_filter('formatdatetime')
 def format_datetime(value, format="%d %b %Y"):
     """Format a date time to: d Mon YYYY"""
@@ -1188,22 +1130,6 @@ def become_an_author(user_id):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
-
-@app.route('/test')
-def testinggetcommens():
-    get_comments(1)
-    categories_view_adder_from_posts_function(1)
-    return redirect(url_for('init'))
-
-@app.route("/testingpage")
-def testing():
-    current_user_id = session["user_id"]
-    parent_object = "post"
-    parent_post_id = 1
-    parent_object_id=None
-    comment="This recipe is good."
-    post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment)
-    return redirect(url_for('init'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',

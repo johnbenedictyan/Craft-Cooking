@@ -11,5 +11,3 @@ UPLOAD_LOCATION =  'http://{}.s3.amazonaws.com/'.format(FLASKS3_BUCKET_NAME)
 ALLOWED_FILE_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 PROFILE_PICTURE_LOCATION = "http://{}.s3.amazonaws.com/uploads/profile-pictures/".format(FLASKS3_BUCKET_NAME)
 RECIPE_PICTURE_LOCATION = "http://{}.s3.amazonaws.com/uploads/recipe-pictures/".format(FLASKS3_BUCKET_NAME)
-SQLALCHEMY_DATABASE_URI = "sqlite:///example.sqlite"
-SQLALCHEMY_TRACK_MODIFICATIONS = "False"
