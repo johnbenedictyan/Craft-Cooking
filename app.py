@@ -3,7 +3,7 @@ from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
 from bson import ObjectId
-import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi
+import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi,babel.dates
 from datetime import datetime
 import env_var
 # only comment the 'import env' out when deploying to heroku
@@ -812,8 +812,7 @@ def get_comments(post_id):
     comment_query = { "parent_post_id": post_id }
     sort = [('timestamp', -1)]
     comment_list = list(comments.find(comment_query).sort(sort))
-    print(comment_list)
-    return None
+    return comment_list
 
 def comment_packaging_function(comment_array):
     result_array = []
@@ -860,11 +859,15 @@ def edit_comment(comment_id,comment):
     return updated_comment
 
 @app.template_filter('formatdatetime')
-def format_datetime(value, format="%d %b %Y"):
+def format_datetime(value, format="medium"):
     """Format a date time to: d Mon YYYY"""
     if value is None:
         return ""
-    return value.strftime(format)
+    if format == 'full':
+        format="EEEE, d. MMMM y 'at' HH:mm"
+    elif format == 'medium':
+        format="EE dd.MM.y HH:mm"
+    return babel.dates.format_datetime(value, format)
 
 @app.route("/")
 def init():
@@ -1054,24 +1057,22 @@ def single_category(category_id):
     top_categories = get_top_categories()
     return render_template("single_category.html",category_name=category_name,recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],top_categories=top_categories)
 
-@app.route("/single/<post_id>",methods=["GET","POST"])
+@app.route("/single/<int:post_id>",methods=["GET","POST"])
 def post(post_id):
     if check_if_post_exist(post_id):
+        data = get_post_details(post_id)
+        categories = get_post_categories(post_id)
+        post_comments = get_comments(post_id)
+        post_view_adder_function(post_id)
         if session:
             if request.method=="GET":
-                data = get_post_details(post_id)
-                categories = get_post_categories(post_id)
-                post_view_adder_function(post_id)
-                return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],user_is_sign_in=True)
+                return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],user_is_sign_in=True,post_comments=post_comments)
             else:
-                comment = request.form["comment_input"]
+                new_comment = request.form["comment_input"]
                 print(comment)
                 return redirect(url_for("post",post_id=post_id))
         else:
-            data = get_post_details(post_id)
-            categories = get_post_categories(post_id)
-            post_view_adder_function(post_id)
-            return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'])
+            return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],post_comments=post_comments)
     else:
         return abort(404)
 
