@@ -5,7 +5,6 @@ from werkzeug.utils import secure_filename
 from bson import ObjectId
 import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
 import env_var
 # only comment the 'import env' out when deploying to heroku
 db_url = "mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),urllib.parse.quote(os.environ.get("MONGO_DB_PASSWORD")))
@@ -29,7 +28,6 @@ def create_app():
 app = create_app()
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
-sql_alchemy_db = SQLAlchemy(app)
 
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
 
