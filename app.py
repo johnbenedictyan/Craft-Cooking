@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from bson import ObjectId
 import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 import env_var
 # only comment the 'import env' out when deploying to heroku
 db_url = "mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),urllib.parse.quote(os.environ.get("MONGO_DB_PASSWORD")))
@@ -28,6 +29,7 @@ def create_app():
 app = create_app()
 app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
+sql_alchemy_db = SQLAlchemy(app)
 
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
 
@@ -1051,7 +1053,8 @@ def recipe_list():
 def single_category(category_id):
     category_name = category_id_to_category_name(category_id)
     searched_recipe_lists_post_list_details = recipe_list_search_function(category_name,True)
-    return render_template("single_category.html",category_name=category_name,recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'])
+    top_categories = get_top_categories()
+    return render_template("single_category.html",category_name=category_name,recipe_list=searched_recipe_lists_post_list_details,recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],top_categories=top_categories)
 
 @app.route("/single/<post_id>",methods=["GET","POST"])
 def post(post_id):
