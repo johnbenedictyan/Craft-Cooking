@@ -1,34 +1,25 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <title>Craft Cooking</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,900" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i,900,900i" rel="stylesheet">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/core.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
   <!-- Boostrap 4 Select Picker Plugin -->
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
-
   <style>.message-success{color: #39ed29;}.message-error{color: #ed2939;}.icon-wrap i{font-size: 6rem;}.flash-message-modal{top:15%;}.flash-message-modal .modal-header{border:none;}.flash-message-modal .modal-footer{border:none;}</style>
   {% block page_specific_css_section %}
   {% endblock %}
@@ -284,15 +275,8 @@
     </div>
   </footer>
 
-
-
   <!-- loader -->
-  <div id="ftco-loader" class="show fullscreen">
-    <svg class="circular" width="48px" height="48px">
-      <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
-      <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" />
-    </svg>
-  </div>
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
   <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
@@ -305,8 +289,6 @@
   <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
   <script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/scrollax.min.js') }}"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-  <script src="{{ url_for('static', filename='js/google-map.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   {% block jquery_script_section %} {% endblock %}
   <script>/* global $ */$(function(){$('#flash_message_modal_messages').modal('show');$('#flash_message_modal_errors').modal('show');});</script>
