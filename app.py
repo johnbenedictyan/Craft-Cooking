@@ -818,16 +818,18 @@ def comment_packaging_function(comment_array):
     result_array = []
     for i in comment_array:
         if i["parent_comment_id"] == None:
-            #THESE ARE FRESH/Parent COMMENTS
+            #These are fresh/parent commments.
             dump_dict = {
-            "id": 1
+            "parent": i,
+            "children":[]
             }
-            dump_array.append(i)
-            result_array.append(dump_array)
+            result_array.append(dump_dict)
         else:
-            pass
-            #ENTER SORTING FUNCTION AND CASCADING FUNCTION HERE
-    return None
+            #These are children comments.
+            for j in result_array:
+                if i["parent_comment_id"] == j["_id"]:
+                    j["children"].append(i)
+    return result_array
 
 def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
@@ -1063,6 +1065,7 @@ def post(post_id):
         data = get_post_details(post_id)
         categories = get_post_categories(post_id)
         post_comments = get_comments(post_id)
+        print(post_comments)
         post_view_adder_function(post_id)
         if session:
             if request.method=="GET":
