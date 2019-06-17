@@ -3,6 +3,9 @@
     .post_icon {
         font-size:2rem;
     }
+    .comment-box-close-icon{
+      font-size:x-large;
+    }
 </style>
 {% endblock %}
 {% extends "layout.html" %} {% block single_post_hero_wrap_section %}
@@ -137,7 +140,7 @@
                                 <h3>John Doe</h3>
                                 <div class="meta">{{i.date_time_created|formatdatetime('full')}}</div>
                                 <p>{{i.comment}}</p>
-                                <p><a href="#" class="reply">Reply</a></p>
+                                <p><a href="#" data-comment-id="{{i._id}}" class="reply">Reply</a></p>
                             </div>
                         </li>
                       {% endfor %}
@@ -153,6 +156,22 @@
                                     nihil?
                                 </p>
                                 <p><a href="#" class="reply">Reply</a></p>
+                                <div class="container">
+                                <form class="py-3 bg-light w-100" method="POST">
+                                    <div class="row form-group">
+                                      <div class="col px-5 text-center">
+                                        <label for="message">Comment</label>
+                                        <i class="icon-close float-right comment-box-close-icon"></i>
+                                        <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please Log In to leave a comment!</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                      <div class="col text-center">
+                                        <input type="submit" value="Reply" class="btn p-2 w-25 reply">
+                                      </div>
+                                    </div>
+                                </form>
+                                </div>
                             </div>
 
                             <ul class="children">
@@ -342,4 +361,32 @@
         </div>
     </div>
 </section>
+{% endblock %}
+{% block jquery_script_section %}
+<script>
+$(function(){
+  console.log("ASD")
+  $(".comment-body").on("click",".reply",function(e){
+    e.preventDefault();
+    $(this).parent().append(`
+    <div class="container">
+    <form class="py-3 mt-2 bg-light w-100" method="POST">
+        <div class="row form-group">
+          <div class="col px-5 text-center">
+            <label for="message">Comment</label>
+            <i class="icon-close float-right comment-box-close-icon"></i>
+            <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please Log In to leave a comment!</textarea>
+            </div>
+        </div>
+        <div class="row form-group">
+          <div class="col text-center">
+            <input type="submit" value="Reply" class="btn p-2 w-25 reply">
+          </div>
+        </div>
+    </form>
+    </div>
+    `)
+  });
+});
+</script>
 {% endblock %}
