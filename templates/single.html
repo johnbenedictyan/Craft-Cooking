@@ -146,7 +146,7 @@
                                 {% if user_is_sign_in %}
                                 <p><a href="#" data-parent-comment-id="{{i._id}}" data-parent-obj-type="comment" class="reply reply_comment">Reply</a></p>
                                 {% else %}
-                                <p><a tabindex="0" class="reply" role="button" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" data-content="Please log in to reply.">Reply</a></p>
+                                <p><a tabindex="0" class="reply" role="button" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" data-content="Please sign in to reply.">Reply</a></p>
                                 {% endif %}
                             </div>
                         </li>
@@ -169,7 +169,7 @@
                                       <div class="col px-5 text-center">
                                         <label for="message">Comment</label>
                                         <i class="icon-close float-right comment-box-close-icon"></i>
-                                        <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please Log In to leave a comment!</textarea>
+                                        <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please sign in to leave a comment!</textarea>
                                         </div>
                                     </div>
                                     <div class="row form-group">
@@ -281,7 +281,7 @@
                         <form class="p-5 bg-light w-100" method="POST">
                             <div class="form-group">
                                 <label for="message">Comment</label>
-                                <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please Log In to leave a comment!</textarea>
+                                <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please sign in to leave a comment!</textarea>
                             </div>
                             <div class="form-group">
                               <div class="col text-center">
@@ -379,33 +379,37 @@ $(function(){
   //Each time a reply button is clicked, a new comment box will be appended to it//
   $(".comment-body").on("click",".reply_comment",function(e){
     e.preventDefault();
-    $(this).parent().append(`
-    <div class="container comment-box">
-    <form class="py-3 mt-2 bg-light w-100" method="POST">
-        <div class="row form-group">
-          <div class="col px-5 text-center">
-            <label for="message">Comment</label>
-            <i class="icon-close float-right comment-box-close-icon"></i>
-            <textarea name="comment_input" class="form-control" id="comment" cols="30" rows="5"></textarea>
-            <div class="valid-feedback">Looks Good!</div>
-            <div class="invalid-feedback">Invalid comment. No special characters.</div>
-            <input type="hidden" class="parent_comment_id" name="parent_comment_id">
-            <input type="hidden" class="parent_obj_type" name="parent_obj_type">
-            </div>
-        </div>
-        <div class="row form-group">
-          <div class="col text-center">
-            <input type="submit" value="Reply" class="btn p-2 w-25 reply comment_reply_button">
+    if($(this).siblings(".comment-box").length == 0){
+      $(this).parent().parent().append(`
+      <div class="container comment-box">
+      <form class="py-3 mt-2 bg-light w-100" method="POST">
+          <div class="row form-group">
+            <div class="col px-5 text-center">
+              <label for="message">Comment</label>
+              <i class="icon-close float-right comment-box-close-icon"></i>
+              <textarea name="comment_input" class="form-control" id="comment" cols="30" rows="5"></textarea>
+              <div class="valid-feedback">Looks Good!</div>
+              <div class="invalid-feedback">Invalid comment. No special characters.</div>
+              <input type="hidden" class="parent_comment_id" name="parent_comment_id">
+              <input type="hidden" class="parent_obj_type" name="parent_obj_type">
+              </div>
           </div>
-        </div>
-    </form>
-    </div>
-    `);
+          <div class="row form-group">
+            <div class="col text-center">
+              <input type="submit" value="Reply" class="btn p-2 w-25 reply comment_reply_button">
+            </div>
+          </div>
+      </form>
+      </div>
+      `);
+      $(this).hide();
+    }
   });
 
   //When the cross icon is clicked, the comment box will be deleted//
   $(".comment-body").on("click",".comment-box-close-icon",function(e){
     e.preventDefault();
+    $(this).parents(".comment-box").prev().find(".reply_comment").show();
     $(this).parents(".comment-box").remove();
   })
 
@@ -433,7 +437,7 @@ $(function(){
     e.preventDefault();
     let input = $(this).parents(".row").prev().find("#comment");
     let comment_has_custom_error = input[0].validity.customError;
-    let comment_parent_object = $(this).parents(".comment-box").prev()[0];
+    let comment_parent_object = $(this).parents(".comment-box").prev().find(".reply_comment")[0];
     let comment_parent_object_id = comment_parent_object.dataset.parentCommentId;
     let comment_parent_object_type = comment_parent_object.dataset.parentObjType;
     if(comment_has_custom_error == true){}

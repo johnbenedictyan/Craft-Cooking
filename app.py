@@ -841,19 +841,17 @@ def post_comment(current_user_id,parent_object_type,parent_post_id,comment,paren
             "date_time_created":datetime.utcnow(),
             "comment":comment
         }
-        # inserted_comment = comments.insert_one(new_comment)
-        # return inserted_comment.inserted_id
     else:
         new_comment = {
             "user_id":current_user_id,
             "parent_post_id":parent_post_id,
-            "parent_comment_id":parent_comment_id,
+            "parent_comment_id":ObjectId(parent_comment_id),
             "date_time_created":datetime.utcnow(),
             "comment":comment
         }
     print(new_comment)
-        # inserted_comment = comments.insert_one(new_comment)
-        # return inserted_comment.inserted_id
+    # inserted_comment = comments.insert_one(new_comment)
+    # return inserted_comment.inserted_id
 
 def edit_comment(comment_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
