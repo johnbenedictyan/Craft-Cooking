@@ -143,7 +143,11 @@
                                 <h3>John Doe</h3>
                                 <div class="meta">{{i.date_time_created|formatdatetime('full')}}</div>
                                 <p>{{i.comment}}</p>
-                                <p><a href="#" data-parent-comment-id="{{i._id}}" data-parent-comment-type="comment" class="reply reply_comment">Reply</a></p>
+                                {% if user_is_sign_in %}
+                                <p><a href="#" data-parent-comment-id="{{i._id}}" data-parent-obj-type="comment" class="reply reply_comment">Reply</a></p>
+                                {% else %}
+                                <p><a tabindex="0" class="reply" role="button" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" data-content="Please log in to reply.">Reply</a></p>
+                                {% endif %}
                             </div>
                         </li>
                       {% endfor %}
@@ -241,7 +245,7 @@
                     </ul>
                     <!-- END comment-list -->
                 </div>
-                {% if user_is_login %}
+                {% if user_is_sign_in %}
                 <div class="row comment-form-wrap pt-5">
                   <div class="col">
                       <div class="row mb-2">
@@ -254,6 +258,7 @@
                               <div class="form-group">
                                   <label for="message">Comment</label>
                                   <textarea name="comment_input" id="comment" cols="30" rows="5" class="form-control"></textarea>
+                                  <input type="hidden" class="parent_obj_type" name="parent_obj_type" value="post">
                               </div>
                               <div class="form-group">
                                 <div class="col text-center">
@@ -384,8 +389,8 @@ $(function(){
             <textarea name="comment_input" class="form-control" id="comment" cols="30" rows="5"></textarea>
             <div class="valid-feedback">Looks Good!</div>
             <div class="invalid-feedback">Invalid comment. No special characters.</div>
-            <input type="hidden" class="parent_object_id" name="parent_object_id">
-            <input type="hidden" class="parent_object_type" name="parent_object_type">
+            <input type="hidden" class="parent_comment_id" name="parent_comment_id">
+            <input type="hidden" class="parent_obj_type" name="parent_obj_type">
             </div>
         </div>
         <div class="row form-group">
@@ -426,16 +431,16 @@ $(function(){
   //Each time the comment box's reply button is clicked, there will be client side checking for special characters inside the comments. If the comment is valid, then the JS will post the comment to Flask.//
   $(".comment-body").on("click",".comment_reply_button",function(e){
     e.preventDefault();
-    let input = $(this).parents(".row").prev().find("#comment"),
-     comment_has_custom_error = input[0].validity.customError,
-     comment_parent_object = $(this).parents(".comment-box").prev()[0],
-     comment_parent_object_id = comment_parent_object.dataset.parentCommentId,
-     comment_parent_object_type = comment_parent_object.dataset.parentCommentType;
+    let input = $(this).parents(".row").prev().find("#comment");
+    let comment_has_custom_error = input[0].validity.customError;
+    let comment_parent_object = $(this).parents(".comment-box").prev()[0];
+    let comment_parent_object_id = comment_parent_object.dataset.parentCommentId;
+    let comment_parent_object_type = comment_parent_object.dataset.parentObjType;
     if(comment_has_custom_error == true){}
     else{
       //These hidden inputs are necessary so that flask will know the values of the comment parent object id and type.
-      input.siblings(".parent_object_id").val(comment_parent_object_id);
-      input.siblings(".parent_object_type").val(comment_parent_object_type);
+      input.siblings(".parent_comment_id").val(comment_parent_object_id);
+      input.siblings(".parent_obj_type").val(comment_parent_object_type);
       input.closest("form").submit();
     }
   });

@@ -831,27 +831,29 @@ def comment_packaging_function(comment_array):
                     j["children"].append(i)
     return result_array
 
-def post_comment(current_user_id,parent_object,parent_object_id,parent_post_id,comment):
+def post_comment(current_user_id,parent_object_type,parent_post_id,comment,parent_comment_id=None):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
-    if parent_object == "post":
+    if parent_object_type == "post":
         new_comment = {
             "user_id":current_user_id,
             "parent_post_id":parent_post_id,
-            "parent_comment_id":None,
+            "parent_comment_id":parent_comment_id,
             "date_time_created":datetime.utcnow(),
             "comment":comment
         }
-        inserted_comment = comments.insert_one(new_comment)
-        return inserted_comment.inserted_id
+        # inserted_comment = comments.insert_one(new_comment)
+        # return inserted_comment.inserted_id
     else:
         new_comment = {
             "user_id":current_user_id,
             "parent_post_id":parent_post_id,
-            "parent_comment_id":parent_object_id,
+            "parent_comment_id":parent_comment_id,
+            "date_time_created":datetime.utcnow(),
             "comment":comment
         }
-        inserted_comment = comments.insert_one(new_comment)
-        return inserted_comment.inserted_id
+    print(new_comment)
+        # inserted_comment = comments.insert_one(new_comment)
+        # return inserted_comment.inserted_id
 
 def edit_comment(comment_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
@@ -1065,14 +1067,19 @@ def post(post_id):
         data = get_post_details(post_id)
         categories = get_post_categories(post_id)
         post_comments = get_comments(post_id)
-        print(post_comments)
         post_view_adder_function(post_id)
         if session:
             if request.method=="GET":
                 return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],user_is_sign_in=True,post_comments=post_comments)
             else:
+                current_user_id = session["user_id"]
                 new_comment = request.form["comment_input"]
-                print(comment)
+                comment_parent_object_type = request.form["parent_obj_type"]
+                if comment_parent_object_type == "comment":
+                    comment_parent_comment_id = request.form["parent_comment_id"]
+                    post_comment(current_user_id,comment_parent_object_type,post_id,new_comment,comment_parent_comment_id)
+                else:
+                    post_comment(current_user_id,comment_parent_object_type,post_id,new_comment)
                 return redirect(url_for("post",post_id=post_id))
         else:
             return render_template("single.html",author_details=data[0],recipe_details=data[1],ingredient_details=data[2],recipe_procedure_list=data[3],recipe_time_details_list=data[4],photo_uri=data[5],allergens=categories[0],cooking_styles=categories[1],cuisines=categories[2],diet_health_types=categories[3],dish_types=categories[4],meal_types=categories[5],recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],post_comments=post_comments)
