@@ -140,7 +140,11 @@
                                 <h3>John Doe</h3>
                                 <div class="meta">{{i.date_time_created|formatdatetime('full')}}</div>
                                 <p>{{i.comment}}</p>
-                                <p><a href="#" data-comment-id="{{i._id}}" class="reply">Reply</a></p>
+                                {% if user_is_sign_in %}
+                                <p><a href="#" data-comment-id="{{i._id}}" class="reply reply_comment">Reply</a></p>
+                                {% else %}
+                                <p><a tabindex="0" class="reply" role="button" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" data-content="Please log in to reply.">Reply</a></p>
+                                {% endif %}
                             </div>
                         </li>
                       {% endfor %}
@@ -365,8 +369,8 @@
 {% block jquery_script_section %}
 <script>
 $(function(){
-  console.log("ASD")
-  $(".comment-body").on("click",".reply",function(e){
+  $('[data-toggle="popover"]').popover()
+  $(".comment-body").on("click",".reply_comment",function(e){
     e.preventDefault();
     $(this).parent().append(`
     <div class="container">
@@ -380,12 +384,16 @@ $(function(){
         </div>
         <div class="row form-group">
           <div class="col text-center">
-            <input type="submit" value="Reply" class="btn p-2 w-25 reply">
+            <input type="submit" value="Reply" class="btn p-2 w-25 reply comment_reply_button">
           </div>
         </div>
     </form>
     </div>
     `)
+  });
+  $(".comment-body").on("click",".comment_reply_button",function(e){
+    e.preventDefault();
+    console.log($(this).parent().parent().prev().find("#comment")[0].value)
   });
 });
 </script>
