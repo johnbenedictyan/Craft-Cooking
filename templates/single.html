@@ -140,11 +140,7 @@
                                 <h3>John Doe</h3>
                                 <div class="meta">{{i.date_time_created|formatdatetime('full')}}</div>
                                 <p>{{i.comment}}</p>
-                                {% if user_is_sign_in %}
                                 <p><a href="#" data-comment-id="{{i._id}}" class="reply reply_comment">Reply</a></p>
-                                {% else %}
-                                <p><a tabindex="0" class="reply" role="button" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" data-content="Please log in to reply.">Reply</a></p>
-                                {% endif %}
                             </div>
                         </li>
                       {% endfor %}
@@ -369,7 +365,10 @@
 {% block jquery_script_section %}
 <script>
 $(function(){
+  //Initalise the popovers//
   $('[data-toggle="popover"]').popover()
+
+  //Each time a reply button is clicked, a new comment box will be appended to it//
   $(".comment-body").on("click",".reply_comment",function(e){
     e.preventDefault();
     $(this).parent().append(`
@@ -379,7 +378,9 @@ $(function(){
           <div class="col px-5 text-center">
             <label for="message">Comment</label>
             <i class="icon-close float-right comment-box-close-icon"></i>
-            <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please Log In to leave a comment!</textarea>
+            <textarea name="comment_input" class="form-control" id="comment" cols="30" rows="5"></textarea>
+            <div class="valid-feedback">Looks Good!</div>
+            <div class="invalid-feedback">Invalid comment. No special characters.</div>
             </div>
         </div>
         <div class="row form-group">
@@ -391,9 +392,32 @@ $(function(){
     </div>
     `)
   });
+
+  //This function checks the input comment for special characters//
+  function check_comments(input){
+    let comment_regex = /^[a-zA-Z0-9-_,.$#/!+-=\[\]()%@]+$/;
+    let element = input[0]
+    input.parent().parent().removeClass("was-validated")
+    if (comment_regex.test(element.value)!==true){
+      element.setCustomValidity("Invalid comment. No special characters.");
+    }
+    else{
+      element.setCustomValidity('');
+    }
+    input.parent().parent().addClass("was-validated")
+  }
+
+  //This function checks the validity of the comment everything the textbox is changed.//
+  $(".comment-body").on("change","#comment",function(e){
+    check_comments($(this))
+  });
+
+  //Each time the comment box's reply button is clicked, there will be client side checking for special characters inside the comments. If the comment is valid, then the JS will post the comment to Flask.//
   $(".comment-body").on("click",".comment_reply_button",function(e){
     e.preventDefault();
-    console.log($(this).parent().parent().prev().find("#comment")[0].value)
+    let input = $(this).parent().parent().prev().find("#comment")
+    console.log(input[0].validity.customError)
+    console.log("ASd")
   });
 });
 </script>

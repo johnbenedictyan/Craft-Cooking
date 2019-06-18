@@ -143,16 +143,16 @@
       $(".navbar-nav li").removeClass("active");
       $("#sign_up_nav_item").addClass("active");
       $(".form-group").on("change","#user_username",function(){
-        check_username($("#user_username"))
+        check_username($(this));
       });
       $(".form-group").on("change","#user_email",function(){
-        check_email($("#user_email"))
+        check_email($(this))
       });
       $(".form-group").on("change","#user_password_1",function(){
-        check_password($("#user_password_1"))
+        check_password($(this))
       });
       $(".form-group").on("change","#user_password_2",function(){
-        check_confirm_password($("#user_password_2"))
+        check_confirm_password($(this))
       });
   });
 </script>
