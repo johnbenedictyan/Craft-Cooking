@@ -827,7 +827,7 @@ def comment_packaging_function(comment_array):
         else:
             #These are children comments.
             for j in result_array:
-                if i["parent_comment_id"] == j["_id"]:
+                if i["parent_comment_id"] == j["parent"]["_id"]:
                     j["children"].append(i)
     return result_array
 
@@ -849,9 +849,8 @@ def post_comment(current_user_id,parent_object_type,parent_post_id,comment,paren
             "date_time_created":datetime.utcnow(),
             "comment":comment
         }
-    print(new_comment)
-    # inserted_comment = comments.insert_one(new_comment)
-    # return inserted_comment.inserted_id
+    inserted_comment = comments.insert_one(new_comment)
+    return inserted_comment.inserted_id
 
 def edit_comment(comment_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
@@ -1198,8 +1197,7 @@ def page_not_found(e):
 
 @app.route('/test')
 def testinggetcommens():
-    get_comments(1)
-    categories_view_adder_from_posts_function(1)
+    print(comment_packaging_function(get_comments(1)))
     return redirect(url_for('init'))
 
 @app.route("/testingpage")
