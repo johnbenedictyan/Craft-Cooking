@@ -143,7 +143,7 @@
                                 <h3>John Doe</h3>
                                 <div class="meta">{{i.date_time_created|formatdatetime('full')}}</div>
                                 <p>{{i.comment}}</p>
-                                <p><a href="#" data-comment-id="{{i._id}}" class="reply reply_comment">Reply</a></p>
+                                <p><a href="#" data-parent-comment-id="{{i._id}}" data-parent-comment-type="comment" class="reply reply_comment">Reply</a></p>
                             </div>
                         </li>
                       {% endfor %}
@@ -384,6 +384,8 @@ $(function(){
             <textarea name="comment_input" class="form-control" id="comment" cols="30" rows="5"></textarea>
             <div class="valid-feedback">Looks Good!</div>
             <div class="invalid-feedback">Invalid comment. No special characters.</div>
+            <input type="hidden" class="parent_object_id" name="parent_object_id">
+            <input type="hidden" class="parent_object_type" name="parent_object_type">
             </div>
         </div>
         <div class="row form-group">
@@ -399,21 +401,21 @@ $(function(){
   //When the cross icon is clicked, the comment box will be deleted//
   $(".comment-body").on("click",".comment-box-close-icon",function(e){
     e.preventDefault();
-    $(this).parent().parent().parent().parent().remove();
+    $(this).parents(".comment-box").remove();
   })
 
   //This function checks the input comment for special characters//
   function check_comments(input){
     let comment_regex = /^[a-zA-Z0-9-_,.$#/!+-=\[\]()%@]+$/;
     let element = input[0];
-    input.parent().parent().removeClass("was-validated");
+    input.parents(".form-group").removeClass("was-validated");
     if (comment_regex.test(element.value)!==true){
       element.setCustomValidity("Invalid comment. No special characters.");
     }
     else{
       element.setCustomValidity('');
     }
-    input.parent().parent().addClass("was-validated");
+    input.parents(".form-group").addClass("was-validated");
   }
 
   //This function checks the validity of the comment everything the textbox is changed.//
@@ -424,10 +426,16 @@ $(function(){
   //Each time the comment box's reply button is clicked, there will be client side checking for special characters inside the comments. If the comment is valid, then the JS will post the comment to Flask.//
   $(".comment-body").on("click",".comment_reply_button",function(e){
     e.preventDefault();
-    let input = $(this).parent().parent().prev().find("#comment");
-    let comment_has_custom_error = input[0].validity.customError;
-    if (comment_has_custom_error == true){}
+    let input = $(this).parents(".row").prev().find("#comment"),
+     comment_has_custom_error = input[0].validity.customError,
+     comment_parent_object = $(this).parents(".comment-box").prev()[0],
+     comment_parent_object_id = comment_parent_object.dataset.parentCommentId,
+     comment_parent_object_type = comment_parent_object.dataset.parentCommentType;
+    if(comment_has_custom_error == true){}
     else{
+      //These hidden inputs are necessary so that flask will know the values of the comment parent object id and type.
+      input.siblings(".parent_object_id").val(comment_parent_object_id);
+      input.siblings(".parent_object_type").val(comment_parent_object_type);
       input.closest("form").submit();
     }
   });
