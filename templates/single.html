@@ -416,8 +416,13 @@ $(function(){
   $(".comment-body").on("click",".comment_reply_button",function(e){
     e.preventDefault();
     let input = $(this).parent().parent().prev().find("#comment")
-    console.log(input[0].validity.customError)
-    console.log("ASd")
+    let comment_has_custom_error = input[0].validity.customError
+    if (comment_has_custom_error == true){
+
+    }
+    else{
+      input.closest("form").submit();
+    }
   });
 });
 </script>
