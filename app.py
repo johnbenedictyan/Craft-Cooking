@@ -869,9 +869,10 @@ def post_comment(current_user_id,parent_object_type,parent_post_id,comment,paren
             "children_comments":[]
         }
         inserted_comment = comments.insert_one(new_comment)
+        inserted_comment_id = inserted_comment.inserted_id
     else:
-        comment_query = { "parent_comment_id": parent_comment_id }
         new_comment = {
+            "_id": ObjectId(),
             "user_id":current_user_id,
             "parent_post_id":parent_post_id,
             "parent_comment_id":ObjectId(parent_comment_id),
@@ -879,16 +880,16 @@ def post_comment(current_user_id,parent_object_type,parent_post_id,comment,paren
             "comment":comment,
             "children_comments":[]
         }
-        inserted_comment=new_comment
-        comments.update(
-            comment_query,
+        comments.update_one(
+            { "_id": ObjectId(parent_comment_id)},
                 {
                     "$addToSet":{
-                        children_comments:new_comment
+                        "children_comments":new_comment
                 }
             }
         )
-    return inserted_comment.inserted_id
+        inserted_comment_id = new_comment["_id"]
+    return inserted_comment_id
 
 def edit_comment(comment_id,comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
