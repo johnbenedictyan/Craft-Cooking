@@ -204,8 +204,8 @@
             <div class="modal-body">
                 <div class="container">
                     <div class="row my-2">
-                        <div class="col text-center icon-wrap">
-                            <i class="ion-ios-close-circle-outline"></i>
+                        <div class="col text-center icon-wrap message-danger">
+                            <span class="icon-warning"></span>
                         </div>
                     </div>
                     <div class="row my-2">
@@ -242,7 +242,7 @@
     let email_input = document.getElementById('');
     let username_input = document.getElementById('');
     let password_input = document.getElementById('');
-    
+
     $(function() {
         $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
            let button = $(event.relatedTarget);

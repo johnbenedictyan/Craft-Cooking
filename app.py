@@ -40,14 +40,14 @@ def sign_in_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def target_url_safe_checker(target_url):
-    #ref_url is the refernce url which is the craft_cooking website
-    ref_url = urlparse(request.host_url)
-    #test_url is the url that is passed from the next function in the url_for which will be tested.
-    test_url = urlparse(urljoin(request.host_url, target_url))
-    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
-
 def get_redirect_target_url():
+    def target_url_safe_checker(target_url):
+        #ref_url is the refernce url which is the craft_cooking website
+        ref_url = urlparse(request.host_url)
+        #test_url is the url that is passed from the next function in the url_for which will be tested.
+        test_url = urlparse(urljoin(request.host_url, target_url))
+        return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
     #this will get the target url which is passed through the next "function"
     for target in request.values.get('next'), request.referrer:
         if not target:
@@ -116,7 +116,7 @@ def get_user_details(current_user_id):
     pymysql_cursor.execute(user_details_sql,user_details_input)
     user_details=pymysql_cursor.fetchone()
     pymysql_cursor.close()
-    return return_array
+    return user_details
 
 def get_post_categories(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -898,14 +898,15 @@ def edit_comment(comment_id,comment):
     return updated_comment
 
 @app.template_filter('formatdatetime')
-def format_datetime(value, format="medium"):
+def format_datetime(value, format='medium'):
     """Format a date time to: d Mon YYYY"""
     if value is None:
         return ""
     if format == 'full':
         format="EEEE, d. MMMM y 'at' HH:mm"
     elif format == 'medium':
-        format="EE dd.MM.y HH:mm"
+        # format="EE dd.MM.y HH:mm"
+        format = "d MMM y"
     return babel.dates.format_datetime(value, format)
 
 @app.route("/")
@@ -937,8 +938,8 @@ def sign_in():
             flash("This account does not exist", "error")
             return redirect(url_for("sign_in"))
 
-@app.route("/logout")
-def logout():
+@app.route("/sign_out")
+def sign_out():
     next = get_redirect_target_url()
     if 'username' in session:
         session.pop('username',None)
@@ -975,7 +976,7 @@ def user_creation():
                     pymysql_connection.commit()
                     pymysql_cursor.close()
                     flash("Your account has been created!", "message")
-                    return redirect(url_for('logout'))
+                    return redirect(url_for('sign_out'))
                 else:
                     pymysql_cursor.close()
                     flash("This username has been taken!", "error")
@@ -1238,8 +1239,7 @@ def page_not_found(e):
 
 @app.route('/test')
 def testinggetcommens():
-    print(comment_packaging_function(get_comments(1)))
-    return redirect(url_for('init'))
+    return render_template("icontest.html")
 
 @app.route("/testingpage")
 def testing():
