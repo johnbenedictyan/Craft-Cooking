@@ -43,7 +43,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{{url_for('user_dashboard')}}">Account Details</a>
               <a class="dropdown-item" href="{{url_for('recipes')}}">My Recipes</a>
-              <a class="dropdown-item" href="{{url_for('logout')}}">Log Out</a>
+              <a class="dropdown-item" href="{{url_for('logout', next=request.url)}}">Log Out</a>
             </div>
           </li>
           {% else %}

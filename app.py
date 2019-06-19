@@ -3,7 +3,7 @@ from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
 from bson import ObjectId
-from urlparse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin
 import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi,babel.dates
 from datetime import datetime
 import env_var
@@ -41,22 +41,21 @@ def sign_in_required(f):
     return decorated_function
 
 def target_url_safe_checker(target_url):
+    #ref_url is the refernce url which is the craft_cooking website
     ref_url = urlparse(request.host_url)
+    #test_url is the url that is passed from the next function in the url_for which will be tested.
     test_url = urlparse(urljoin(request.host_url, target_url))
-    return test_url.scheme in ('http', 'https') and \ref_url.netloc == test_url.netloc
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
 def get_redirect_target_url():
+    #this will get the target url which is passed through the next "function"
     for target in request.values.get('next'), request.referrer:
         if not target:
             continue
         if target_url_safe_checker(target):
             return target
-
-def redirector(endpoint, **values):
-    target_url = request.form['next']
-    if not target_url or not target_url_safe_checker(target_url):
-        target_url = url_for(endpoint, **values)
-    return redirect(target_url)
+        #this is the fallback url if the target url parsed fails the checker function
+        return url_for("init")
 
 def upload_picture_to_s3(file, bucket_name, is_profile_picture, acl="public-read"):
     #if is_profile_picture then the file is a profile picture, otherwise it is a recipe picture
@@ -920,6 +919,7 @@ def sign_in():
     if request.method == "GET":
         return render_template("sign_in.html")
     else:
+        next = get_redirect_target_url()
         username_input = request.form["username_input"]
         password_input = request.form["password_input"]
         user_details = check_sign_in_details(username_input,password_input)
@@ -928,7 +928,8 @@ def sign_in():
             if bcrypt.check_password_hash(stored_password,password_input):
                 session["username"] = username_input
                 session["user_id"] = user_details["id"]
-                return redirect(url_for("init"))
+                #init will be the fallback url for the redirector
+                return redirect(next)
             else:
                 flash("Incorrect Password", "error")
                 return redirect(url_for("sign_in"))
@@ -938,9 +939,10 @@ def sign_in():
 
 @app.route("/logout")
 def logout():
+    next = get_redirect_target_url()
     if 'username' in session:
         session.pop('username',None)
-    return redirect(url_for("init"))
+    return redirect(next)
 
 @app.route("/sign_up",methods=["GET","POST"])
 def user_creation():
