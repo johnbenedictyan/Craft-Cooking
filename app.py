@@ -3,6 +3,7 @@ from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 from flask_s3 import FlaskS3
 from werkzeug.utils import secure_filename
 from bson import ObjectId
+from urlparse import urlparse, urljoin
 import pymongo,os,pymysql,random,config,boto3,botocore,tempfile,re,urllib.parse,certifi,babel.dates
 from datetime import datetime
 import env_var
@@ -30,6 +31,32 @@ app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
 
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
+
+def sign_in_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.user is None:
+            return redirect(url_for('sign_in', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def target_url_safe_checker(target_url):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target_url))
+    return test_url.scheme in ('http', 'https') and \ref_url.netloc == test_url.netloc
+
+def get_redirect_target_url():
+    for target in request.values.get('next'), request.referrer:
+        if not target:
+            continue
+        if target_url_safe_checker(target):
+            return target
+
+def redirector(endpoint, **values):
+    target_url = request.form['next']
+    if not target_url or not target_url_safe_checker(target_url):
+        target_url = url_for(endpoint, **values)
+    return redirect(target_url)
 
 def upload_picture_to_s3(file, bucket_name, is_profile_picture, acl="public-read"):
     #if is_profile_picture then the file is a profile picture, otherwise it is a recipe picture
@@ -839,17 +866,29 @@ def post_comment(current_user_id,parent_object_type,parent_post_id,comment,paren
             "parent_post_id":parent_post_id,
             "parent_comment_id":parent_comment_id,
             "date_time_created":datetime.utcnow(),
-            "comment":comment
+            "comment":comment,
+            "children_comments":[]
         }
+        inserted_comment = comments.insert_one(new_comment)
     else:
+        comment_query = { "parent_comment_id": parent_comment_id }
         new_comment = {
             "user_id":current_user_id,
             "parent_post_id":parent_post_id,
             "parent_comment_id":ObjectId(parent_comment_id),
             "date_time_created":datetime.utcnow(),
-            "comment":comment
+            "comment":comment,
+            "children_comments":[]
         }
-    inserted_comment = comments.insert_one(new_comment)
+        inserted_comment=new_comment
+        comments.update(
+            comment_query,
+                {
+                    "$addToSet":{
+                        children_comments:new_comment
+                }
+            }
+        )
     return inserted_comment.inserted_id
 
 def edit_comment(comment_id,comment):
