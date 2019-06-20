@@ -68,6 +68,9 @@ app.secret_key = os.urandom(24)
 
 bcrypt = Bcrypt(app)
 
+# FLASK-SQLALCHEMY STARTING POINT
+flask_sqlalchemy_db = SQLAlchemy(app)
+
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
 
 def sign_in_required(f):
