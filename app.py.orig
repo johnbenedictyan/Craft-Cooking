@@ -27,6 +27,7 @@ import certifi
 import babel.dates
 import env_var
 # only comment the 'import env' out when deploying to heroku
+<<<<<<< HEAD
 db_url = """mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/
 test?retryWrites=true&w=majority""".format(
     os.environ.get("MONGO_DB_USERNAME"),
@@ -38,7 +39,8 @@ ssl_cert = certifi.where()
 mongo_connection = pymongo.MongoClient(
     db_url,
     ssl=True,
-    ssl_ca_certs=ssl_cert
+    ssl_ca_certs=ssl_cert,
+    authSource="admin"
     )
 
 pymysql_connection = pymysql.connect(
@@ -48,6 +50,12 @@ pymysql_connection = pymysql.connect(
     db = os.environ.get("remotemysql_db_name")
     )
 
+=======
+pymysql_connection = pymysql.connect(host="remotemysql.com",
+                             user = os.environ.get("remotemysql_username"),
+                             password = os.environ.get("remotemysql_password"),
+                             db = os.environ.get("remotemysql_db_name"))
+>>>>>>> SQL_Alchemy
 s3 = FlaskS3()
 
 custom_s3 = boto3.client(
@@ -2118,6 +2126,7 @@ def update_user_details(current_user_id,email_input,password_input,bio_input):
         pymysql_cursor.close()
         return error
 
+<<<<<<< HEAD
 def get_comments(post_id):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
     comment_query = { "parent_post_id": post_id }
@@ -2188,6 +2197,8 @@ def edit_comment(comment_id,comment):
     updated_comment = comments.update_one(comment_query, new_comment)
     return updated_comment
 
+=======
+>>>>>>> SQL_Alchemy
 @app.template_filter('formatdatetime')
 def format_datetime(value, format='medium'):
     """Format a date time to: d Mon YYYY"""
@@ -2785,6 +2796,7 @@ def become_an_author(user_id):
 def page_not_found(e):
     return render_template("404.html"), 404
 
+<<<<<<< HEAD
 @app.route('/test')
 def icontest():
     return render_template("icontest.html")
@@ -2793,6 +2805,8 @@ def icontest():
 def testing():
     return redirect(url_for('init'))
 
+=======
+>>>>>>> SQL_Alchemy
 if __name__ == '__main__':
     app.run(host='0.0.0.0',
             port=8080,
