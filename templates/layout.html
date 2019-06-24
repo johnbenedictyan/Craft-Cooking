@@ -37,6 +37,7 @@
         <ul class="navbar-nav ml-auto">
           <li id="home_nav_item" class="nav-item"><a href="{{url_for('init')}}" class="nav-link">Home<span class="icon-home ml-2"></span></a></li>
           <li id="recipes_nav_item" class="nav-item"><a href="{{url_for('recipe_list')}}" class="nav-link">Recipes<span class="icon-restaurant_menu ml-2"></span></a></li>
+					<li id="recipes_nav_item" class="nav-item"><a href="{{url_for('bloghub')}}" class="nav-link">Blogs<span class="icon-pencil-square ml-2"></span></a></li>
           {% if "username" in session %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{session.username}}</a>
@@ -69,13 +70,13 @@
   {% block seasonal_recipes_section %}
   {% endblock %}
 
-  {% block recipe_list_hero_wrap_section %}
+  {% block hero_wrap_section %}
   {% endblock %}
-
+		
+	{% block blog_section %}
+	{% endblock %}
+		
   {% block recipe_list_section %}
-  {% endblock %}
-
-  {% block single_post_hero_wrap_section %}
   {% endblock %}
 
   {% block single_post_main_content_section %}
@@ -84,31 +85,16 @@
   {% block newsletter_section %}
   {% endblock %}
 
-  {% block sign_in_hero_wrap_section %}
-  {% endblock %}
-
   {% block sign_in_form_section %}
-  {% endblock %}
-
-  {% block sign_up_hero_wrap_section %}
   {% endblock %}
 
   {% block sign_up_form_section %}
   {% endblock %}
 
-  {% block user_dashboard_hero_wrap_section %}
-  {% endblock %}
-
   {% block user_dashboard_section %}
   {% endblock %}
 
-  {% block recipe_creator_hero_wrap_section %}
-  {% endblock %}
-
   {% block recipe_creator_section %}
-  {% endblock %}
-
-  {% block recipe_editor_hero_wrap_section %}
   {% endblock %}
 
   {% block recipe_editor_section %}

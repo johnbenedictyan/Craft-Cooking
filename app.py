@@ -69,7 +69,7 @@ app.secret_key = os.urandom(24)
 bcrypt = Bcrypt(app)
 
 # FLASK-SQLALCHEMY STARTING POINT
-flask_sqlalchemy_db = SQLAlchemy(app)
+# flask_sqlalchemy_db = SQLAlchemy(app)
 
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
 
@@ -2783,6 +2783,14 @@ def become_an_author(user_id):
     else:
         flash("This user does not exist!", "error")
         return redirect(url_for("init"))
+
+@app.route("/blogs")
+def bloghub():
+  return render_template("bloghub.html")
+
+@app.route("/blogs/<int:blog_id>")
+def single_blog(blog_id):
+  return redirect(url_for("init"))
 
 @app.errorhandler(404)
 def page_not_found(e):
