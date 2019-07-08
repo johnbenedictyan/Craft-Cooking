@@ -1,5 +1,5 @@
 from flask import Flask,render_template,request,redirect,url_for,session,\
-send_from_directory,session,flash,abort
+send_from_directory,session,flash,abort,g
 
 from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
 
@@ -12,6 +12,8 @@ from bson import ObjectId
 from urllib.parse import urlparse, urljoin
 
 from datetime import datetime
+
+from functools import wraps
 
 import pymongo
 import os
@@ -477,10 +479,10 @@ def get_recipe_details_for_recipe_editor(post_id):
 
     pymysql_cursor.close()
 
-    recipe_details = helper_function_result[0]
-    recipe_time_details = helper_function_result[1]
-    ingredient_details = helper_function_result[2]
-    photo_uri = helper_function_result[3]
+    # recipe_details = helper_function_result[0]
+    # recipe_time_details = helper_function_result[1]
+    # ingredient_details = helper_function_result[2]
+    # photo_uri = helper_function_result[3]
 
     #Getting the post categories for the recipe editor
     category_allergen = []
@@ -1125,7 +1127,10 @@ def user_recipe_list_search_function(current_user_id,search_terms):
     """
 
     search_input = ("%" + search_terms +"%")
-
+    
+    pymysql_cursor.execute(search_in_recipes_sql,search_input)
+    result_recipes=pymysql_cursor.fetchall()
+    
     pymysql_cursor.execute(search_in_cuisines_sql,search_input)
     result_cuisines=pymysql_cursor.fetchall()
 
@@ -1142,6 +1147,7 @@ def user_recipe_list_search_function(current_user_id,search_terms):
     result_meal_type=pymysql_cursor.fetchall()
 
     matching_recipes_array = [
+        result_recipes,
         result_cuisines,
         result_cooking_styles,
         result_diet_and_health,
