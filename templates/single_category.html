@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-center">
             <div class="col-md-9 ftco-animate pb-5 text-center">
-                <h1 class="mb-3 bread">Recipe List</h1>
+                <h1 class="mb-3 bread">{{category_name|title}}</h1>
                 <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Recipe List <i class="ion-ios-arrow-forward"></i></span></p>
             </div>
         </div>
@@ -35,7 +35,7 @@
                             <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{recipe_picture_url~i.post_photo_uri}})"></a>
                             </div>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published|formatdatetime('medium')}}</span></p>
+                                <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
                                 <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
                                 <div class="tagcloud">
                                     {% for j in i.cooking_styles %}

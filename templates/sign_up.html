@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+{% block hero_wrap_section %}
+<section class="hero-wrap hero-wrap-2" style="background-image: url({{url_for('static',filename='images/bg_3.jpg')}});">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-center">
+            <div class="col-md-9 ftco-animate pb-5 text-center">
+                <h1 class="mb-3 bread">Sign Up</h1>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Sign Up <i class="ion-ios-arrow-forward"></i></span></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block sign_up_form_section %}
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col heading-section ftco-animate">
+                <h2 class="mb-4"><span>Sign Up</span></h2>
+                <form id="signup_form" method="POST">
+                    <div class="form-group">
+                        <input type="email" class="form-control form_input" id="user_email" name="email_input" placeholder="Email Address" required>
+                        <small id="emailHelp" class="form-text text-muted ml-2">We'll never share your email with anyone else.</small>
+                        <div class="valid-feedback">Looks Good!</div>
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md">
+                            <div class="form-group">
+                                <input type="text" class="form-control form_input" id="user_username" name="username_input" aria-describedby="user_username" placeholder="Choose A Username" required>
+                                <small id="usernameHelp" class="form-text text-muted ml-2">Your display name.</small>
+                                <div class="valid-feedback">Looks Good!</div>
+                                <div class="invalid-feedback">Please enter a valid username.</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md">
+                            <div class="form-group">
+                                <select class="form-control form_input" id="user_country" name="country_input" required>
+                                    {% for i in country_list %}
+                                    <option value="{{i.id}}">{{i.country_name}}</option>
+                                    {% endfor %}
+                                </select>
+                                <small id="countryoforiginHelp" class="form-text text-muted ml-2">Your country of origin.</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 col-md">
+                          <div class="form-group">
+                              <input type="password" class="form-control form_input" id="user_password_1" name="password_input_1" placeholder="Password" required>
+                              <small id="passwordHelp" class="form-text text-muted ml-2">Choose a strong password!</small>
+                              <div class="valid-feedback">Looks Good!</div>
+                              <div class="invalid-feedback">Please enter a valid password.</div>
+                          </div>
+                      </div>
+                      <div class="col-12 col-md">
+                          <div class="form-group">
+                              <input type="password" class="form-control form_input " id="user_password_2" name="password_input_2" placeholder="Confirm Password" required>
+                              <small id="confirmpasswordHelp" class="form-text text-muted ml-2">The two passwords must match!</small>
+                              <div class="valid-feedback">Looks Good!</div>
+                              <div class="invalid-feedback">The passwords do not match.</div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="row my-2">
+                      <div class="col text-center">
+                        <button type="submit" class="btn btn-primary btn-lg w-50">Sign Up</button>
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <span class="mr-2">Already have an account?</span>
+                        <a href="/login">Sign In</a>
+                    </div>
+                    <div class="row my-2 bg-dark p-4">
+                      <div class="col text-center">
+                        <h5>User Detail Requirements</h5>
+                        <p class="lead">Usernames must alphanumeric, a minimum of 5 characters and contain no special characters except hyphens.</p>
+                        <p class="lead">Passwords must have at least 8 characters with at least one Capital letter,one lower case letter,one number and special character.</p>
+                      </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block jquery_script_section %}
+<script>
+  /* global $ */
+  $(function() {
+      // Form Input Validation //
+      function check_username(input){
+        let username_regex = /^[a-zA-Z0-9-_]+$/;
+        let element = input[0]
+        input.parent().removeClass("was-validated")
+        if(element.value.length < 5 || username_regex.test(element.value)!==true){
+          element.setCustomValidity("Invalid username.");
+        }
+        else{
+          element.setCustomValidity('');
+        }
+        input.parent().addClass("was-validated")
+      }
+      function check_email(input){
+        let email_regex = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+        let element = input[0]
+        input.parent().removeClass("was-validated")
+        if (email_regex.test(element.value)!==true){
+          element.setCustomValidity("Invalid email.");
+        }
+        else{
+          element.setCustomValidity('');
+        }
+        input.parent().addClass("was-validated")
+      }
+      function check_password(input){
+        let password_regex = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,50})/;
+        let element = input[0]
+        input.parent().removeClass("was-validated")
+        if (password_regex.test(element.value)!==true){
+          element.setCustomValidity("Invalid password.");
+        }
+        else{
+          element.setCustomValidity('');
+        }
+        input.parent().addClass("was-validated")
+      }
+      function check_confirm_password(input){
+        let element = input[0]
+        let firstpassword = $("#user_password_1")[0]
+        input.parent().removeClass("was-validated")
+        if (element.value!==firstpassword.value){
+          element.setCustomValidity("Passwords do not match.");
+        }
+        else{
+          element.setCustomValidity('');
+        }
+        input.parent().addClass("was-validated")
+      }
+      // End of Form Input Validation //
+      $(".navbar-nav li").removeClass("active");
+      $("#sign_up_nav_item").addClass("active");
+      $(".form-group").on("change","#user_username",function(){
+        check_username($(this));
+      });
+      $(".form-group").on("change","#user_email",function(){
+        check_email($(this))
+      });
+      $(".form-group").on("change","#user_password_1",function(){
+        check_password($(this))
+      });
+      $(".form-group").on("change","#user_password_2",function(){
+        check_confirm_password($(this))
+      });
+  });
+</script>
+{% endblock %}

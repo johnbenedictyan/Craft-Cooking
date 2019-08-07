@@ -1,34 +1,26 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <title>Craft Cooking</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,900" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i,900,900i" rel="stylesheet">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/core.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  
   <!-- Boostrap 4 Select Picker Plugin -->
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-select.min.css') }}">
-
-  <style>.message-success{color: #39ed29;}.message-error{color: #ed2939;}.icon-wrap i{font-size: 6rem;}.flash-message-modal{top:15%;}.flash-message-modal .modal-header{border:none;}.flash-message-modal .modal-footer{border:none;}</style>
+  <style>.message-warning{color:#eddd29}.message-success{color: #39ed29;}.message-error{color: #ed2939;}.icon-wrap span{font-size: 6rem;}.flash-message-modal{top:15%;}.flash-message-modal .modal-header{border:none;}.flash-message-modal .modal-footer{border:none;}</style>
   {% block page_specific_css_section %}
   {% endblock %}
 </head>
@@ -43,20 +35,21 @@
 
       <div class="collapse navbar-collapse" id="ftco-nav">
         <ul class="navbar-nav ml-auto">
-          <li id="home_nav_item" class="nav-item"><a href="{{url_for('init')}}" class="nav-link">Home</a></li>
-          <li id="recipes_nav_item" class="nav-item"><a href="{{url_for('recipe_list')}}" class="nav-link">Recipes</a></li>
+          <li id="home_nav_item" class="nav-item"><a href="{{url_for('init')}}" class="nav-link">Home<span class="icon-home ml-2"></span></a></li>
+          <li id="recipes_nav_item" class="nav-item"><a href="{{url_for('recipe_list')}}" class="nav-link">Recipes<span class="icon-restaurant_menu ml-2"></span></a></li>
+					<li id="recipes_nav_item" class="nav-item"><a href="{{url_for('bloghub')}}" class="nav-link">Blogs<span class="icon-pencil-square ml-2"></span></a></li>
           {% if "username" in session %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{session.username}}</a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{{url_for('user_dashboard')}}">Account Details</a>
-              <a class="dropdown-item" href="{{url_for('recipes')}}">My Recipes</a>
-              <a class="dropdown-item" href="{{url_for('logout')}}">Log Out</a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{url_for('user_dashboard')}}">Account Details<span class="icon-user ml-2"></span></a>
+              <a class="dropdown-item" href="{{url_for('recipes')}}">My Recipes<span class="icon-restaurant_menu ml-2"></span></a>
+              <a class="dropdown-item" href="{{url_for('sign_out', next=request.url)}}">Sign Out<span class="icon-sign-out ml-2"></span></a>
             </div>
           </li>
           {% else %}
-          <li id="log_in_nav_item" class="nav-item"><a href="{{url_for('login')}}" class="nav-link">Sign In</a></li>
-          <li id="sign_up_nav_item" class="nav-item"><a href="{{url_for('user_creation')}}" class="nav-link">Sign Up</a></li>
+          <li id="log_in_nav_item" class="nav-item"><a href="{{url_for('sign_in', next=request.url)}}" class="nav-link">Sign In<span class="icon-sign-in ml-2"></span></a></li>
+          <li id="sign_up_nav_item" class="nav-item"><a href="{{url_for('user_creation')}}" class="nav-link">Sign Up<span class="icon-user ml-2"></span></a></li>
           {% endif %}
       </div>
     </div>
@@ -64,70 +57,55 @@
   <!-- END nav -->
   {% block testing_block %}
   {% endblock %}
-  
-  {% block home_slider_section %} 
-  {% endblock %} 
-  
-  {% block new_recipes_section %} 
-  {% endblock %} 
-  
-  {% block featured_recipes_section %} 
+
+  {% block home_slider_section %}
   {% endblock %}
-  
-  {% block seasonal_recipes_section %} 
-  {% endblock %} 
-  
-  {% block recipe_list_hero_wrap_section %}
+
+  {% block new_recipes_section %}
   {% endblock %}
-  
+
+  {% block featured_recipes_section %}
+  {% endblock %}
+
+  {% block seasonal_recipes_section %}
+  {% endblock %}
+
+  {% block hero_wrap_section %}
+  {% endblock %}
+		
+	{% block blog_section %}
+	{% endblock %}
+		
   {% block recipe_list_section %}
   {% endblock %}
-  
-  {% block single_post_hero_wrap_section %}
-  {% endblock %}
-  
+
   {% block single_post_main_content_section %}
   {% endblock %}
-  
-  {% block newsletter_section %} 
-  {% endblock %} 
-  
-  {% block login_hero_wrap_section %}
+
+  {% block newsletter_section %}
   {% endblock %}
-  
-  {% block login_form_section %} 
-  {% endblock %} 
-  
-  {% block sign_up_hero_wrap_section %}
+
+  {% block sign_in_form_section %}
   {% endblock %}
-  
-  {% block sign_up_form_section %} 
+
+  {% block sign_up_form_section %}
   {% endblock %}
-  
-  {% block user_dashboard_hero_wrap_section %}
-  {% endblock %}
-  
+
   {% block user_dashboard_section %}
   {% endblock %}
-  
-  {% block recipe_creator_hero_wrap_section %}
-  {% endblock %}
-  
+
   {% block recipe_creator_section %}
   {% endblock %}
-  
-  {% block recipe_editor_hero_wrap_section %}
-  {% endblock %}
-  
+
   {% block recipe_editor_section %}
   {% endblock %}
-  
+
   {% block confirm_delete_modal_section %}
   {% endblock %}
-  
+
   {% block page_not_found_main_content_section %}
   {% endblock %}
-  
+
   {% with messages = get_flashed_messages(category_filter=["message"]) %}
   {% if messages %}
   <div class="modal fade" id="flash_message_modal_messages" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_messages_label" aria-hidden="true">
@@ -139,8 +117,8 @@
               <div class="modal-body">
                   <div class="container">
                       <div class="row my-2">
-                          <div class="col text-center icon-wrap">
-                              <i class="ion-ios-checkmark-circle-outline message-success"></i>
+                          <div class="col text-center icon-wrap message-success">
+                              <span class="icon-check_circle"></span>
                           </div>
                       </div>
                       <div class="row my-2">
@@ -171,7 +149,7 @@
   </div>
   {% endif %}
   {% endwith %}
-  
+
   {% with errors = get_flashed_messages(category_filter=["error"]) %}
   {% if errors %}
   <div class="modal fade" id="flash_message_modal_errors" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_errors_label" aria-hidden="true">
@@ -184,7 +162,7 @@
                   <div class="container">
                       <div class="row my-2">
                           <div class="col text-center icon-wrap message-error">
-                              <i class="ion-ios-alert"></i>
+                              <span class="icon-warning"></span>
                           </div>
                       </div>
                       <div class="row my-2">
@@ -213,9 +191,9 @@
           </div>
       </div>
   </div>
-  {% endif %} 
+  {% endif %}
   {% endwith %}
-  
+
   <footer class="ftco-footer ftco-footer-2 ftco-section">
     <div class="container">
       <div class="row mb-5">
@@ -283,12 +261,8 @@
     </div>
   </footer>
 
-
-
   <!-- loader -->
-  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
-
-
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
   <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
@@ -301,8 +275,6 @@
   <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
   <script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/scrollax.min.js') }}"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-  <script src="{{ url_for('static', filename='js/google-map.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   {% block jquery_script_section %} {% endblock %}
   <script>/* global $ */$(function(){$('#flash_message_modal_messages').modal('show');$('#flash_message_modal_errors').modal('show');});</script>

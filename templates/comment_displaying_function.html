@@ -1,0 +1,38 @@
+{% macro comment_packaging_function(comment_array) %}
+{% for i in comment_array %}
+<li class="comment">
+  {% if i.children_comments %}
+    <div class="vcard bio">
+        <img src="images/person_1.jpg" alt="Image placeholder">
+    </div>
+    <div class="comment-body">
+        <h3>{{i.username}}</h3>
+        <div class="meta">{{i.date_time_created|formatdatetime('full')}}</div>
+        <p>{{i.comment}}</p>
+        {% if user_is_sign_in %}
+        <p><a href="#" data-parent-comment-id="{{i._id}}" data-parent-obj-type="comment" class="reply reply_comment">Reply</a></p>
+        {% else %}
+        <p><a tabindex="0" class="reply" role="button" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" data-content="Please sign in to reply.">Reply</a></p>
+        {% endif %}
+    </div>
+    <ul class="children">
+    {{ comment_packaging_function(i.children_comments) }}
+    </ul>
+  {% else %}
+  <div class="vcard bio">
+      <img src="images/person_1.jpg" alt="Image placeholder">
+  </div>
+  <div class="comment-body">
+      <h3>{{i.username}}</h3>
+      <div class="meta">{{i.date_time_created|formatdatetime('full')}}</div>
+      <p>{{i.comment}}</p>
+      {% if user_is_sign_in %}
+      <p><a href="#" data-parent-comment-id="{{i._id}}" data-parent-obj-type="comment" class="reply reply_comment">Reply</a></p>
+      {% else %}
+      <p><a tabindex="0" class="reply" role="button" data-toggle="popover" data-trigger="focus" data-container="body" data-placement="top" data-content="Please sign in to reply.">Reply</a></p>
+      {% endif %}
+  </div>
+  {% endif %}
+</li>
+{% endfor %}
+{% endmacro %}

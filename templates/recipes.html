@@ -1,4 +1,4 @@
-{% extends "layout.html" %} {% block recipe_creator_hero_wrap_section %}
+{% extends "layout.html" %} {% block hero_wrap_section %}
 <section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
     <div class="overlay"></div>
     <div class="container">
@@ -49,24 +49,24 @@
                                                 <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{recipe_picture_url~i.post_photo_uri}})"></a>
                                                 </div>
                                                 <div class="text pt-3">
-                                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published}}</span></p>
+                                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published|formatdatetime}}</span></p>
                                                     <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
                                                     <div class="tagcloud">
                                                         {% for j in i.cooking_styles %}
-                                                        <a href="#" class="tag-cloud-link">{{j.cooking_style_name}}</a> 
+                                                        <a href="#" class="tag-cloud-link">{{j.cooking_style_name}}</a>
                                                         {% endfor %}
                                                         {% for k in i.cuisines %}
-                                                        <a href="#" class="tag-cloud-link">{{k.cuisine_name}}</a> 
-                                                        {% endfor %} 
+                                                        <a href="#" class="tag-cloud-link">{{k.cuisine_name}}</a>
+                                                        {% endfor %}
                                                         {% for l in i.diet_health_types %}
-                                                        <a href="#" class="tag-cloud-link">{{l.diet_health_type_name}}</a> 
-                                                        {% endfor %} 
+                                                        <a href="#" class="tag-cloud-link">{{l.diet_health_type_name}}</a>
+                                                        {% endfor %}
                                                         {% for m in i.dish_types %}
-                                                        <a href="#" class="tag-cloud-link">{{m.dish_type_name}}</a> 
-                                                        {% endfor %} 
+                                                        <a href="#" class="tag-cloud-link">{{m.dish_type_name}}</a>
+                                                        {% endfor %}
                                                         {% for n in i.meal_types %}
-                                                        <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a> 
-                                                        {% endfor %} 
+                                                        <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a>
+                                                        {% endfor %}
                                                     </div>
                                                     <span class="mb-0"><a href="{{ url_for('recipe_editor', post_id=i.post_recipe_id) }}" class="btn btn-black py-2">Edit Recipe</a></span>
                                                     <span class="mb-0"><button type="button" class="btn btn-black py-2" data-delete-button-recipe-id="{{i.post_recipe_id}}" data-delete-button-recipe-name="{{i.post_recipe_name}}" data-toggle="modal" data-target="#confirm_recipe_deletion_modal">Delete Recipe</button></span>
@@ -342,87 +342,87 @@
 {% endblock %}
 {% block jquery_script_section %}
 <script>
-    /* global $ */
-    $(function() {
-        $( "#recipe_procedure_div" ).on( "click", " #add_next_step_button", function( event ) {
-            event.preventDefault();
-            $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control recipe_procedure_list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
-        });
-        $( "#ingredient_list_big_div" ).on( "click", " #add_next_ingredient_button", function( event ) {
-            event.preventDefault();
-            $("#ingredient_list_div").append(`<div class="form-row my-2">
-                                                <div class="col-2">
-                                                    <input type="text" class="form-control ingredient_list_item" name="ingredient_list_amount"/>
-                                                </div>
-                                                <div class="col-3">
-                                                    <select class="selectpicker" name="ingredient_list_measurement" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
-                                                      <optgroup label="Weight">
-                                                        <option data-tokens="gram" value="gram">Gram(s)</option>
-                                                        <option data-tokens="kilogram" value="kilogram">Kilogram(s)</option>
-                                                        <option data-tokens="ounce" value="ounce">Ounce(s)</option>
-                                                        <option data-tokens="pound" value="pound">Pound(s)</option>
-                                                      </optgroup>
-                                                      <optgroup label="Length">
-                                                          <option data-tokens="centimetre" value="centimetre">Centimetre(s)</option>
-                                                          <option data-tokens="inch" value="inch">Inch(es)</option>
-                                                      </optgroup>
-                                                      <optgroup label="Volume">
-                                                          <option data-tokens="milliliter" value="milliliter">Milliliter(s)</option>
-                                                          <option data-tokens="liter" value="liter">Liter(s)</option>
-                                                          <option data-tokens="metric cup" value="metric cup">Metric Cup(s)</option>
-                                                          <option data-tokens="fluid ounce" value="fluid ounce">Fluid Ounce(s)</option>
-                                                          <option data-tokens="imperial cup" value="imperial cup">Imperial Cup(s)</option>
-                                                          <option data-tokens="pint" value="pint">Pint(s)</option>
-                                                          <option data-tokens="quart" value="quart">Quart(s)</option>
-                                                          <option data-tokens="gallon" value="gallon">Gallon(s)</option>
-                                                      </optgroup>
-                                                      <optgroup label="Others">
-                                                          <option data-tokens="drop" value="drop">Drop(s)</option>
-                                                          <option data-tokens="smidgen" value="smidgen">Smidgen(s)</option>
-                                                          <option data-tokens="pinch" value="pinch">Pinch(s)</option>
-                                                          <option data-tokens="dash" value="dash">Dash(s)</option>
-                                                          <option data-tokens="tablespoon" value="tablespoon">Tablespoon(s)</option>
-                                                          <option data-tokens="teaspoon" value="teaspoon">Teaspoon(s)</option>
-                                                      </optgroup>
-                                                    </select>
-                                                </div>
-                                                <div class="col-3">
-                                                    <select class="selectpicker" name="ingredient_list_ingredient" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
-                                                        {% for i in recipe_creator_form_details[0] %}
-                                                        <option value="{{i.id}}" data-tokens="{{i.name}}">{{i.name | title}}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
-                                                <div class="col-3">
-                                                    <input type="text" class="form-control ingredient_list_item" name="ingredient_list_special"/>
-                                                </div>
-                                                <div class="col-1">
-                                                    <button class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
-                                                </div>
-                                            </div>
-                                                        `);
-        $('.selectpicker').selectpicker('refresh');
-        });
-        $( "#recipe_procedure_div" ).on( "click", ".remove_step_button", function( event ) {
-            event.preventDefault();
-            $(this).parent().remove();
-        });
-        $( "#ingredient_list_div" ).on( "click", ".remove_step_button", function( event ) {
-            event.preventDefault();
-            $(this).parent().parent().remove();
-        });
-        $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
-           let button = $(event.relatedTarget);
-           let recipe_id = parseInt(button.data("delete-button-recipe-id"), 10);
-           let recipe_name = button.data("delete-button-recipe-name");
-           let modal = $(this);
-           let delete_link = "/delete-post/"+recipe_id;
-           modal.find("#delete-modal-recipe-name").text(recipe_name);
-           modal.find("#delete-modal-delete-link").attr("href",delete_link);
-        });
-    });
+  /* global $ */
+  $(function() {
+      $( "#recipe_procedure_div" ).on( "click", " #add_next_step_button", function( event ) {
+          event.preventDefault();
+          $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control recipe_procedure_list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
+      });
+      $( "#ingredient_list_big_div" ).on( "click", " #add_next_ingredient_button", function( event ) {
+          event.preventDefault();
+          $("#ingredient_list_div").append(`<div class="form-row my-2">
+                                              <div class="col-2">
+                                                  <input type="text" class="form-control ingredient_list_item" name="ingredient_list_amount"/>
+                                              </div>
+                                              <div class="col-3">
+                                                  <select class="selectpicker" name="ingredient_list_measurement" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
+                                                    <optgroup label="Weight">
+                                                      <option data-tokens="gram" value="gram">Gram(s)</option>
+                                                      <option data-tokens="kilogram" value="kilogram">Kilogram(s)</option>
+                                                      <option data-tokens="ounce" value="ounce">Ounce(s)</option>
+                                                      <option data-tokens="pound" value="pound">Pound(s)</option>
+                                                    </optgroup>
+                                                    <optgroup label="Length">
+                                                        <option data-tokens="centimetre" value="centimetre">Centimetre(s)</option>
+                                                        <option data-tokens="inch" value="inch">Inch(es)</option>
+                                                    </optgroup>
+                                                    <optgroup label="Volume">
+                                                        <option data-tokens="milliliter" value="milliliter">Milliliter(s)</option>
+                                                        <option data-tokens="liter" value="liter">Liter(s)</option>
+                                                        <option data-tokens="metric cup" value="metric cup">Metric Cup(s)</option>
+                                                        <option data-tokens="fluid ounce" value="fluid ounce">Fluid Ounce(s)</option>
+                                                        <option data-tokens="imperial cup" value="imperial cup">Imperial Cup(s)</option>
+                                                        <option data-tokens="pint" value="pint">Pint(s)</option>
+                                                        <option data-tokens="quart" value="quart">Quart(s)</option>
+                                                        <option data-tokens="gallon" value="gallon">Gallon(s)</option>
+                                                    </optgroup>
+                                                    <optgroup label="Others">
+                                                        <option data-tokens="drop" value="drop">Drop(s)</option>
+                                                        <option data-tokens="smidgen" value="smidgen">Smidgen(s)</option>
+                                                        <option data-tokens="pinch" value="pinch">Pinch(s)</option>
+                                                        <option data-tokens="dash" value="dash">Dash(s)</option>
+                                                        <option data-tokens="tablespoon" value="tablespoon">Tablespoon(s)</option>
+                                                        <option data-tokens="teaspoon" value="teaspoon">Teaspoon(s)</option>
+                                                    </optgroup>
+                                                  </select>
+                                              </div>
+                                              <div class="col-3">
+                                                  <select class="selectpicker" name="ingredient_list_ingredient" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
+                                                      {% for i in recipe_creator_form_details[0] %}
+                                                      <option value="{{i.id}}" data-tokens="{{i.name}}">{{i.name | title}}</option>
+                                                      {% endfor %}
+                                                  </select>
+                                              </div>
+                                              <div class="col-3">
+                                                  <input type="text" class="form-control ingredient_list_item" name="ingredient_list_special"/>
+                                              </div>
+                                              <div class="col-1">
+                                                  <button class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
+                                              </div>
+                                          </div>
+                                                      `);
+      $('.selectpicker').selectpicker('refresh');
+      });
+      $( "#recipe_procedure_div" ).on( "click", ".remove_step_button", function( event ) {
+          event.preventDefault();
+          $(this).parent().remove();
+      });
+      $( "#ingredient_list_div" ).on( "click", ".remove_step_button", function( event ) {
+          event.preventDefault();
+          $(this).parent().parent().remove();
+      });
+      $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
+         let button = $(event.relatedTarget);
+         let recipe_id = parseInt(button.data("delete-button-recipe-id"), 10);
+         let recipe_name = button.data("delete-button-recipe-name");
+         let modal = $(this);
+         let delete_link = "/delete-post/"+recipe_id;
+         modal.find("#delete-modal-recipe-name").text(recipe_name);
+         modal.find("#delete-modal-delete-link").attr("href",delete_link);
+      });
+  });
 </script>
-{% endblock %} 
+{% endblock %}
 {% block page_specific_css_section %}
 <style>
     .list_item_custom_css {
@@ -447,7 +447,7 @@
     }
     .blog-entry .img-2-wrapper{
         height:250px;
-        overflow: hidden; 
+        overflow: hidden;
     }
     .blog-entry .img-2-wrapper .img-2 {
          height: 100%;
@@ -470,7 +470,7 @@
     -o-transform: scale(1.2);
     -ms-transform: scale(1.2);
     transform: scale(1.2); }
-    
+
     .selectpicker + button {
         height:52px;
     }
@@ -486,8 +486,8 @@
             <div class="modal-body">
                 <div class="container">
                     <div class="row my-2">
-                        <div class="col text-center icon-wrap">
-                            <i class="ion-ios-close-circle-outline"></i>
+                        <div class="col text-center icon-wrap message-danger">
+                            <span class="icon-warning"></span>
                         </div>
                     </div>
                     <div class="row my-2">

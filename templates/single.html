@@ -1,11 +1,18 @@
+{% from "comment_displaying_function.html" import comment_packaging_function %}
 {% block page_specific_css_section %}
 <style>
     .post_icon {
         font-size:2rem;
     }
+    .comment-box-close-icon{
+      font-size:x-large;
+    }
+    .comment-box-close-icon:hover{
+      cursor: pointer;
+    }
 </style>
 {% endblock %}
-{% extends "layout.html" %} {% block single_post_hero_wrap_section %}
+{% extends "layout.html" %} {% block hero_wrap_section %}
 <section class="hero-wrap hero-wrap-2" style="background-image: url({{recipe_picture_url~photo_uri}});">
     <div class="overlay"></div>
     <div class="container">
@@ -94,20 +101,20 @@
                         <div class="tag-widget post-tag-container mb-5 mt-5">
                             <div class="tagcloud">
                                 {% for m in cooking_styles %}
-                                <a href="#" class="tag-cloud-link">{{m.cooking_style_name}}</a> 
+                                <a href="#" class="tag-cloud-link">{{m.cooking_style_name}}</a>
                                 {% endfor %}
                                 {% for n in cuisines %}
-                                <a href="#" class="tag-cloud-link">{{n.cuisine_name}}</a> 
-                                {% endfor %} 
+                                <a href="#" class="tag-cloud-link">{{n.cuisine_name}}</a>
+                                {% endfor %}
                                 {% for o in diet_health_types %}
-                                <a href="#" class="tag-cloud-link">{{o.diet_health_type_name}}</a> 
-                                {% endfor %} 
+                                <a href="#" class="tag-cloud-link">{{o.diet_health_type_name}}</a>
+                                {% endfor %}
                                 {% for p in dish_types %}
-                                <a href="#" class="tag-cloud-link">{{p.dish_type_name}}</a> 
-                                {% endfor %} 
+                                <a href="#" class="tag-cloud-link">{{p.dish_type_name}}</a>
+                                {% endfor %}
                                 {% for q in meal_types %}
-                                <a href="#" class="tag-cloud-link">{{q.meal_type_name}}</a> 
-                                {% endfor %} 
+                                <a href="#" class="tag-cloud-link">{{q.meal_type_name}}</a>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -125,114 +132,69 @@
                         </div>
                     </div>
                 </div>
-                <div class="pt-5 mt-5">
+                <div class="row pt-5 mt-5">
+                  <div class="col-12">
                     <h3 class="mb-5">6 Comments</h3>
-                    <ul class="comment-list">
-                        <li class="comment">
-                            <div class="vcard bio">
-                                <img src="images/person_1.jpg" alt="Image placeholder">
-                            </div>
-                            <div class="comment-body">
-                                <h3>John Doe</h3>
-                                <div class="meta">October 03, 2018 at 2:21pm</div>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus,
-                                    nihil?
-                                </p>
-                                <p><a href="#" class="reply">Reply</a></p>
-                            </div>
-                        </li>
-
-                        <li class="comment">
-                            <div class="vcard bio">
-                                <img src="images/person_1.jpg" alt="Image placeholder">
-                            </div>
-                            <div class="comment-body">
-                                <h3>John Doe</h3>
-                                <div class="meta">October 03, 2018 at 2:21pm</div>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus,
-                                    nihil?
-                                </p>
-                                <p><a href="#" class="reply">Reply</a></p>
-                            </div>
-
-                            <ul class="children">
-                                <li class="comment">
-                                    <div class="vcard bio">
-                                        <img src="images/person_1.jpg" alt="Image placeholder">
-                                    </div>
-                                    <div class="comment-body">
-                                        <h3>John Doe</h3>
-                                        <div class="meta">October 03, 2018 at 2:21pm</div>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus,
-                                            nihil?
-                                        </p>
-                                        <p><a href="#" class="reply">Reply</a></p>
-                                    </div>
-
-
-                                    <ul class="children">
-                                        <li class="comment">
-                                            <div class="vcard bio">
-                                                <img src="images/person_1.jpg" alt="Image placeholder">
-                                            </div>
-                                            <div class="comment-body">
-                                                <h3>John Doe</h3>
-                                                <div class="meta">October 03, 2018 at 2:21pm</div>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit
-                                                    necessitatibus, nihil?</p>
-                                                <p><a href="#" class="reply">Reply</a></p>
-                                            </div>
-
-                                            <ul class="children">
-                                                <li class="comment">
-                                                    <div class="vcard bio">
-                                                        <img src="images/person_1.jpg" alt="Image placeholder">
-                                                    </div>
-                                                    <div class="comment-body">
-                                                        <h3>John Doe</h3>
-                                                        <div class="meta">October 03, 2018 at 2:21pm</div>
-                                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum
-                                                            impedit necessitatibus, nihil?</p>
-                                                        <p><a href="#" class="reply">Reply</a></p>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="comment">
-                            <div class="vcard bio">
-                                <img src="images/person_1.jpg" alt="Image placeholder">
-                            </div>
-                            <div class="comment-body">
-                                <h3>John Doe</h3>
-                                <div class="meta">October 03, 2018 at 2:21pm</div>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus,
-                                    nihil?
-                                </p>
-                                <p><a href="#" class="reply">Reply</a></p>
-                            </div>
-                        </li>
-                    </ul>
-                    <!-- END comment-list -->
-                    {% if user_is_login %}
-                    <div class="comment-form-wrap pt-5">
-                        <h3 class="mb-5">Leave a comment</h3>
-                        <form class="p-5 bg-light" method="POST">
+                    </div>
+                    <div class="col-12">
+                      {% if post_comments %}
+                      <ul class="comment-list">
+                      {{ comment_packaging_function(post_comments) }}
+                      <!-- END comment-list -->
+                      </ul>
+                      {% else %}
+                      <p>No Comments Yet!</p>
+                      {% endif %}
+                      </div>
+                </div>
+                {% if user_is_sign_in %}
+                <div class="row comment-form-wrap pt-5">
+                  <div class="col">
+                      <div class="row mb-2">
+                          <div class="col text-center">
+                            <h3 class="my-2">Leave a comment</h3>
+                          </div>
+                        </div>
+                      <div class="row">
+                          <form class="p-5 bg-light w-100" method="POST">
+                              <div class="form-group">
+                                  <label for="message">Comment</label>
+                                  <textarea name="comment_input" id="comment" cols="30" rows="5" class="form-control"></textarea>
+                                  <input type="hidden" class="parent_obj_type" name="parent_obj_type" value="post">
+                              </div>
+                              <div class="form-group">
+                                <div class="col text-center">
+                                  <input type="submit" value="Post Comment" class="w-50 btn py-3 px-4 btn-primary">
+                                  </div>
+                              </div>
+                          </form>
+                        </div>
+                  </div>
+                </div>
+                {% else %}
+                <div class="row comment-form-wrap pt-5">
+                  <div class="col">
+                    <div class="row mb-2">
+                        <div class="col text-center">
+                          <h3 class="my-2">Leave a comment</h3>
+                        </div>
+                      </div>
+                    <div class="row">
+                        <form class="p-5 bg-light w-100" method="POST">
                             <div class="form-group">
                                 <label for="message">Comment</label>
-                                <textarea name="comment_input" id="comment" cols="30" rows="5" class="form-control"></textarea>
+                                <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please sign in to leave a comment!</textarea>
                             </div>
                             <div class="form-group">
-                                <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
+                              <div class="col text-center">
+                                <input type="submit" value="Post Comment" class="w-50 btn py-3 px-4 btn-primary">
+                              </div>
                             </div>
                         </form>
+                      </div>
                     </div>
-                    {% endif %}
                 </div>
+                {% endif %}
 
             </div>
             <!-- .col-md-8 -->
@@ -309,4 +271,85 @@
         </div>
     </div>
 </section>
+{% endblock %}
+{% block jquery_script_section %}
+<script>
+$(function(){
+  //Initalise the popovers//
+  $('[data-toggle="popover"]').popover()
+
+  //Each time a reply button is clicked, a new comment box will be appended to it//
+  $(".comment-body").on("click",".reply_comment",function(e){
+    e.preventDefault();
+    if($(this).siblings(".comment-box").length == 0){
+      $(this).parent().parent().append(`
+      <div class="container comment-box">
+      <form class="py-3 mt-2 bg-light w-100" method="POST">
+          <div class="row form-group">
+            <div class="col px-5 text-center">
+              <label for="message">Comment</label>
+              <i class="icon-close float-right comment-box-close-icon"></i>
+              <textarea name="comment_input" class="form-control" id="comment" cols="30" rows="5"></textarea>
+              <div class="valid-feedback">Looks Good!</div>
+              <div class="invalid-feedback">Invalid comment. No special characters.</div>
+              <input type="hidden" class="parent_comment_id" name="parent_comment_id">
+              <input type="hidden" class="parent_obj_type" name="parent_obj_type">
+              </div>
+          </div>
+          <div class="row form-group">
+            <div class="col text-center">
+              <input type="submit" value="Reply" class="btn p-2 w-25 reply comment_reply_button">
+            </div>
+          </div>
+      </form>
+      </div>
+      `);
+      $(this).hide();
+    }
+  });
+
+  //When the cross icon is clicked, the comment box will be deleted//
+  $(".comment-body").on("click",".comment-box-close-icon",function(e){
+    e.preventDefault();
+    $(this).parents(".comment-box").prev().find(".reply_comment").show();
+    $(this).parents(".comment-box").remove();
+  })
+
+  //This function checks the input comment for special characters//
+  function check_comments(input){
+    let comment_regex = /^[a-zA-Z0-9-_,.$#/!+-=\[\]()%@]+$/;
+    let element = input[0];
+    input.parents(".form-group").removeClass("was-validated");
+    if (comment_regex.test(element.value)!==true){
+      element.setCustomValidity("Invalid comment. No special characters.");
+    }
+    else{
+      element.setCustomValidity('');
+    }
+    input.parents(".form-group").addClass("was-validated");
+  }
+
+  //This function checks the validity of the comment everything the textbox is changed.//
+  $(".comment-body").on("change","#comment",function(e){
+    check_comments($(this));
+  });
+
+  //Each time the comment box's reply button is clicked, there will be client side checking for special characters inside the comments. If the comment is valid, then the JS will post the comment to Flask.//
+  $(".comment-body").on("click",".comment_reply_button",function(e){
+    e.preventDefault();
+    let input = $(this).parents(".row").prev().find("#comment");
+    let comment_has_custom_error = input[0].validity.customError;
+    let comment_parent_object = $(this).parents(".comment-box").prev().find(".reply_comment")[0];
+    let comment_parent_object_id = comment_parent_object.dataset.parentCommentId;
+    let comment_parent_object_type = comment_parent_object.dataset.parentObjType;
+    if(comment_has_custom_error == true){}
+    else{
+      //These hidden inputs are necessary so that flask will know the values of the comment parent object id and type.
+      input.siblings(".parent_comment_id").val(comment_parent_object_id);
+      input.siblings(".parent_obj_type").val(comment_parent_object_type);
+      input.closest("form").submit();
+    }
+  });
+});
+</script>
 {% endblock %}
