@@ -1,3 +1,4 @@
 uploads/
 unprocessed_images/
-env.py
+env_var.py
+__pycache__/
