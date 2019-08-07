@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from bson import ObjectId
 import pymongo,os,pymysql,random,config,boto3,botocore
 from datetime import datetime
-import env_var
+# import env_var
 # only comment the 'import env' out when deploying to heroku
 db_url = "mongodb+srv://{}:{}@cluster0-mllxb.mongodb.net/test?retryWrites=true&w=majority".format(os.environ.get("MONGO_DB_USERNAME"),os.environ.get("MONGO_DB_PASSWORD"))
 mongo_connection = pymongo.MongoClient(db_url)
