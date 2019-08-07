@@ -27,7 +27,7 @@ import re
 import urllib.parse
 import certifi
 import babel.dates
-import env_var
+# import env_var
 
 # only comment the 'import env_var' out when deploying to heroku
 db_url = """mongodb+srv://{}:{}@cluster0-mllxb.mongodb.net/
