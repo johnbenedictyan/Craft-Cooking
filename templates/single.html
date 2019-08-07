@@ -137,10 +137,14 @@
                     <h3 class="mb-5">6 Comments</h3>
                     </div>
                     <div class="col-12">
+                      {% if post_comments %}
                       <ul class="comment-list">
                       {{ comment_packaging_function(post_comments) }}
                       <!-- END comment-list -->
                       </ul>
+                      {% else %}
+                      <p>No Comments Yet!</p>
+                      {% endif %}
                       </div>
                 </div>
                 {% if user_is_sign_in %}

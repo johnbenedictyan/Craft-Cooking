@@ -28,8 +28,9 @@ import urllib.parse
 import certifi
 import babel.dates
 import env_var
-# only comment the 'import env' out when deploying to heroku
-db_url = """mongodb+srv://{}:{}@tgc-ci-project-3-cluster-mllxb.mongodb.net/
+
+# only comment the 'import env_var' out when deploying to heroku
+db_url = """mongodb+srv://{}:{}@cluster0-mllxb.mongodb.net/
 test?retryWrites=true&w=majority""".format(
     os.environ.get("MONGO_DB_USERNAME"),
     urllib.parse.quote(os.environ.get("MONGO_DB_PASSWORD"))
@@ -2548,6 +2549,8 @@ def post(post_id):
         data = get_post_details(post_id)
         categories = get_post_categories(post_id)
         post_comments = get_comments(post_id)
+        number_of_comments = len(post_comments)
+        print(number_of_comments)
         post_view_adder_function(post_id)
         if session:
             if request.method=="GET":
