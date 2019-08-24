@@ -27,7 +27,7 @@ import re
 import urllib.parse
 import certifi
 import babel.dates
-# import env_var
+import env_var
 
 # only comment the 'import env_var' out when deploying to heroku
 db_url = """mongodb+srv://{}:{}@cluster0-mllxb.mongodb.net/
@@ -139,10 +139,11 @@ def check_if_file_is_allow(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_FILE_EXTENSIONS
 
 def username_special_character_cleaner(username_input):
-    regex = re.compile("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
+    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:;`=,-.\'"]') 
 
     if(regex.search(username_input) == None):
         ErrorFlag = False
+        ErrorMessage = "None"
     else:
         ErrorFlag = True
         ErrorMessage = "Username has special characters"
@@ -2266,7 +2267,7 @@ def user_creation():
     else:
         email_input = request.form["email_input"]
         username_input = request.form["username_input"]
-        password_input = request.form["password_input"]
+        password_input = request.form["password_input_1"]
         country_input = request.form["country_input"]
         if username_input == None or password_input == None:
             if username_input == None:
@@ -2311,7 +2312,7 @@ def user_creation():
 
                     flash("Your account has been created!", "message")
 
-                    return redirect(url_for('sign_out'))
+                    return redirect(url_for('init'))
                 else:
                     pymysql_cursor.close()
 
