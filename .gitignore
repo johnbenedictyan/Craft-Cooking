@@ -3,6 +3,7 @@ unprocessed_images/
 env_var.py
 static/
 notes.md
+bugs.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
