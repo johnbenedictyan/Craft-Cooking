@@ -4,6 +4,7 @@ env_var.py
 static/
 notes.md
 bugs.txt
+models/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
