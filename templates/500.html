@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block internal_error_main_content_section %}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col ftco-animate">
+                <div id="notfound">
+                    <div class="notfound">
+                        <div class="notfound-404 mb-3">
+                            <h1>500</h1>
+                        </div>
+                        <h2>Oops! Something went wrong.</h2>
+                        <p>There's an issue in the craft cooking kitchen right now.</p>
+                        <p>Our team of highly skilled code chefs will get right to work!</p>
+                        <a href="{{url_for('init')}}">Return to homepage</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} {% block page_specific_css_section %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/page_not_found.css') }}"> {% endblock %}

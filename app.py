@@ -2091,7 +2091,6 @@ def update_user_profile_photo(profile_picture_uri,current_user_id):
 def update_user_details(current_user_id,email_input,password_input,bio_input):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
-
     if password_input == "":
         update_user_details_sql = """
         UPDATE `users`
@@ -2127,7 +2126,6 @@ def update_user_details(current_user_id,email_input,password_input,bio_input):
         error = "An error has occured in the update_user_details function."
     finally:
         pymysql_cursor.close()
-        return error
 
 def get_comments(post_id):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
@@ -2236,9 +2234,9 @@ def sign_in():
         if user_details is not None:
             stored_password = user_details["password"]
             if bcrypt.check_password_hash(stored_password,password_input):
+                session.permanent = True
                 session["username"] = username_input
                 session["user_id"] = user_details["id"]
-                session.permanent = True
                 #init will be the fallback url for the redirector
                 return redirect(next)
             else:
@@ -2806,6 +2804,10 @@ def single_blog(blog_id):
 def page_not_found(e):
     return render_template("404.html"), 404
 
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template("500.html"), 500
+    
 @app.route('/test')
 def icontest():
     return render_template("icontest.html")
