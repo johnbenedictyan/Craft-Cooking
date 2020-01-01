@@ -346,7 +346,7 @@
   $(function() {
       $( "#recipe_procedure_div" ).on( "click", " #add_next_step_button", function( event ) {
           event.preventDefault();
-          $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control recipe_procedure_list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
+          $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
       });
       $( "#ingredient_list_big_div" ).on( "click", " #add_next_ingredient_button", function( event ) {
           event.preventDefault();
