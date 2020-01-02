@@ -28,7 +28,7 @@
 <section class="ftco-section">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 order-lg-last ftco-animate">
+            <div class="col-lg-12 order-lg-last ftco-animate">
                 <div class="row mt-2">
                     <blockquote class="blockquote text-center">
                         <h3 class="mb-0 font-weight-bold">{{recipe_details.description}}</h3>
@@ -78,11 +78,13 @@
                 </div>
                 <div class="row">
                     <h2 class="mb-3 mt-5">Instructions</h2>
-                    <ol>
-                        {% for j in recipe_procedure_list %}
-                        <li>{{j}}.</li>
-                        {% endfor %}
-                    </ol>
+                    <div class="col-12">
+                        <ol>
+                            {% for j in recipe_procedure_list %}
+                            <li>{{j}}.</li>
+                            {% endfor %}
+                        </ol>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
@@ -122,7 +124,7 @@
                 <div class="row">
                     <div class="col">
                         <div class="about-author d-flex p-4 bg-light">
-                            <div class="bio mr-5">
+                            <div class="bio mr-5" style="height:25%;width:25%;">
                                 <img src="{{profile_picture_url~author_details.profile_picture_uri}}" alt="Image placeholder" class="img-fluid mb-4">
                             </div>
                             <div class="desc">
@@ -134,7 +136,7 @@
                 </div>
                 <div class="row pt-5 mt-5">
                   <div class="col-12">
-                    <h3 class="mb-5">6 Comments</h3>
+                    <h3 class="mb-5">{{number_of_comments}} Comments</h3>
                     </div>
                     <div class="col-12">
                       {% if post_comments %}
@@ -198,7 +200,7 @@
 
             </div>
             <!-- .col-md-8 -->
-            <div class="col-lg-4 sidebar pr-lg-5 ftco-animate">
+            <div class="col-lg-4 sidebar pr-lg-5 ftco-animate  d-none">
                 <div class="sidebar-box ftco-animate">
                     <ul class="categories">
                         <h3 class="heading mb-4">Categories</h3>
