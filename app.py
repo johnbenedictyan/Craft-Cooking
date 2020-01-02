@@ -27,6 +27,7 @@ import re
 import urllib.parse
 import certifi
 import babel.dates
+import threading
 import env_var
 
 # only comment the 'import env_var' out when deploying to heroku
@@ -75,6 +76,29 @@ bcrypt = Bcrypt(app)
 # flask_sqlalchemy_db = SQLAlchemy(app)
 
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
+
+def setInterval(interval):
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            stopped = threading.Event()
+
+            def loop(): # executed in another thread
+                while not stopped.wait(interval): # until stopped
+                    function(*args, **kwargs)
+
+            t = threading.Thread(target=loop)
+            t.daemon = True # stop if the program exits
+            t.start()
+            return stopped
+        return wrapper
+    return decorator
+    
+@setInterval(600)
+def pinger():
+    pymysql_connection.ping(reconnect=True)  
+
+stop_auto_pinger = pinger()
+
 
 def sign_in_required(f):
     @wraps(f)
@@ -169,7 +193,6 @@ def check_sign_in_details(username_input,password_input):
 
 def get_user_recipe_details(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     recipe_details_sql="""
     SELECT `recipes`.`id`,`recipes`.`name`
@@ -2570,7 +2593,8 @@ def post(post_id):
                     recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
                     profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],
                     user_is_sign_in=True,
-                    post_comments=post_comments
+                    post_comments=post_comments,
+                    number_of_comments=number_of_comments
                     )
             else:
                 current_user_id = session["user_id"]
@@ -2610,7 +2634,8 @@ def post(post_id):
                 meal_types=categories[5],
                 recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
                 profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],
-                post_comments=post_comments
+                post_comments=post_comments,
+                number_of_comments=number_of_comments
                 )
     else:
         return abort(404)
