@@ -28,7 +28,7 @@ import urllib.parse
 import certifi
 import babel.dates
 import threading
-import env_var
+# import env_var
 
 # only comment the 'import env_var' out when deploying to heroku
 db_url = """mongodb+srv://{}:{}@cluster0-mllxb.mongodb.net/
@@ -1725,13 +1725,13 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
 
     return True
 
-def category_id_to_category_name(category_id):
+def get_category_details(category_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
 
     sql = """
     SELECT
-    name
+    name,bg_sm_uri
     FROM
     `categories`
     WHERE
@@ -1739,11 +1739,10 @@ def category_id_to_category_name(category_id):
     """
 
     pymysql_cursor.execute(sql,category_id)
-    category_name = pymysql_cursor.fetchone()["name"]
-
+    category_details = pymysql_cursor.fetchone()
     pymysql_cursor.close()
 
-    return category_name
+    return category_details
 
 def user_is_current_post_author_checker(user_id,recipe_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -2549,15 +2548,16 @@ def recipe_list():
 
 @app.route("/category/<category_id>")
 def single_category(category_id):
-    category_name = category_id_to_category_name(category_id)
+    category_details = get_category_details(category_id)
     searched_recipe_lists_post_list_details = recipe_list_search_function(
-        category_name,
+        category_details['name'],
         True
         )
     top_categories = get_top_categories()
     return render_template(
         "single_category.html",
-        category_name=category_name,
+        category_name=category_details['name'],
+        category_recipe_uri=category_details['bg_sm_uri'],
         recipe_list=searched_recipe_lists_post_list_details,
         recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
         top_categories=top_categories
