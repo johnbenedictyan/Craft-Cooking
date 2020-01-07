@@ -1,5 +1,5 @@
 {% extends "layout.html" %} {% block hero_wrap_section %}
-<section class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_4.jpg');">
+<section class="hero-wrap hero-wrap-2" style="background-image: url({{url_for('static', filename='images/recipe-editor-bg-2.jpg')}});">
     <div class="overlay"></div>
     <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-center">
@@ -15,14 +15,14 @@
     <div class="container">
         <div class="row">
             <div class="col heading-section ftco-animate">
-                <h2 class="mb-4"><span>Recipe Editor</span></h2>
+                <h2 class="mb-2"><span>Recipe Editor</span></h2>
                 <section class="ftco-section ftco-animate">
                     <div class="container">
                         <form method="POST" enctype="multipart/form-data">
                             <div class="form-row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label for="recipe_photo">Recipe Photo</label>
+                                        <label for="recipe_photo">Recipe Photo (Add a file to replace the current recipe photo)</label>
                                         <input type="file" class="form-control" name="recipe_photo">
                                     </div>
                                 </div>
@@ -378,7 +378,7 @@
     $(function() {
         $( "#recipe_procedure_div" ).on( "click", " #add_next_step_button", function( event ) {
             event.preventDefault();
-            $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control recipe_procedure_list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
+            $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
         });
         $( "#ingredient_list_big_div" ).on( "click", " #add_next_ingredient_button", function( event ) {
             event.preventDefault();
