@@ -97,7 +97,7 @@ def setInterval(interval):
 def pinger():
     pymysql_connection.ping(reconnect=True)  
 
-stop_auto_pinger = pinger()
+pinger()
 
 
 def sign_in_required(f):
@@ -450,7 +450,8 @@ def get_recipe_details_for_recipe_editor(post_id):
 
     #Getting the recipe details
     get_recipe_details_sql = """
-    SELECT recipes.serves,recipes.name,recipes.recipe_procedure
+    SELECT recipes.serves,recipes.name,recipes.recipe_procedure,
+    recipes.description
     FROM `recipes`
     WHERE recipes.id = %s
     """
@@ -502,7 +503,6 @@ def get_recipe_details_for_recipe_editor(post_id):
     photo_uri=pymysql_cursor.fetchone()
 
 
-    pymysql_cursor.close()
 
     # recipe_details = helper_function_result[0]
     # recipe_time_details = helper_function_result[1]
@@ -625,7 +625,6 @@ def get_recipe_details_for_recipe_editor(post_id):
         category_meal_type.append(i["meal_type_id"])
 
 
-    pymysql_cursor.close()
 
 
     current_post_categories_list = [
@@ -1312,7 +1311,6 @@ def get_recipe_creator_form_details():
 
 def ingredient_list_packing_function(unpacked_ingredient_list_array):
     result_array = []
-
     for i in range(len(unpacked_ingredient_list_array[0])):
         result_array.append(
             [unpacked_ingredient_list_array[0][i],
@@ -2572,7 +2570,6 @@ def post(post_id):
         categories = get_post_categories(post_id)
         post_comments = get_comments(post_id)
         number_of_comments = len(post_comments)
-        print(number_of_comments)
         post_view_adder_function(post_id)
         if session:
             if request.method=="GET":
@@ -2709,7 +2706,6 @@ def recipe_editor(post_id):
                         request.form.getlist("ingredient_list_ingredient")
                     ingredient_list_special = \
                         request.form.getlist("ingredient_list_special")
-
                     ingredient_list_array=[
                         ingredient_list_ingredient,
                         ingredient_list_amount,
