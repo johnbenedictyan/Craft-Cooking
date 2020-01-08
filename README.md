@@ -83,7 +83,7 @@ To run the app locally:
 2. Run this python script.
 3. Click on the local host link address to open the app the web browser.
 
-You can view the deployed version on [Heroku](https://tgc-ci-project-3.herokuapp.com/)
+You can view the deployed version on [Heroku](https://tgc-ci-project-3.herokuapp.com/) or [CraftCooking](http://www.craftcooking.co/)
 ## Credits
 
 ### Content
