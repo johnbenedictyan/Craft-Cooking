@@ -1,4 +1,6 @@
 import os
+from datetime import timedelta
+
 FLASKS3_BUCKET_NAME = os.environ.get("FLASKS3_BUCKET_NAME")
 AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_SECRET_KEY_ID")
@@ -11,4 +13,4 @@ PROFILE_PICTURE_LOCATION = "http://{}.s3.amazonaws.com/uploads/profile-pictures/
 RECIPE_PICTURE_LOCATION = "http://{}.s3.amazonaws.com/uploads/recipe-pictures/".format(FLASKS3_BUCKET_NAME)
 # SQLALCHEMY_DATABASE_URI = "sqlite:///example.sqlite"
 # SQLALCHEMY_TRACK_MODIFICATIONS = "False"
-PERMANENT_SESSION_LIFETIME = 1800
+PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
