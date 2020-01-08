@@ -141,7 +141,7 @@
                     <div class="col-12">
                       {% if post_comments %}
                       <ul class="comment-list">
-                      {{ comment_packaging_function(post_comments) }}
+                      {{ comment_packaging_function(post_comments,user_is_sign_in) }}
                       <!-- END comment-list -->
                       </ul>
                       {% else %}

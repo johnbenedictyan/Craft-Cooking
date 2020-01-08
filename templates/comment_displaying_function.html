@@ -1,4 +1,4 @@
-{% macro comment_packaging_function(comment_array) %}
+{% macro comment_packaging_function(comment_array,user_is_sign_in) %}
 {% for i in comment_array %}
 <li class="comment">
   {% if i.children_comments %}
