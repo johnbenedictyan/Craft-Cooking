@@ -1,289 +1,350 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <title>Craft Cooking</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,900" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i,900,900i" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/core.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <!-- Boostrap 4 Select Picker Plugin -->
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css">
-  <style>.message-warning{color:#eddd29}.message-success{color: #39ed29;}.message-error{color: #ed2939;}.icon-wrap span{font-size: 6rem;}.flash-message-modal{top:15%;}.flash-message-modal .modal-header{border:none;}.flash-message-modal .modal-footer{border:none;}</style>
-  {% block page_specific_css_section %}
-  {% endblock %}
+    <title>Craft Cooking</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i,900,900i" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flaticon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/core.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Boostrap 4 Select Picker Plugin -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css">
+    <style>
+        .message-warning {
+            color: #eddd29
+        }
+
+        .message-success {
+            color: #39ed29;
+        }
+
+        .message-error {
+            color: #ed2939;
+        }
+
+        .icon-wrap span {
+            font-size: 6rem;
+        }
+
+        .flash-message-modal {
+            top: 15%;
+        }
+
+        .flash-message-modal .modal-header {
+            border: none;
+        }
+
+        .flash-message-modal .modal-footer {
+            border: none;
+        }
+    </style>
+    {% block page_specific_css_section %}
+    {% endblock %}
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark ftco-navbar-light" id="ftco-navbar">
-    <div class="container">
-      <a class="navbar-brand" href="/">Craft Cooking<span>.</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Menu
-	      </button>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ftco-navbar-light" id="ftco-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/">Craft Cooking<span>.</span></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
+                aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="oi oi-menu"></span> Menu
+            </button>
 
-      <div class="collapse navbar-collapse" id="ftco-nav">
-        <ul class="navbar-nav ml-auto">
-          <li id="home_nav_item" class="nav-item"><a href="{{url_for('init')}}" class="nav-link">Home<span class="icon-home ml-2"></span></a></li>
-          <li id="recipes_nav_item" class="nav-item"><a href="{{url_for('recipe_list')}}" class="nav-link">Recipes<span class="icon-restaurant_menu ml-2"></span></a></li>
-					<!--<li id="recipes_nav_item" class="nav-item"><a href="{{url_for('bloghub')}}" class="nav-link">Blogs<span class="icon-pencil-square ml-2"></span></a></li>-->
-          {% if "username" in session %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{session.username}}</a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{{url_for('user_dashboard')}}">Account Details<span class="icon-user ml-2"></span></a>
-              <a class="dropdown-item" href="{{url_for('recipes')}}">My Recipes<span class="icon-restaurant_menu ml-2"></span></a>
-              <a class="dropdown-item" href="{{url_for('sign_out', next=request.url)}}">Sign Out<span class="icon-sign-out ml-2"></span></a>
+            <div class="collapse navbar-collapse" id="ftco-nav">
+                <ul class="navbar-nav ml-auto">
+                    <li id="home_nav_item" class="nav-item"><a href="{{url_for('init')}}" class="nav-link">Home<span
+                                class="icon-home ml-2"></span></a></li>
+                    <li id="recipes_nav_item" class="nav-item"><a href="{{url_for('recipe_list')}}"
+                            class="nav-link">Recipes<span class="icon-restaurant_menu ml-2"></span></a></li>
+                    <!--<li id="recipes_nav_item" class="nav-item"><a href="{{url_for('bloghub')}}" class="nav-link">Blogs<span class="icon-pencil-square ml-2"></span></a></li>-->
+                    {% if "username" in session %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{session.username}}</a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{url_for('user_dashboard')}}">Account Details<span
+                                    class="icon-user ml-2"></span></a>
+                            <a class="dropdown-item" href="{{url_for('recipes')}}">My Recipes<span
+                                    class="icon-restaurant_menu ml-2"></span></a>
+                            <a class="dropdown-item" href="{{url_for('sign_out', next=request.url)}}">Sign Out<span
+                                    class="icon-sign-out ml-2"></span></a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li id="log_in_nav_item" class="nav-item"><a href="{{url_for('sign_in', next=request.url)}}"
+                            class="nav-link">Sign In<span class="icon-sign-in ml-2"></span></a></li>
+                    <li id="sign_up_nav_item" class="nav-item"><a href="{{url_for('user_creation')}}"
+                            class="nav-link">Sign Up<span class="icon-user ml-2"></span></a></li>
+                    {% endif %}
             </div>
-          </li>
-          {% else %}
-          <li id="log_in_nav_item" class="nav-item"><a href="{{url_for('sign_in', next=request.url)}}" class="nav-link">Sign In<span class="icon-sign-in ml-2"></span></a></li>
-          <li id="sign_up_nav_item" class="nav-item"><a href="{{url_for('user_creation')}}" class="nav-link">Sign Up<span class="icon-user ml-2"></span></a></li>
-          {% endif %}
-      </div>
-    </div>
-  </nav>
-  <!-- END nav -->
-  {% block testing_block %}
-  {% endblock %}
-
-  {% block home_slider_section %}
-  {% endblock %}
-
-  {% block new_recipes_section %}
-  {% endblock %}
-
-  {% block featured_recipes_section %}
-  {% endblock %}
-
-  {% block seasonal_recipes_section %}
-  {% endblock %}
-
-  {% block hero_wrap_section %}
-  {% endblock %}
-		
-	{% block blog_section %}
-	{% endblock %}
-		
-  {% block recipe_list_section %}
-  {% endblock %}
-
-  {% block single_post_main_content_section %}
-  {% endblock %}
-
-  {% block newsletter_section %}
-  {% endblock %}
-
-  {% block sign_in_form_section %}
-  {% endblock %}
-
-  {% block sign_up_form_section %}
-  {% endblock %}
-
-  {% block user_dashboard_section %}
-  {% endblock %}
-
-  {% block recipe_creator_section %}
-  {% endblock %}
-
-  {% block recipe_editor_section %}
-  {% endblock %}
-
-  {% block confirm_delete_modal_section %}
-  {% endblock %}
-
-  {% block page_not_found_main_content_section %}
-  {% endblock %}
-  
-  {% block internal_error_main_content_section %}
-  {% endblock %}
-
-  {% with messages = get_flashed_messages(category_filter=["message"]) %}
-  {% if messages %}
-  <div class="modal fade" id="flash_message_modal_messages" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_messages_label" aria-hidden="true">
-      <div class="modal-dialog flash-message-modal" role="document">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body">
-                  <div class="container">
-                      <div class="row my-2">
-                          <div class="col text-center icon-wrap message-success">
-                              <span class="icon-check_circle"></span>
-                          </div>
-                      </div>
-                      <div class="row my-2">
-                          <div class="col text-center">
-                              <h1 class="modal-title font-weight-bold display-4" id="flash_message_modal_messages_label">SUCCESS</h1>
-                          </div>
-                      </div>
-                      <div class="row my-2 border-top pt-4">
-                          <div class="col text-center">
-                              {% for msg in messages %}
-                              <h3>{{msg}}</h3>
-                              {% endfor %}
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <div class="modal-footer mb-3">
-                  <div class="container">
-                      <div class="row">
-                          <div class="col text-center">
-                              <button type="button" class="btn btn-primary btn-lg w-75" data-dismiss="modal">Close</button>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-  {% endif %}
-  {% endwith %}
-
-  {% with errors = get_flashed_messages(category_filter=["error"]) %}
-  {% if errors %}
-  <div class="modal fade" id="flash_message_modal_errors" tabindex="-1" role="dialog" aria-labelledby="flash_message_modal_errors_label" aria-hidden="true">
-      <div class="modal-dialog flash-message-modal" role="document">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              </div>
-              <div class="modal-body">
-                  <div class="container">
-                      <div class="row my-2">
-                          <div class="col text-center icon-wrap message-error">
-                              <span class="icon-warning"></span>
-                          </div>
-                      </div>
-                      <div class="row my-2">
-                          <div class="col text-center">
-                              <h1 class="modal-title font-weight-bold display-4" id="flash_message_modal_errors_label">ERROR</h1>
-                          </div>
-                      </div>
-                      <div class="row my-2 border-top pt-4">
-                          <div class="col text-center">
-                              {% for msg in errors %}
-                              <h3>{{msg}}</h3>
-                              {% endfor %}
-                          </div>
-                      </div>
-                  </div>
-              </div>
-              <div class="modal-footer mb-3">
-                  <div class="container">
-                      <div class="row">
-                          <div class="col text-center">
-                              <button type="button" class="btn btn-primary btn-lg w-75" data-dismiss="modal">Close</button>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-  {% endif %}
-  {% endwith %}
-
-  <footer class="ftco-footer ftco-footer-2 ftco-section">
-    <div class="container">
-      <div class="row mb-5">
-        <div class="col-md">
-          <div class="ftco-footer-widget mb-4">
-            <h2 class="ftco-heading-2">Craft Cooking</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
-              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-            </ul>
-          </div>
         </div>
-        <div class="col-md">
-          <div class="ftco-footer-widget mb-4 ml-md-5">
-            <h2 class="ftco-heading-2">Information</h2>
-            <ul class="list-unstyled">
-              <li><a href="#" class="py-2 d-block">Terms of Uses</a></li>
-              <li><a href="#" class="py-2 d-block">About Craft Cooking</a></li>
-              <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
-              <li><a href="#" class="py-2 d-block">Accessibility Help</a></li>
-              <li><a href="#" class="py-2 d-block">Advertise with us</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md">
-          <div class="ftco-footer-widget mb-4">
-            <h2 class="ftco-heading-2">Categories</h2>
-            <ul class="list-unstyled">
-              <li><a href="#" class="py-2 d-block">Food</a></li>
-              <li><a href="#" class="py-2 d-block">Restaurant</a></li>
-              <li><a href="#" class="py-2 d-block">Dessert</a></li>
-              <li><a href="#" class="py-2 d-block">Lifestyle</a></li>
-              <li><a href="#" class="py-2 d-block">Recipes</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md">
-          <div class="ftco-footer-widget mb-4">
-            <h2 class="ftco-heading-2">Have a Questions?</h2>
-            <div class="block-23 mb-3">
-              <ul>
-                <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-                <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-                <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
-              </ul>
+    </nav>
+    <!-- END nav -->
+    {% block testing_block %}
+    {% endblock %}
+
+    {% block home_slider_section %}
+    {% endblock %}
+
+    {% block new_recipes_section %}
+    {% endblock %}
+
+    {% block featured_recipes_section %}
+    {% endblock %}
+
+    {% block seasonal_recipes_section %}
+    {% endblock %}
+
+    {% block hero_wrap_section %}
+    {% endblock %}
+
+    {% block blog_section %}
+    {% endblock %}
+
+    {% block recipe_list_section %}
+    {% endblock %}
+
+    {% block single_post_main_content_section %}
+    {% endblock %}
+
+    {% block newsletter_section %}
+    {% endblock %}
+
+    {% block sign_in_form_section %}
+    {% endblock %}
+
+    {% block sign_up_form_section %}
+    {% endblock %}
+
+    {% block user_dashboard_section %}
+    {% endblock %}
+
+    {% block recipe_creator_section %}
+    {% endblock %}
+
+    {% block recipe_editor_section %}
+    {% endblock %}
+
+    {% block confirm_delete_modal_section %}
+    {% endblock %}
+
+    {% block page_not_found_main_content_section %}
+    {% endblock %}
+
+    {% block internal_error_main_content_section %}
+    {% endblock %}
+
+    {% with messages = get_flashed_messages(category_filter=["message"]) %}
+    {% if messages %}
+    <div class="modal fade" id="flash_message_modal_messages" tabindex="-1" role="dialog"
+        aria-labelledby="flash_message_modal_messages_label" aria-hidden="true">
+        <div class="modal-dialog flash-message-modal" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row my-2">
+                            <div class="col text-center icon-wrap message-success">
+                                <span class="icon-check_circle"></span>
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col text-center">
+                                <h1 class="modal-title font-weight-bold display-4"
+                                    id="flash_message_modal_messages_label">SUCCESS</h1>
+                            </div>
+                        </div>
+                        <div class="row my-2 border-top pt-4">
+                            <div class="col text-center">
+                                {% for msg in messages %}
+                                <h3>{{msg}}</h3>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer mb-3">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-primary btn-lg w-75"
+                                    data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12 text-center">
-
-          <p>
-            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            Copyright &copy;
-            <script>
-              document.write(new Date().getFullYear());
-            </script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-          </p>
-        </div>
-      </div>
     </div>
-  </footer>
+    {% endif %}
+    {% endwith %}
 
-  <!-- loader -->
-  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
-  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery.easing.1.3.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery.waypoints.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery.stellar.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/scrollax.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-  {% block jquery_script_section %} {% endblock %}
-  <script>/* global $ */$(function(){$('#flash_message_modal_messages').modal('show');$('#flash_message_modal_errors').modal('show');});</script>
-  <!-- Boostrap 4 Select Picker Plugin -->
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/js/bootstrap-select.min.js"></script>
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+    <div class="modal fade" id="flash_message_modal_errors" tabindex="-1" role="dialog"
+        aria-labelledby="flash_message_modal_errors_label" aria-hidden="true">
+        <div class="modal-dialog flash-message-modal" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row my-2">
+                            <div class="col text-center icon-wrap message-error">
+                                <span class="icon-warning"></span>
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col text-center">
+                                <h1 class="modal-title font-weight-bold display-4"
+                                    id="flash_message_modal_errors_label">ERROR</h1>
+                            </div>
+                        </div>
+                        <div class="row my-2 border-top pt-4">
+                            <div class="col text-center">
+                                {% for msg in errors %}
+                                <h3>{{msg}}</h3>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer mb-3">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-primary btn-lg w-75"
+                                    data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <footer class="ftco-footer ftco-footer-2 ftco-section">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-md">
+                    <div class="ftco-footer-widget mb-4">
+                        <h2 class="ftco-heading-2">Craft Cooking</h2>
+                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia,
+                            there live the blind texts.</p>
+                        <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+                            <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                            <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                            <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="ftco-footer-widget mb-4 ml-md-5">
+                        <h2 class="ftco-heading-2">Information</h2>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="py-2 d-block">Terms of Uses</a></li>
+                            <li><a href="#" class="py-2 d-block">About Craft Cooking</a></li>
+                            <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                            <li><a href="#" class="py-2 d-block">Accessibility Help</a></li>
+                            <li><a href="#" class="py-2 d-block">Advertise with us</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="ftco-footer-widget mb-4">
+                        <h2 class="ftco-heading-2">Categories</h2>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="py-2 d-block">Food</a></li>
+                            <li><a href="#" class="py-2 d-block">Restaurant</a></li>
+                            <li><a href="#" class="py-2 d-block">Dessert</a></li>
+                            <li><a href="#" class="py-2 d-block">Lifestyle</a></li>
+                            <li><a href="#" class="py-2 d-block">Recipes</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="ftco-footer-widget mb-4">
+                        <h2 class="ftco-heading-2">Have a Questions?</h2>
+                        <div class="block-23 mb-3">
+                            <ul>
+                                <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain
+                                        View, San Francisco, California, USA</span></li>
+                                <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929
+                                            210</span></a></li>
+                                <li><a href="#"><span class="icon icon-envelope"></span><span
+                                            class="text">info@yourdomain.com</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+
+                    <p>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;
+                        <script>
+                            document.write(new Date().getFullYear());
+                        </script> All rights reserved | This template is made with <i class="icon-heart color-danger"
+                            aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- loader -->
+    <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px">
+            <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
+            <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10"
+                stroke="#F96D00" /></svg></div>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-migrate-3.0.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.easing.1.3.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.stellar.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.magnific-popup.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/aos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.animateNumber.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scrollax.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block jquery_script_section %} {% endblock %}
+    <script>
+        /* global $ */
+        $(function () {
+            $('#flash_message_modal_messages').modal('show');
+            $('#flash_message_modal_errors').modal('show');
+        });
+    </script>
+    <!-- Boostrap 4 Select Picker Plugin -->
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/js/bootstrap-select.min.js"></script>
 </body>
 
 </html>

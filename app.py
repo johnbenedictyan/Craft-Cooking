@@ -1,7 +1,7 @@
-from flask import Flask,render_template,request,redirect,url_for,session,\
-send_from_directory,session,flash,abort,g
+from flask import Flask, render_template, request, redirect, url_for, session,\
+    send_from_directory, session, flash, abort, g
 
-from flask_bcrypt import check_password_hash,Bcrypt,generate_password_hash
+from flask_bcrypt import check_password_hash, Bcrypt, generate_password_hash
 
 from flask_s3 import FlaskS3
 
@@ -35,7 +35,7 @@ db_url = """mongodb+srv://{}:{}@cluster0-mllxb.mongodb.net/
 test?retryWrites=true&w=majority""".format(
     os.environ.get("MONGO_DB_USERNAME"),
     urllib.parse.quote(os.environ.get("MONGO_DB_PASSWORD"))
-    )
+)
 
 ssl_cert = certifi.where()
 
@@ -43,14 +43,14 @@ mongo_connection = pymongo.MongoClient(
     db_url,
     ssl=True,
     ssl_ca_certs=ssl_cert
-    )
+)
 
 pymysql_connection = pymysql.connect(
     host="remotemysql.com",
-    user = os.environ.get("remotemysql_username"),
-    password = os.environ.get("remotemysql_password"),
-    db = os.environ.get("remotemysql_db_name")
-    )
+    user=os.environ.get("remotemysql_username"),
+    password=os.environ.get("remotemysql_password"),
+    db=os.environ.get("remotemysql_db_name")
+)
 
 s3 = FlaskS3()
 
@@ -58,13 +58,15 @@ custom_s3 = boto3.client(
     "s3",
     aws_access_key_id=os.environ.get("AWS_SECRET_KEY_ID"),
     aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY")
-    )
+)
+
 
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     s3.init_app(app)
     return app
+
 
 app = create_app()
 
@@ -77,25 +79,28 @@ bcrypt = Bcrypt(app)
 
 ALLOWED_FILE_EXTENSIONS = app.config["ALLOWED_FILE_EXTENSIONS"]
 
+
 def setInterval(interval):
     def decorator(function):
         def wrapper(*args, **kwargs):
             stopped = threading.Event()
 
-            def loop(): # executed in another thread
-                while not stopped.wait(interval): # until stopped
+            def loop():  # executed in another thread
+                while not stopped.wait(interval):  # until stopped
                     function(*args, **kwargs)
 
             t = threading.Thread(target=loop)
-            t.daemon = True # stop if the program exits
+            t.daemon = True  # stop if the program exits
             t.start()
             return stopped
         return wrapper
     return decorator
-    
+
+
 @setInterval(600)
 def pinger():
-    pymysql_connection.ping(reconnect=True)  
+    pymysql_connection.ping(reconnect=True)
+
 
 pinger()
 
@@ -108,19 +113,20 @@ def sign_in_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 def get_redirect_target_url():
     def target_url_safe_checker(target_url):
-        #ref_url is the refernce url which is the craft_cooking website
+        # ref_url is the refernce url which is the craft_cooking website
         ref_url = urlparse(request.host_url)
 
-        #test_url is the url that is passed from the next function in the
+        # test_url is the url that is passed from the next function in the
         # url_for which will be tested.
         test_url = urlparse(urljoin(request.host_url, target_url))
 
         return test_url.scheme in ('http', 'https') and \
-        ref_url.netloc == test_url.netloc
+            ref_url.netloc == test_url.netloc
 
-    #this will get the target url which is passed through the next "function"
+    # this will get the target url which is passed through the next "function"
     for target in request.values.get('next'), request.referrer:
         if not target:
             continue
@@ -128,14 +134,15 @@ def get_redirect_target_url():
         if target_url_safe_checker(target):
             return target
 
-        #the fallback url if the target url parsed fails the checker function
+        # the fallback url if the target url parsed fails the checker function
         return url_for("init")
 
+
 def upload_picture_to_s3(file,
-                        bucket_name,
-                        is_profile_picture,
-                        acl="public-read"):
-    #if is_profile_picture then the file is a profile picture,
+                         bucket_name,
+                         is_profile_picture,
+                         acl="public-read"):
+    # if is_profile_picture then the file is a profile picture,
     # otherwise it is a recipe picture
     try:
         if is_profile_picture == True:
@@ -158,25 +165,27 @@ def upload_picture_to_s3(file,
         return e
     return "{}{}".format(app.config["UPLOAD_LOCATION"], filename)
 
+
 def check_if_file_is_allow(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_FILE_EXTENSIONS
 
-def username_special_character_cleaner(username_input):
-    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:;`=,-.\'"]') 
 
-    if(regex.search(username_input) == None):
+def username_special_character_cleaner(username_input):
+    regex = re.compile('[@_!#$%^&*()<>?/\|}{~:;`=,-.\'"]')
+
+    if (regex.search(username_input) == None):
         ErrorFlag = False
         ErrorMessage = "None"
     else:
         ErrorFlag = True
         ErrorMessage = "Username has special characters"
 
-    return [ErrorFlag,ErrorMessage]
+    return [ErrorFlag, ErrorMessage]
 
-def check_sign_in_details(username_input,password_input):
+
+def check_sign_in_details(username_input, password_input):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     check_sql = """
     SELECT id,password
@@ -184,17 +193,17 @@ def check_sign_in_details(username_input,password_input):
     `username` = %s
     """
     check_input = (username_input)
-    pymysql_cursor.execute(check_sql,check_input)
+    pymysql_cursor.execute(check_sql, check_input)
     user_details = pymysql_cursor.fetchone()
-
 
     pymysql_cursor.close()
     return user_details
 
+
 def get_user_recipe_details(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
-    recipe_details_sql="""
+    recipe_details_sql = """
     SELECT `recipes`.`id`,`recipes`.`name`
     FROM recipes
     JOIN authors
@@ -203,36 +212,34 @@ def get_user_recipe_details(current_user_id):
     """
 
     recipe_details_input = (current_user_id)
-    pymysql_cursor.execute(recipe_details_sql,recipe_details_input)
-    user_recipe_list=pymysql_cursor.fetchall()
-
+    pymysql_cursor.execute(recipe_details_sql, recipe_details_input)
+    user_recipe_list = pymysql_cursor.fetchall()
 
     pymysql_cursor.close()
     return user_recipe_list
 
+
 def get_username(user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
-
-    user_details_sql="""
+    user_details_sql = """
     SELECT username
     FROM users
     WHERE `users`.`id` = %s
     """
 
-    user_details_input=(user_id)
-    pymysql_cursor.execute(user_details_sql,user_details_input)
-    username=pymysql_cursor.fetchone()["username"]
-
+    user_details_input = (user_id)
+    pymysql_cursor.execute(user_details_sql, user_details_input)
+    username = pymysql_cursor.fetchone()["username"]
 
     pymysql_cursor.close()
     return username
 
+
 def get_user_details(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
-
-    user_details_sql="""
+    user_details_sql = """
     SELECT users.id,users.username,users.email,users.bio,
     users.profile_picture_uri,countries.country_name,countries.id,
     authors.user_to_author_date
@@ -244,12 +251,13 @@ def get_user_details(current_user_id):
     WHERE `users`.`id` = %s
     """
 
-    user_details_input=(current_user_id)
-    pymysql_cursor.execute(user_details_sql,user_details_input)
-    user_details=pymysql_cursor.fetchone()
+    user_details_input = (current_user_id)
+    pymysql_cursor.execute(user_details_sql, user_details_input)
+    user_details = pymysql_cursor.fetchone()
 
     pymysql_cursor.close()
     return user_details
+
 
 def get_post_categories(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
@@ -262,10 +270,8 @@ def get_post_categories(post_id):
     """
 
     get_allergen_lists_input = (post_id)
-    pymysql_cursor.execute(get_allergen_lists_sql,get_allergen_lists_input)
-    allergen_lists_details=pymysql_cursor.fetchall()
-
-
+    pymysql_cursor.execute(get_allergen_lists_sql, get_allergen_lists_input)
+    allergen_lists_details = pymysql_cursor.fetchall()
 
     get_cooking_style_lists_sql = """
     SELECT cooking_styles.id AS cooking_style_id,
@@ -279,9 +285,7 @@ def get_post_categories(post_id):
     get_cooking_style_lists_input = (post_id)
     pymysql_cursor.execute(get_cooking_style_lists_sql,
                            get_cooking_style_lists_input)
-    cooking_style_lists_details=pymysql_cursor.fetchall()
-
-
+    cooking_style_lists_details = pymysql_cursor.fetchall()
 
     get_cuisine_lists_sql = """
     SELECT cuisines.id AS cuisine_id,
@@ -292,10 +296,8 @@ def get_post_categories(post_id):
     """
 
     get_cuisine_lists_input = (post_id)
-    pymysql_cursor.execute(get_cuisine_lists_sql,get_cuisine_lists_input)
-    cuisine_lists_details=pymysql_cursor.fetchall()
-
-
+    pymysql_cursor.execute(get_cuisine_lists_sql, get_cuisine_lists_input)
+    cuisine_lists_details = pymysql_cursor.fetchall()
 
     get_diet_health_type_lists_sql = """
     SELECT diet_health_types.id AS diet_health_type_id,
@@ -309,9 +311,7 @@ def get_post_categories(post_id):
     get_diet_health_type_lists_input = (post_id)
     pymysql_cursor.execute(get_diet_health_type_lists_sql,
                            get_diet_health_type_lists_input)
-    diet_health_type_lists_details=pymysql_cursor.fetchall()
-
-
+    diet_health_type_lists_details = pymysql_cursor.fetchall()
 
     get_dish_type_lists_sql = """
     SELECT dish_types.id AS dish_type_id,dish_types.name AS dish_type_name
@@ -322,10 +322,8 @@ def get_post_categories(post_id):
     """
 
     get_dish_type_lists_input = (post_id)
-    pymysql_cursor.execute(get_dish_type_lists_sql,get_dish_type_lists_input)
-    dish_type_lists_details=pymysql_cursor.fetchall()
-
-
+    pymysql_cursor.execute(get_dish_type_lists_sql, get_dish_type_lists_input)
+    dish_type_lists_details = pymysql_cursor.fetchall()
 
     get_meal_type_lists_sql = """
     SELECT meal_types.id AS meal_type_id,meal_types.name AS meal_type_name
@@ -336,9 +334,8 @@ def get_post_categories(post_id):
     """
 
     get_meal_type_lists_input = (post_id)
-    pymysql_cursor.execute(get_meal_type_lists_sql,get_meal_type_lists_input)
-    meal_type_lists_details=pymysql_cursor.fetchall()
-
+    pymysql_cursor.execute(get_meal_type_lists_sql, get_meal_type_lists_input)
+    meal_type_lists_details = pymysql_cursor.fetchall()
 
     pymysql_cursor.close()
 
@@ -349,13 +346,13 @@ def get_post_categories(post_id):
         diet_health_type_lists_details,
         dish_type_lists_details,
         meal_type_lists_details
-        ]
+    ]
 
     return category_lists_details
 
+
 def get_post_details(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     get_author_details_sql = """
     SELECT users.username,users.id,users.profile_picture_uri,users.bio
@@ -368,10 +365,8 @@ def get_post_details(post_id):
     """
 
     get_author_details_input = (post_id)
-    pymysql_cursor.execute(get_author_details_sql,get_author_details_input)
-    author_details=pymysql_cursor.fetchone()
-
-
+    pymysql_cursor.execute(get_author_details_sql, get_author_details_input)
+    author_details = pymysql_cursor.fetchone()
 
     get_recipe_details_sql = """
     SELECT *
@@ -380,10 +375,8 @@ def get_post_details(post_id):
     """
 
     get_recipe_details_input = (post_id)
-    pymysql_cursor.execute(get_recipe_details_sql,get_recipe_details_input)
-    recipe_details=pymysql_cursor.fetchone()
-
-
+    pymysql_cursor.execute(get_recipe_details_sql, get_recipe_details_input)
+    recipe_details = pymysql_cursor.fetchone()
 
     get_photo_lists_sql = """
     SELECT `uri`
@@ -393,10 +386,8 @@ def get_post_details(post_id):
     WHERE recipes.id = %s"""
 
     get_photo_lists_input = (post_id)
-    pymysql_cursor.execute(get_photo_lists_sql,get_photo_lists_input)
-    photo_details=pymysql_cursor.fetchone()
-
-
+    pymysql_cursor.execute(get_photo_lists_sql, get_photo_lists_input)
+    photo_details = pymysql_cursor.fetchone()
 
     get_ingredient_list_sql = """
     SELECT ingredient_id,ingredient_amount,measurement_type,extra_information,
@@ -408,9 +399,8 @@ def get_post_details(post_id):
     """
 
     get_ingredient_list_input = (post_id)
-    pymysql_cursor.execute(get_ingredient_list_sql,get_ingredient_list_input)
+    pymysql_cursor.execute(get_ingredient_list_sql, get_ingredient_list_input)
     ingredient_list_details = list(pymysql_cursor.fetchall())
-
 
     pymysql_cursor.close()
 
@@ -426,12 +416,12 @@ def get_post_details(post_id):
         recipe_details["prep_duration_seconds"],
         recipe_details["cook_duration_seconds"],
         recipe_details["ready_in_duration_seconds"]
-        ]
+    ]
 
     photo_uri = photo_details["uri"]
     for j in recipe_time_details_list:
-        recipe_time_details_list[recipe_time_details_list.index(j)] = str(j)+\
-        " seconds"
+        recipe_time_details_list[recipe_time_details_list.index(j)] = str(j) +\
+            " seconds"
 
     result_array = [
         author_details,
@@ -440,15 +430,15 @@ def get_post_details(post_id):
         recipe_procedure_list,
         recipe_time_details_list,
         photo_uri
-        ]
+    ]
 
     return result_array
+
 
 def get_recipe_details_for_recipe_editor(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
-
-    #Getting the recipe details
+    # Getting the recipe details
     get_recipe_details_sql = """
     SELECT recipes.serves,recipes.name,recipes.recipe_procedure,
     recipes.description
@@ -457,10 +447,8 @@ def get_recipe_details_for_recipe_editor(post_id):
     """
 
     get_recipe_details_input = (post_id)
-    pymysql_cursor.execute(get_recipe_details_sql,get_recipe_details_input)
-    recipe_details=pymysql_cursor.fetchone()
-
-
+    pymysql_cursor.execute(get_recipe_details_sql, get_recipe_details_input)
+    recipe_details = pymysql_cursor.fetchone()
 
     get_recipe_time_details_sql = """
     SELECT recipes.ready_in_duration_seconds,recipes.prep_duration_seconds,
@@ -472,9 +460,7 @@ def get_recipe_details_for_recipe_editor(post_id):
     get_recipe_time_details_input = (post_id)
     pymysql_cursor.execute(get_recipe_time_details_sql,
                            get_recipe_time_details_input)
-    recipe_time_details=pymysql_cursor.fetchone()
-
-
+    recipe_time_details = pymysql_cursor.fetchone()
 
     get_ingredient_list_sql = """
     SELECT ingredient_id,ingredient_amount,measurement_type,extra_information,
@@ -486,10 +472,8 @@ def get_recipe_details_for_recipe_editor(post_id):
     """
 
     get_ingredient_list_input = (post_id)
-    pymysql_cursor.execute(get_ingredient_list_sql,get_ingredient_list_input)
+    pymysql_cursor.execute(get_ingredient_list_sql, get_ingredient_list_input)
     ingredient_details = list(pymysql_cursor.fetchall())
-
-
 
     get_photo_sql = """
     SELECT `uri`
@@ -499,17 +483,15 @@ def get_recipe_details_for_recipe_editor(post_id):
     WHERE recipes.id = %s
     """
     get_photo_input = (post_id)
-    pymysql_cursor.execute(get_photo_sql,get_photo_input)
-    photo_uri=pymysql_cursor.fetchone()
-
-
+    pymysql_cursor.execute(get_photo_sql, get_photo_input)
+    photo_uri = pymysql_cursor.fetchone()
 
     # recipe_details = helper_function_result[0]
     # recipe_time_details = helper_function_result[1]
     # ingredient_details = helper_function_result[2]
     # photo_uri = helper_function_result[3]
 
-    #Getting the post categories for the recipe editor
+    # Getting the post categories for the recipe editor
     category_allergen = []
 
     get_allergen_lists_sql = """
@@ -521,13 +503,11 @@ def get_recipe_details_for_recipe_editor(post_id):
     """
 
     get_allergen_lists_input = (post_id)
-    pymysql_cursor.execute(get_allergen_lists_sql,get_allergen_lists_input)
-    allergen_lists_details=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(get_allergen_lists_sql, get_allergen_lists_input)
+    allergen_lists_details = pymysql_cursor.fetchall()
 
     for i in allergen_lists_details:
         category_allergen.append(i["allergen_id"])
-
-
 
     category_cooking_style = []
 
@@ -542,12 +522,10 @@ def get_recipe_details_for_recipe_editor(post_id):
     get_cooking_style_lists_input = (post_id)
     pymysql_cursor.execute(get_cooking_style_lists_sql,
                            get_cooking_style_lists_input)
-    cooking_style_lists_details=pymysql_cursor.fetchall()
+    cooking_style_lists_details = pymysql_cursor.fetchall()
 
     for i in cooking_style_lists_details:
         category_cooking_style.append(i["cooking_style_id"])
-
-
 
     category_cuisine = []
 
@@ -560,13 +538,11 @@ def get_recipe_details_for_recipe_editor(post_id):
     """
 
     get_cuisine_lists_input = (post_id)
-    pymysql_cursor.execute(get_cuisine_lists_sql,get_cuisine_lists_input)
-    cuisine_lists_details=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(get_cuisine_lists_sql, get_cuisine_lists_input)
+    cuisine_lists_details = pymysql_cursor.fetchall()
 
     for i in cuisine_lists_details:
         category_cuisine.append(i["cuisine_id"])
-
-
 
     category_diet_health_type = []
 
@@ -581,12 +557,10 @@ def get_recipe_details_for_recipe_editor(post_id):
     get_diet_health_type_lists_input = (post_id)
     pymysql_cursor.execute(get_diet_health_type_lists_sql,
                            get_diet_health_type_lists_input)
-    diet_health_type_lists_details=pymysql_cursor.fetchall()
+    diet_health_type_lists_details = pymysql_cursor.fetchall()
 
     for i in diet_health_type_lists_details:
         category_diet_health_type.append(i["diet_health_type_id"])
-
-
 
     category_dish_type = []
 
@@ -599,13 +573,11 @@ def get_recipe_details_for_recipe_editor(post_id):
     """
 
     get_dish_type_lists_input = (post_id)
-    pymysql_cursor.execute(get_dish_type_lists_sql,get_dish_type_lists_input)
-    dish_type_lists_details=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(get_dish_type_lists_sql, get_dish_type_lists_input)
+    dish_type_lists_details = pymysql_cursor.fetchall()
 
     for i in dish_type_lists_details:
         category_dish_type.append(i["dish_type_id"])
-
-
 
     category_meal_type = []
 
@@ -618,14 +590,11 @@ def get_recipe_details_for_recipe_editor(post_id):
     """
 
     get_meal_type_lists_input = (post_id)
-    pymysql_cursor.execute(get_meal_type_lists_sql,get_meal_type_lists_input)
-    meal_type_lists_details=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(get_meal_type_lists_sql, get_meal_type_lists_input)
+    meal_type_lists_details = pymysql_cursor.fetchall()
 
     for i in meal_type_lists_details:
         category_meal_type.append(i["meal_type_id"])
-
-
-
 
     current_post_categories_list = [
         category_allergen,
@@ -634,9 +603,9 @@ def get_recipe_details_for_recipe_editor(post_id):
         category_diet_health_type,
         category_dish_type,
         category_meal_type
-        ]
+    ]
 
-    #Getting the get recipe creator form details.
+    # Getting the get recipe creator form details.
     all_allergens_sql = """
     SELECT id,name
     FROM allergens
@@ -644,8 +613,6 @@ def get_recipe_details_for_recipe_editor(post_id):
 
     pymysql_cursor.execute(all_allergens_sql)
     allergens_form_list = pymysql_cursor.fetchall()
-
-
 
     all_cooking_styles_sql = """
     SELECT id,name
@@ -655,8 +622,6 @@ def get_recipe_details_for_recipe_editor(post_id):
     pymysql_cursor.execute(all_cooking_styles_sql)
     cooking_styles_form_list = pymysql_cursor.fetchall()
 
-
-
     all_cuisines_sql = """
     SELECT id,name
     FROM cuisines
@@ -664,8 +629,6 @@ def get_recipe_details_for_recipe_editor(post_id):
 
     pymysql_cursor.execute(all_cuisines_sql)
     cuisines_form_list = pymysql_cursor.fetchall()
-
-
 
     all_diet_health_types_sql = """
     SELECT id,name
@@ -675,16 +638,12 @@ def get_recipe_details_for_recipe_editor(post_id):
     pymysql_cursor.execute(all_diet_health_types_sql)
     diet_health_types_form_list = pymysql_cursor.fetchall()
 
-
-
     all_dish_types_sql = """
     SELECT id,name
     FROM dish_types"""
 
     pymysql_cursor.execute(all_dish_types_sql)
     dish_types_form_list = pymysql_cursor.fetchall()
-
-
 
     all_meal_types_sql = """
     SELECT id,name
@@ -693,8 +652,6 @@ def get_recipe_details_for_recipe_editor(post_id):
 
     pymysql_cursor.execute(all_meal_types_sql)
     meal_types_form_list = pymysql_cursor.fetchall()
-
-
 
     all_ingredient_sql = """
     SELECT id,name
@@ -713,13 +670,12 @@ def get_recipe_details_for_recipe_editor(post_id):
         diet_health_types_form_list,
         dish_types_form_list,
         meal_types_form_list
-        ]
-
+    ]
 
     recipe_procedure = recipe_details["recipe_procedure"]
     recipe_procedure_list = recipe_procedure.split(".")
 
-    for c,v in enumerate(recipe_procedure_list):
+    for c, v in enumerate(recipe_procedure_list):
         if v == "":
             recipe_procedure_list.remove(v)
         else:
@@ -731,26 +687,26 @@ def get_recipe_details_for_recipe_editor(post_id):
         recipe_procedure_list,
         recipe_time_details,
         photo_uri["uri"]
-        ]
+    ]
 
-    result  = {
-        "current_post_details":current_post_details,
-        "current_post_categories":current_post_categories_list,
-        "all_available_categories":all_categories_list,
-        "all_available_ingredients":all_ingredients_list
+    result = {
+        "current_post_details": current_post_details,
+        "current_post_categories": current_post_categories_list,
+        "all_available_categories": all_categories_list,
+        "all_available_ingredients": all_ingredients_list
     }
 
     pymysql_cursor.close()
 
     return result
 
+
 def recipe_list_helper_function(recipe_lists_post_list_details):
     for i in recipe_lists_post_list_details:
-        #Get post categories
+        # Get post categories
         pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
         post_id = int(i['post_id'])
-
 
         get_allergen_lists_sql = """
         SELECT allergens.id AS allergen_id,allergens.name AS allergen_name
@@ -761,10 +717,9 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
         """
 
         get_allergen_lists_input = (post_id)
-        pymysql_cursor.execute(get_allergen_lists_sql,get_allergen_lists_input)
-        allergen_lists_details=pymysql_cursor.fetchall()
-
-
+        pymysql_cursor.execute(get_allergen_lists_sql,
+                               get_allergen_lists_input)
+        allergen_lists_details = pymysql_cursor.fetchall()
 
         get_cooking_style_lists_sql = """
         SELECT cooking_styles.id AS cooking_style_id,
@@ -778,9 +733,7 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
         get_cooking_style_lists_input = (post_id)
         pymysql_cursor.execute(get_cooking_style_lists_sql,
                                get_cooking_style_lists_input)
-        cooking_style_lists_details=pymysql_cursor.fetchall()
-
-
+        cooking_style_lists_details = pymysql_cursor.fetchall()
 
         get_cuisine_lists_sql = """
         SELECT cuisines.id AS cuisine_id,cuisines.name AS cuisine_name
@@ -791,10 +744,8 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
         """
 
         get_cuisine_lists_input = (post_id)
-        pymysql_cursor.execute(get_cuisine_lists_sql,get_cuisine_lists_input)
-        cuisine_lists_details=pymysql_cursor.fetchall()
-
-
+        pymysql_cursor.execute(get_cuisine_lists_sql, get_cuisine_lists_input)
+        cuisine_lists_details = pymysql_cursor.fetchall()
 
         get_diet_health_type_lists_sql = """
         SELECT diet_health_types.id AS diet_health_type_id,
@@ -808,9 +759,7 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
         get_diet_health_type_lists_input = (post_id)
         pymysql_cursor.execute(get_diet_health_type_lists_sql,
                                get_diet_health_type_lists_input)
-        diet_health_type_lists_details=pymysql_cursor.fetchall()
-
-
+        diet_health_type_lists_details = pymysql_cursor.fetchall()
 
         get_dish_type_lists_sql = """
         SELECT dish_types.id AS dish_type_id,dish_types.name AS dish_type_name
@@ -823,9 +772,7 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
         get_dish_type_lists_input = (post_id)
         pymysql_cursor.execute(get_dish_type_lists_sql,
                                get_dish_type_lists_input)
-        dish_type_lists_details=pymysql_cursor.fetchall()
-
-
+        dish_type_lists_details = pymysql_cursor.fetchall()
 
         get_meal_type_lists_sql = """
         SELECT meal_types.id AS meal_type_id,meal_types.name AS meal_type_name
@@ -838,8 +785,7 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
         get_meal_type_lists_input = (post_id)
         pymysql_cursor.execute(get_meal_type_lists_sql,
                                get_meal_type_lists_input)
-        meal_type_lists_details=pymysql_cursor.fetchall()
-
+        meal_type_lists_details = pymysql_cursor.fetchall()
 
         pymysql_cursor.close()
 
@@ -850,7 +796,7 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
             diet_health_type_lists_details,
             dish_type_lists_details,
             meal_type_lists_details
-            ]
+        ]
 
         categories = category_lists_details
 
@@ -869,29 +815,28 @@ def recipe_list_helper_function(recipe_lists_post_list_details):
         else:
             i["allergens"] = [
                 random.choice(categories[0])
-                ]
+            ]
             i["cooking_styles"] = [
                 random.choice(categories[1])
-                ]
+            ]
             i["cuisines"] = [
                 random.choice(categories[2])
-                ]
+            ]
             i["diet_health_types"] = [
                 random.choice(categories[3])
-                ]
+            ]
             i["dish_types"] = [
                 random.choice(categories[4])
-                ]
+            ]
             i["meal_types"] = [
                 random.choice(categories[5])
-                ]
-
+            ]
 
     return recipe_lists_post_list_details
 
+
 def get_recipe_lists_post_list_details():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     recipe_lists_details_sql = """
     SELECT
@@ -909,8 +854,7 @@ def get_recipe_lists_post_list_details():
     """
 
     pymysql_cursor.execute(recipe_lists_details_sql)
-    recipe_lists_post_list_details=pymysql_cursor.fetchall()
-
+    recipe_lists_post_list_details = pymysql_cursor.fetchall()
 
     result = recipe_list_helper_function(recipe_lists_post_list_details)
 
@@ -918,9 +862,9 @@ def get_recipe_lists_post_list_details():
 
     return result
 
+
 def get_user_recipe_lists_post_list_details(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     recipe_lists_details_sql = """
     SELECT
@@ -941,8 +885,9 @@ def get_user_recipe_lists_post_list_details(current_user_id):
     """
 
     recipe_lists_details_input = (current_user_id)
-    pymysql_cursor.execute(recipe_lists_details_sql,recipe_lists_details_input)
-    recipe_lists_post_list_details=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(recipe_lists_details_sql,
+                           recipe_lists_details_input)
+    recipe_lists_post_list_details = pymysql_cursor.fetchall()
 
     result = recipe_list_helper_function(recipe_lists_post_list_details)
 
@@ -950,9 +895,9 @@ def get_user_recipe_lists_post_list_details(current_user_id):
 
     return result
 
-def recipe_list_search_function(search_terms,categories_only):
-    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
+def recipe_list_search_function(search_terms, categories_only):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
     search_sql = """
     SELECT
@@ -1022,22 +967,22 @@ def recipe_list_search_function(search_terms,categories_only):
     LIKE %s
     """
 
-    search_input = ("%" + search_terms +"%")
+    search_input = ("%" + search_terms + "%")
 
-    pymysql_cursor.execute(search_in_cuisines_sql,search_input)
-    result_cuisines=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_cuisines_sql, search_input)
+    result_cuisines = pymysql_cursor.fetchall()
 
-    pymysql_cursor.execute(search_in_cooking_styles_sql,search_input)
-    result_cooking_styles=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_cooking_styles_sql, search_input)
+    result_cooking_styles = pymysql_cursor.fetchall()
 
-    pymysql_cursor.execute(search_in_diet_and_health_sql,search_input)
-    result_diet_and_health=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_diet_and_health_sql, search_input)
+    result_diet_and_health = pymysql_cursor.fetchall()
 
-    pymysql_cursor.execute(search_in_dish_type_sql,search_input)
-    result_dish_type=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_dish_type_sql, search_input)
+    result_dish_type = pymysql_cursor.fetchall()
 
-    pymysql_cursor.execute(search_in_meal_type_sql,search_input)
-    result_meal_type=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_meal_type_sql, search_input)
+    result_meal_type = pymysql_cursor.fetchall()
 
     matching_recipes_array = [
         result_cuisines,
@@ -1045,13 +990,13 @@ def recipe_list_search_function(search_terms,categories_only):
         result_diet_and_health,
         result_dish_type,
         result_meal_type
-        ]
+    ]
 
     if categories_only is False:
-        pymysql_cursor.execute(search_in_recipes_sql,search_input)
-        result_recipe_name=pymysql_cursor.fetchall()
+        pymysql_cursor.execute(search_in_recipes_sql, search_input)
+        result_recipe_name = pymysql_cursor.fetchall()
 
-        matching_recipes_array.insert(0,result_recipe_name)
+        matching_recipes_array.insert(0, result_recipe_name)
 
     recipe_result_array = []
 
@@ -1065,19 +1010,19 @@ def recipe_list_search_function(search_terms,categories_only):
 
     for k in recipe_result_array:
         search_input = k
-        pymysql_cursor.execute(search_sql,k)
+        pymysql_cursor.execute(search_sql, k)
         search_result = pymysql_cursor.fetchone()
         final_recipe_list_result.append(search_result)
 
-    result=recipe_list_helper_function(final_recipe_list_result)
+    result = recipe_list_helper_function(final_recipe_list_result)
 
     pymysql_cursor.close()
 
     return result
 
-def user_recipe_list_search_function(current_user_id,search_terms):
-    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
+def user_recipe_list_search_function(current_user_id, search_terms):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
     search_sql = """
     SELECT
@@ -1150,25 +1095,25 @@ def user_recipe_list_search_function(current_user_id,search_terms):
     LIKE %s
     """
 
-    search_input = ("%" + search_terms +"%")
-    
-    pymysql_cursor.execute(search_in_recipes_sql,search_input)
-    result_recipes=pymysql_cursor.fetchall()
-    
-    pymysql_cursor.execute(search_in_cuisines_sql,search_input)
-    result_cuisines=pymysql_cursor.fetchall()
+    search_input = ("%" + search_terms + "%")
 
-    pymysql_cursor.execute(search_in_cooking_styles_sql,search_input)
-    result_cooking_styles=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_recipes_sql, search_input)
+    result_recipes = pymysql_cursor.fetchall()
 
-    pymysql_cursor.execute(search_in_diet_and_health_sql,search_input)
-    result_diet_and_health=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_cuisines_sql, search_input)
+    result_cuisines = pymysql_cursor.fetchall()
 
-    pymysql_cursor.execute(search_in_dish_type_sql,search_input)
-    result_dish_type=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_cooking_styles_sql, search_input)
+    result_cooking_styles = pymysql_cursor.fetchall()
 
-    pymysql_cursor.execute(search_in_meal_type_sql,search_input)
-    result_meal_type=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(search_in_diet_and_health_sql, search_input)
+    result_diet_and_health = pymysql_cursor.fetchall()
+
+    pymysql_cursor.execute(search_in_dish_type_sql, search_input)
+    result_dish_type = pymysql_cursor.fetchall()
+
+    pymysql_cursor.execute(search_in_meal_type_sql, search_input)
+    result_meal_type = pymysql_cursor.fetchall()
 
     matching_recipes_array = [
         result_recipes,
@@ -1177,7 +1122,7 @@ def user_recipe_list_search_function(current_user_id,search_terms):
         result_diet_and_health,
         result_dish_type,
         result_meal_type
-        ]
+    ]
 
     recipe_result_array = []
 
@@ -1190,19 +1135,19 @@ def user_recipe_list_search_function(current_user_id,search_terms):
     final_recipe_list_result = []
 
     for k in recipe_result_array:
-        search_input = (k,current_user_id)
-        pymysql_cursor.execute(search_sql,search_input)
+        search_input = (k, current_user_id)
+        pymysql_cursor.execute(search_sql, search_input)
         search_result = pymysql_cursor.fetchone()
         if search_result:
             final_recipe_list_result.append(search_result)
 
-    result=recipe_list_helper_function(final_recipe_list_result)
+    result = recipe_list_helper_function(final_recipe_list_result)
 
     return result
 
+
 def check_if_user_is_an_author(current_user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     get_author_id_sql = """
     SELECT id
@@ -1211,7 +1156,7 @@ def check_if_user_is_an_author(current_user_id):
     """
 
     get_author_id_input = (current_user_id)
-    pymysql_cursor.execute(get_author_id_sql,get_author_id_input)
+    pymysql_cursor.execute(get_author_id_sql, get_author_id_input)
     result = pymysql_cursor.fetchone()
 
     pymysql_cursor.close()
@@ -1222,9 +1167,9 @@ def check_if_user_is_an_author(current_user_id):
     else:
         return None
 
+
 def get_recipe_creator_form_details():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     all_allergens_sql = """
     SELECT id,name
@@ -1234,8 +1179,6 @@ def get_recipe_creator_form_details():
     pymysql_cursor.execute(all_allergens_sql)
     allergens_form_list = pymysql_cursor.fetchall()
 
-
-
     all_cooking_styles_sql = """
     SELECT id,name
     FROM cooking_styles
@@ -1243,8 +1186,6 @@ def get_recipe_creator_form_details():
 
     pymysql_cursor.execute(all_cooking_styles_sql)
     cooking_styles_form_list = pymysql_cursor.fetchall()
-
-
 
     all_cuisines_sql = """
     SELECT id,name
@@ -1254,8 +1195,6 @@ def get_recipe_creator_form_details():
     pymysql_cursor.execute(all_cuisines_sql)
     cuisines_form_list = pymysql_cursor.fetchall()
 
-
-
     all_diet_health_types_sql = """
     SELECT id,name
     FROM diet_health_types
@@ -1263,8 +1202,6 @@ def get_recipe_creator_form_details():
 
     pymysql_cursor.execute(all_diet_health_types_sql)
     diet_health_types_form_list = pymysql_cursor.fetchall()
-
-
 
     all_dish_types_sql = """
     SELECT id,name
@@ -1274,8 +1211,6 @@ def get_recipe_creator_form_details():
     pymysql_cursor.execute(all_dish_types_sql)
     dish_types_form_list = pymysql_cursor.fetchall()
 
-
-
     all_meal_types_sql = """
     SELECT id,name
     FROM meal_types
@@ -1284,8 +1219,6 @@ def get_recipe_creator_form_details():
     pymysql_cursor.execute(all_meal_types_sql)
     meal_types_form_list = pymysql_cursor.fetchall()
 
-
-
     all_ingredient_sql = """
     SELECT id,name
     FROM ingredients
@@ -1293,7 +1226,6 @@ def get_recipe_creator_form_details():
 
     pymysql_cursor.execute(all_ingredient_sql)
     ingredient_list = pymysql_cursor.fetchall()
-
 
     pymysql_cursor.close()
 
@@ -1305,38 +1237,39 @@ def get_recipe_creator_form_details():
         diet_health_types_form_list,
         dish_types_form_list,
         meal_types_form_list
-        ]
+    ]
 
     return result
+
 
 def ingredient_list_packing_function(unpacked_ingredient_list_array):
     result_array = []
     for i in range(len(unpacked_ingredient_list_array[0])):
         result_array.append(
             [unpacked_ingredient_list_array[0][i],
-            unpacked_ingredient_list_array[1][i],
-            unpacked_ingredient_list_array[2][i],
-            unpacked_ingredient_list_array[3][i]]
-            )
+             unpacked_ingredient_list_array[1][i],
+             unpacked_ingredient_list_array[2][i],
+             unpacked_ingredient_list_array[3][i]]
+        )
 
     return result_array
 
-def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
-    ready_in_time,serves_number,recipe_procedure,recipe_picture_uri,allergens,\
-    cooking_styles,cuisines,diet_health_types,dish_types,meal_types,\
-    packed_ingredient_array,recipe_description):
+
+def recipe_creator_big_function(recipe_title, author_id, prep_time, cook_time,
+                                ready_in_time, serves_number, recipe_procedure, recipe_picture_uri, allergens,
+                                cooking_styles, cuisines, diet_health_types, dish_types, meal_types,
+                                packed_ingredient_array, recipe_description):
 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
     final_recipe_procedure_result = ""
 
     for i in recipe_procedure:
-        if(i[len(i)-1]=="."):
-            final_recipe_procedure_result+=i
+        if (i[len(i)-1] == "."):
+            final_recipe_procedure_result += i
         else:
             i += "."
-            final_recipe_procedure_result+=i
-
+            final_recipe_procedure_result += i
 
     recipe_creation_sql = """
     INSERT INTO
@@ -1348,17 +1281,17 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
     """
 
     recipe_creation_input = (None,
-        recipe_title,
-        author_id,
-        prep_time,
-        cook_time,
-        ready_in_time,
-        serves_number,
-        final_recipe_procedure_result,
-        recipe_description
-        )
+                             recipe_title,
+                             author_id,
+                             prep_time,
+                             cook_time,
+                             ready_in_time,
+                             serves_number,
+                             final_recipe_procedure_result,
+                             recipe_description
+                             )
 
-    pymysql_cursor.execute(recipe_creation_sql,recipe_creation_input)
+    pymysql_cursor.execute(recipe_creation_sql, recipe_creation_input)
     pymysql_connection.commit()
 
     lastest_recipe_id = int(pymysql_cursor.lastrowid)
@@ -1371,8 +1304,8 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
     (%s,%s,%s);
     """
     recipe_photo_creation_input = (None,
-        recipe_picture_uri,
-        lastest_recipe_id)
+                                   recipe_picture_uri,
+                                   lastest_recipe_id)
 
     pymysql_cursor.execute(recipe_photo_creation_sql,
                            recipe_photo_creation_input)
@@ -1392,9 +1325,8 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
                            lastest_recipe_id
                            )
 
-    pymysql_cursor.execute(post_creation_sql,post_creation_input)
+    pymysql_cursor.execute(post_creation_sql, post_creation_input)
     pymysql_connection.commit()
-
 
     for i in allergens:
         recipe_creation_allergen_sql = """
@@ -1405,10 +1337,9 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
         (%s,%s);
         """
 
-        recipe_creation_allergen_input = (lastest_recipe_id,int(i))
+        recipe_creation_allergen_input = (lastest_recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_allergen_sql,
                                recipe_creation_allergen_input)
-
 
     for i in cooking_styles:
         recipe_creation_cooking_styles_sql = """
@@ -1419,10 +1350,9 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
         (%s,%s);
         """
 
-        recipe_creation_cooking_styles_input = (lastest_recipe_id,int(i))
+        recipe_creation_cooking_styles_input = (lastest_recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_cooking_styles_sql,
                                recipe_creation_cooking_styles_input)
-
 
     for i in cuisines:
         recipe_creation_cuisines_sql = """
@@ -1433,10 +1363,9 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
         (%s,%s);
         """
 
-        recipe_creation_cuisines_input = (lastest_recipe_id,int(i))
+        recipe_creation_cuisines_input = (lastest_recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_cuisines_sql,
                                recipe_creation_cuisines_input)
-
 
     for i in diet_health_types:
         recipe_creation_diet_health_types_sql = """
@@ -1447,10 +1376,9 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
         (%s,%s);
         """
 
-        recipe_creation_diet_health_types_input = (lastest_recipe_id,int(i))
+        recipe_creation_diet_health_types_input = (lastest_recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_diet_health_types_sql,
                                recipe_creation_diet_health_types_input)
-
 
     for i in dish_types:
         recipe_creation_dish_types_sql = """
@@ -1460,10 +1388,9 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
         VALUES (%s,%s);
         """
 
-        recipe_creation_dish_types_input = (lastest_recipe_id,int(i))
+        recipe_creation_dish_types_input = (lastest_recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_dish_types_sql,
                                recipe_creation_dish_types_input)
-
 
     for i in meal_types:
         recipe_creation_meal_types_sql = """
@@ -1474,10 +1401,9 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
         (%s,%s);
         """
 
-        recipe_creation_meal_types_input = (lastest_recipe_id,int(i))
+        recipe_creation_meal_types_input = (lastest_recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_meal_types_sql,
                                recipe_creation_meal_types_input)
-
 
     for i in packed_ingredient_array:
         ingredient_list_sql = """
@@ -1489,30 +1415,30 @@ def recipe_creator_big_function(recipe_title,author_id,prep_time,cook_time,\
         (%s,%s,%s,%s,%s);
         """
 
-        ingredient_list_input = (lastest_recipe_id,i[0],i[1],i[2],i[3])
-        pymysql_cursor.execute(ingredient_list_sql,ingredient_list_input)
-
+        ingredient_list_input = (lastest_recipe_id, i[0], i[1], i[2], i[3])
+        pymysql_cursor.execute(ingredient_list_sql, ingredient_list_input)
 
     pymysql_connection.commit()
     pymysql_cursor.close()
 
     return True
 
-def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
-    serves_number,recipe_procedure,recipe_picture_uri,allergens,cooking_styles,\
-    cuisines,diet_health_types,dish_types,meal_types,recipe_id,\
-    change_photo_indicator,packed_ingredient_array,recipe_description):
+
+def recipe_updater_big_function(recipe_title, prep_time, cook_time, ready_in_time,
+                                serves_number, recipe_procedure, recipe_picture_uri, allergens, cooking_styles,
+                                cuisines, diet_health_types, dish_types, meal_types, recipe_id,
+                                change_photo_indicator, packed_ingredient_array, recipe_description):
 
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
     final_recipe_procedure_result = ""
 
     for i in recipe_procedure:
-        if(i[len(i)-1]=="."):
-            final_recipe_procedure_result+=i
+        if (i[len(i)-1] == "."):
+            final_recipe_procedure_result += i
         else:
             i += "."
-            final_recipe_procedure_result+=i
+            final_recipe_procedure_result += i
 
     deletion_recipe_id = (recipe_id)
 
@@ -1533,10 +1459,9 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         final_recipe_procedure_result,
         recipe_description,
         recipe_id
-        )
+    )
 
-    pymysql_cursor.execute(recipe_update_sql,recipe_update_input)
-
+    pymysql_cursor.execute(recipe_update_sql, recipe_update_input)
 
     if change_photo_indicator is True:
         recipe_photo_update_sql = """
@@ -1545,7 +1470,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         WHERE recipe_photos.recipe_id = %s;
         """
 
-        recipe_photo_update_input = (recipe_picture_uri,recipe_id)
+        recipe_photo_update_input = (recipe_picture_uri, recipe_id)
         pymysql_cursor.execute(recipe_photo_update_sql,
                                recipe_photo_update_input)
 
@@ -1556,9 +1481,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
     WHERE allergen_lists.recipe_id = %s;
     """
 
-    pymysql_cursor.execute(allergen_list_deletion_sql,deletion_recipe_id)
-
-
+    pymysql_cursor.execute(allergen_list_deletion_sql, deletion_recipe_id)
 
     for i in allergens:
         recipe_creation_allergen_sql = """
@@ -1569,7 +1492,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         (%s,%s);
         """
 
-        recipe_creation_allergen_input = (recipe_id,int(i))
+        recipe_creation_allergen_input = (recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_allergen_sql,
                                recipe_creation_allergen_input)
 
@@ -1578,9 +1501,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
     WHERE cooking_style_lists.recipe_id = %s;
     """
 
-    pymysql_cursor.execute(cooking_style_list_deletion_sql,deletion_recipe_id)
-
-
+    pymysql_cursor.execute(cooking_style_list_deletion_sql, deletion_recipe_id)
 
     for i in cooking_styles:
         recipe_creation_cooking_styles_sql = """
@@ -1591,7 +1512,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         (%s,%s);
         """
 
-        recipe_creation_cooking_styles_input = (recipe_id,int(i))
+        recipe_creation_cooking_styles_input = (recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_cooking_styles_sql,
                                recipe_creation_cooking_styles_input)
 
@@ -1602,9 +1523,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
     cuisine_lists.recipe_id = %s;
     """
 
-    pymysql_cursor.execute(cuisine_list_deletion_sql,deletion_recipe_id)
-
-
+    pymysql_cursor.execute(cuisine_list_deletion_sql, deletion_recipe_id)
 
     for i in cuisines:
         recipe_creation_cuisines_sql = """
@@ -1615,7 +1534,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         (%s,%s);
         """
 
-        recipe_creation_cuisines_input = (recipe_id,int(i))
+        recipe_creation_cuisines_input = (recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_cuisines_sql,
                                recipe_creation_cuisines_input)
 
@@ -1627,8 +1546,6 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
     pymysql_cursor.execute(diet_health_type_list_deletion_sql,
                            deletion_recipe_id)
 
-
-
     for i in diet_health_types:
         recipe_creation_diet_health_types_sql = """
         INSERT INTO
@@ -1638,7 +1555,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         (%s,%s);
         """
 
-        recipe_creation_diet_health_types_input = (recipe_id,int(i))
+        recipe_creation_diet_health_types_input = (recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_diet_health_types_sql,
                                recipe_creation_diet_health_types_input)
 
@@ -1648,9 +1565,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
     WHERE dish_type_lists.recipe_id = %s;
     """
 
-    pymysql_cursor.execute(dish_type_list_deletion_sql,deletion_recipe_id)
-
-
+    pymysql_cursor.execute(dish_type_list_deletion_sql, deletion_recipe_id)
 
     for i in dish_types:
         recipe_creation_dish_types_sql = """
@@ -1661,7 +1576,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         (%s,%s);
         """
 
-        recipe_creation_dish_types_input = (recipe_id,int(i))
+        recipe_creation_dish_types_input = (recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_dish_types_sql,
                                recipe_creation_dish_types_input)
 
@@ -1671,9 +1586,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
     WHERE meal_type_lists.recipe_id = %s;
     """
 
-    pymysql_cursor.execute(meal_type_list_deletion_sql,deletion_recipe_id)
-
-
+    pymysql_cursor.execute(meal_type_list_deletion_sql, deletion_recipe_id)
 
     for i in meal_types:
         recipe_creation_meal_types_sql = """
@@ -1684,7 +1597,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
         (%s,%s);
         """
 
-        recipe_creation_meal_types_input = (recipe_id,int(i))
+        recipe_creation_meal_types_input = (recipe_id, int(i))
         pymysql_cursor.execute(recipe_creation_meal_types_sql,
                                recipe_creation_meal_types_input)
 
@@ -1695,9 +1608,7 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
     `ingredient_lists`.recipe_id = %s
     """
 
-    pymysql_cursor.execute(ingredient_list_deletion_sql,deletion_recipe_id)
-
-
+    pymysql_cursor.execute(ingredient_list_deletion_sql, deletion_recipe_id)
 
     for i in packed_ingredient_array:
         ingredient_list_sql = """
@@ -1715,19 +1626,18 @@ def recipe_updater_big_function(recipe_title,prep_time,cook_time,ready_in_time,\
             i[1],
             i[2],
             i[3]
-            )
+        )
 
-        pymysql_cursor.execute(ingredient_list_sql,ingredient_list_input)
-
+        pymysql_cursor.execute(ingredient_list_sql, ingredient_list_input)
 
     pymysql_connection.commit()
     pymysql_cursor.close()
 
     return True
 
+
 def get_category_details(category_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     sql = """
     SELECT
@@ -1738,15 +1648,15 @@ def get_category_details(category_id):
     id = %s
     """
 
-    pymysql_cursor.execute(sql,category_id)
+    pymysql_cursor.execute(sql, category_id)
     category_details = pymysql_cursor.fetchone()
     pymysql_cursor.close()
 
     return category_details
 
-def user_is_current_post_author_checker(user_id,recipe_id):
-    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
+def user_is_current_post_author_checker(user_id, recipe_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
     check_sql = """
     SELECT authors.user_id
@@ -1758,7 +1668,7 @@ def user_is_current_post_author_checker(user_id,recipe_id):
 
     current_recipe_id = (recipe_id)
 
-    pymysql_cursor.execute(check_sql,current_recipe_id)
+    pymysql_cursor.execute(check_sql, current_recipe_id)
 
     authors_user_id = pymysql_cursor.fetchone()
 
@@ -1769,9 +1679,9 @@ def user_is_current_post_author_checker(user_id,recipe_id):
     else:
         return False
 
+
 def delete_post_function(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     delete_post_recipe_sql = """
     DELETE
@@ -1780,17 +1690,17 @@ def delete_post_function(post_id):
     """
 
     delete_post_recipe_input = (post_id)
-    pymysql_cursor.execute(delete_post_recipe_sql,delete_post_recipe_input)
+    pymysql_cursor.execute(delete_post_recipe_sql, delete_post_recipe_input)
 
     pymysql_connection.commit()
     pymysql_cursor.close()
 
     return True
 
+
 def delete_user_function(user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-    session.pop('username',None)
-
+    session.pop('username', None)
 
     delete_user_sql = """
     DELETE
@@ -1799,16 +1709,16 @@ def delete_user_function(user_id):
     """
 
     delete_user_input = (user_id)
-    pymysql_cursor.execute(delete_user_sql,delete_user_input)
+    pymysql_cursor.execute(delete_user_sql, delete_user_input)
 
     pymysql_connection.commit()
     pymysql_cursor.close()
 
     return True
 
+
 def user_to_author_function(user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     user_to_author_sql = """
     INSERT INTO `authors`
@@ -1817,17 +1727,17 @@ def user_to_author_function(user_id):
     (%s,%s,CURRENT_DATE());
     """
 
-    user_to_author_input = (None,user_id)
-    pymysql_cursor.execute(user_to_author_sql,user_to_author_input)
+    user_to_author_input = (None, user_id)
+    pymysql_cursor.execute(user_to_author_sql, user_to_author_input)
 
     pymysql_connection.commit()
     pymysql_cursor.close()
 
     return True
 
+
 def get_top_recipe_lists_post_list_details():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     top_recipe_lists_details_sql = """
     SELECT recipes.name AS post_recipe_name,
@@ -1844,14 +1754,14 @@ def get_top_recipe_lists_post_list_details():
     """
 
     pymysql_cursor.execute(top_recipe_lists_details_sql)
-    top_recipe_lists_post_list_details=pymysql_cursor.fetchall()
+    top_recipe_lists_post_list_details = pymysql_cursor.fetchall()
 
     pymysql_cursor.close()
     return top_recipe_lists_post_list_details
 
+
 def get_top_categories():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     top_categories_sql = """
     SELECT id AS category_id,
@@ -1863,14 +1773,14 @@ def get_top_categories():
     """
 
     pymysql_cursor.execute(top_categories_sql)
-    top_categories_list=pymysql_cursor.fetchall()
+    top_categories_list = pymysql_cursor.fetchall()
 
     pymysql_cursor.close()
     return top_categories_list
 
+
 def categories_view_adder_from_posts_function(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     cooking_styles_match_sql = """
     SELECT categories.id AS category_id
@@ -1886,8 +1796,8 @@ def categories_view_adder_from_posts_function(post_id):
     WHERE posts.id = %s
     """
 
-    pymysql_cursor.execute(cooking_styles_match_sql,post_id)
-    category_cs=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(cooking_styles_match_sql, post_id)
+    category_cs = pymysql_cursor.fetchall()
 
     diet_health_types_match_sql = """
     SELECT categories.id AS category_id
@@ -1903,8 +1813,8 @@ def categories_view_adder_from_posts_function(post_id):
     WHERE posts.id = %s
     """
 
-    pymysql_cursor.execute(diet_health_types_match_sql,post_id)
-    category_dht=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(diet_health_types_match_sql, post_id)
+    category_dht = pymysql_cursor.fetchall()
 
     dish_types_match_sql = """
     SELECT categories.id AS category_id
@@ -1920,8 +1830,8 @@ def categories_view_adder_from_posts_function(post_id):
     WHERE posts.id = %s
     """
 
-    pymysql_cursor.execute(dish_types_match_sql,post_id)
-    category_dtm=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(dish_types_match_sql, post_id)
+    category_dtm = pymysql_cursor.fetchall()
 
     meal_types_match_sql = """
     SELECT categories.id AS category_id
@@ -1937,8 +1847,8 @@ def categories_view_adder_from_posts_function(post_id):
     WHERE posts.id = %s
     """
 
-    pymysql_cursor.execute(meal_types_match_sql,post_id)
-    category_mt=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(meal_types_match_sql, post_id)
+    category_mt = pymysql_cursor.fetchall()
 
     cuisines_match_sql = """
     SELECT categories.id AS category_id
@@ -1954,8 +1864,8 @@ def categories_view_adder_from_posts_function(post_id):
     WHERE posts.id = %s
     """
 
-    pymysql_cursor.execute(cuisines_match_sql,post_id)
-    category_c=pymysql_cursor.fetchall()
+    pymysql_cursor.execute(cuisines_match_sql, post_id)
+    category_c = pymysql_cursor.fetchall()
 
     def packing_function(input):
         dump_array = []
@@ -1963,11 +1873,11 @@ def categories_view_adder_from_posts_function(post_id):
             dump_array.append(i["category_id"])
         return dump_array
 
-    category_array = packing_function(category_cs)  + \
-                     packing_function(category_dht) + \
-                     packing_function(category_dtm) + \
-                     packing_function(category_mt)  + \
-                     packing_function(category_c)
+    category_array = packing_function(category_cs) + \
+        packing_function(category_dht) + \
+        packing_function(category_dtm) + \
+        packing_function(category_mt) + \
+        packing_function(category_c)
 
     categories_view_counter_sql = """
     SELECT `categories`.`number_of_views`
@@ -1982,11 +1892,11 @@ def categories_view_adder_from_posts_function(post_id):
     """
 
     for i in category_array:
-        pymysql_cursor.execute(categories_view_counter_sql,i)
+        pymysql_cursor.execute(categories_view_counter_sql, i)
         number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
         number_of_views += 1
 
-        categories_update_counter_input = (number_of_views,i)
+        categories_update_counter_input = (number_of_views, i)
 
         pymysql_cursor.execute(categories_update_counter_sql,
                                categories_update_counter_input)
@@ -1995,9 +1905,9 @@ def categories_view_adder_from_posts_function(post_id):
 
     pymysql_cursor.close()
 
+
 def categories_view_adder_function(category_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     categories_view_counter_sql = """
     SELECT number_of_views
@@ -2018,16 +1928,16 @@ def categories_view_adder_function(category_id):
     WHERE `categories`.id = %s
     """
 
-    categories_view_update_input = (new_number_of_views,category_id)
+    categories_view_update_input = (new_number_of_views, category_id)
     pymysql_cursor.execute(categories_view_update_sql,
                            categories_view_update_input)
 
     pymysql_connection.commit()
     pymysql_cursor.close()
 
+
 def post_view_adder_function(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     post_view_counter_sql = """
     SELECT number_of_views
@@ -2036,7 +1946,7 @@ def post_view_adder_function(post_id):
     """
 
     post_view_counter_input = (post_id)
-    pymysql_cursor.execute(post_view_counter_sql,post_view_counter_input)
+    pymysql_cursor.execute(post_view_counter_sql, post_view_counter_input)
 
     number_of_views = int(pymysql_cursor.fetchone()["number_of_views"])
     number_of_views += 1
@@ -2046,15 +1956,15 @@ def post_view_adder_function(post_id):
     SET `number_of_views`= %s
     WHERE `posts`.id = %s
     """
-    post_view_update_input = (number_of_views,post_id)
-    pymysql_cursor.execute(post_view_update_sql,post_view_update_input)
+    post_view_update_input = (number_of_views, post_id)
+    pymysql_cursor.execute(post_view_update_sql, post_view_update_input)
 
     pymysql_connection.commit()
     pymysql_cursor.close()
 
+
 def check_if_post_exist(post_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     check_if_post_exist_sql = """
     SELECT recipe_id
@@ -2063,15 +1973,15 @@ def check_if_post_exist(post_id):
     """
 
     check_if_post_exist_input = (post_id)
-    pymysql_cursor.execute(check_if_post_exist_sql,check_if_post_exist_input)
+    pymysql_cursor.execute(check_if_post_exist_sql, check_if_post_exist_input)
 
     post = pymysql_cursor.fetchone()
     pymysql_cursor.close()
     return post
 
+
 def check_if_user_exist(user_id):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
-
 
     check_if_user_exist_sql = """
     SELECT username
@@ -2080,15 +1990,15 @@ def check_if_user_exist(user_id):
     """
 
     check_if_user_exist_input = (user_id)
-    pymysql_cursor.execute(check_if_user_exist_sql,check_if_user_exist_input)
+    pymysql_cursor.execute(check_if_user_exist_sql, check_if_user_exist_input)
 
     username = pymysql_cursor.fetchone()
     pymysql_cursor.close()
     return username
 
-def update_user_profile_photo(profile_picture_uri,current_user_id):
-    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
+def update_user_profile_photo(profile_picture_uri, current_user_id):
+    pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
     try:
         update_user_photo_sql = """
@@ -2097,8 +2007,8 @@ def update_user_profile_photo(profile_picture_uri,current_user_id):
         WHERE id = %s
         """
 
-        update_user_photo_input = (profile_picture_uri,current_user_id)
-        pymysql_cursor.execute(update_user_photo_sql,update_user_photo_input)
+        update_user_photo_input = (profile_picture_uri, current_user_id)
+        pymysql_cursor.execute(update_user_photo_sql, update_user_photo_input)
 
         pymysql_connection.commit()
     except:
@@ -2108,7 +2018,8 @@ def update_user_profile_photo(profile_picture_uri,current_user_id):
         pymysql_cursor.close()
         return error
 
-def update_user_details(current_user_id,email_input,password_input,bio_input):
+
+def update_user_details(current_user_id, email_input, password_input, bio_input):
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
 
     if password_input == "":
@@ -2117,13 +2028,13 @@ def update_user_details(current_user_id,email_input,password_input,bio_input):
         SET `email`=%s,`bio`=%s
         WHERE id = %s
         """
-        update_user_details_input=(email_input,bio_input,current_user_id)
+        update_user_details_input = (email_input, bio_input, current_user_id)
     else:
         hashed_password = bcrypt.generate_password_hash(
             password_input
-            ).decode(
-                'utf-8'
-                )
+        ).decode(
+            'utf-8'
+        )
 
         update_user_details_sql = """
         UPDATE `users`
@@ -2131,7 +2042,7 @@ def update_user_details(current_user_id,email_input,password_input,bio_input):
         WHERE id = %s
         """
 
-        update_user_details_input=(
+        update_user_details_input = (
             hashed_password,
             email_input,
             bio_input,
@@ -2147,12 +2058,14 @@ def update_user_details(current_user_id,email_input,password_input,bio_input):
     finally:
         pymysql_cursor.close()
 
+
 def get_comments(post_id):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
-    comment_query = { "parent_post_id": post_id }
+    comment_query = {"parent_post_id": post_id}
     sort = [('timestamp', -1)]
     comment_list = list(comments.find(comment_query).sort(sort))
     return comment_list
+
 
 def post_comment(
         current_user_id,
@@ -2161,17 +2074,17 @@ def post_comment(
         comment,
         parent_comment_id=None):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
-    user_username=get_username(current_user_id)
+    user_username = get_username(current_user_id)
 
     if parent_object_type == "post":
         new_comment = {
-            "user_id":current_user_id,
-            "username":user_username,
-            "parent_post_id":parent_post_id,
-            "parent_comment_id":parent_comment_id,
-            "date_time_created":datetime.utcnow(),
-            "comment":comment,
-            "children_comments":[]
+            "user_id": current_user_id,
+            "username": user_username,
+            "parent_post_id": parent_post_id,
+            "parent_comment_id": parent_comment_id,
+            "date_time_created": datetime.utcnow(),
+            "comment": comment,
+            "children_comments": []
         }
 
         inserted_comment = comments.insert_one(new_comment)
@@ -2180,20 +2093,20 @@ def post_comment(
     else:
         new_comment = {
             "_id": ObjectId(),
-            "user_id":current_user_id,
-            "username":user_username,
-            "parent_post_id":parent_post_id,
-            "parent_comment_id":ObjectId(parent_comment_id),
-            "date_time_created":datetime.utcnow(),
-            "comment":comment,
-            "children_comments":[]
+            "user_id": current_user_id,
+            "username": user_username,
+            "parent_post_id": parent_post_id,
+            "parent_comment_id": ObjectId(parent_comment_id),
+            "date_time_created": datetime.utcnow(),
+            "comment": comment,
+            "children_comments": []
         }
 
         comments.update_one(
-            { "_id": ObjectId(parent_comment_id)},
-                {
-                    "$addToSet":{
-                        "children_comments":new_comment
+            {"_id": ObjectId(parent_comment_id)},
+            {
+                "$addToSet": {
+                    "children_comments": new_comment
                 }
             }
         )
@@ -2202,11 +2115,12 @@ def post_comment(
 
     return inserted_comment_id
 
-def edit_comment(comment_id,comment):
+
+def edit_comment(comment_id, comment):
     comments = mongo_connection["tgc-ci-project-3-db"]["comments-collection"]
     comment_query = {
         "_id": ObjectId(comment_id)
-        }
+    }
 
     new_comment = {
         "$set": {
@@ -2217,31 +2131,34 @@ def edit_comment(comment_id,comment):
     updated_comment = comments.update_one(comment_query, new_comment)
     return updated_comment
 
+
 @app.template_filter('formatdatetime')
 def format_datetime(value, format='medium'):
     """Format a date time to: d Mon YYYY"""
     if value is None:
         return ""
     if format == 'full':
-        format="EEEE, d. MMMM y 'at' HH:mm"
+        format = "EEEE, d. MMMM y 'at' HH:mm"
     elif format == 'medium':
         # format="EE dd.MM.y HH:mm"
         format = "d MMM y"
     return babel.dates.format_datetime(value, format)
+
 
 @app.route("/")
 def init():
     top_recipe_list = get_top_recipe_lists_post_list_details()
     top_categories = get_top_categories()
     return render_template(
-    "index.html",
-    session=session,
-    top_recipes=top_recipe_list,
-    recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
-    top_categories=top_categories
+        "index.html",
+        session=session,
+        top_recipes=top_recipe_list,
+        recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
+        top_categories=top_categories
     )
 
-@app.route("/sign_in",methods=["GET","POST"])
+
+@app.route("/sign_in", methods=["GET", "POST"])
 def sign_in():
     if request.method == "GET":
         return render_template("sign_in.html")
@@ -2249,15 +2166,15 @@ def sign_in():
         next = get_redirect_target_url()
         username_input = request.form["username_input"]
         password_input = request.form["password_input"]
-        user_details = check_sign_in_details(username_input,password_input)
+        user_details = check_sign_in_details(username_input, password_input)
 
         if user_details is not None:
             stored_password = user_details["password"]
-            if bcrypt.check_password_hash(stored_password,password_input):
+            if bcrypt.check_password_hash(stored_password, password_input):
                 session.permanent = True
                 session["username"] = username_input
                 session["user_id"] = user_details["id"]
-                #init will be the fallback url for the redirector
+                # init will be the fallback url for the redirector
                 return redirect(next)
             else:
                 flash("Incorrect Password", "error")
@@ -2266,14 +2183,16 @@ def sign_in():
             flash("This account does not exist", "error")
             return redirect(url_for("sign_in"))
 
+
 @app.route("/sign_out")
 def sign_out():
     next = get_redirect_target_url()
     if 'username' in session:
-        session.pop('username',None)
+        session.pop('username', None)
     return redirect(next)
 
-@app.route("/sign_up",methods=["GET","POST"])
+
+@app.route("/sign_up", methods=["GET", "POST"])
 def user_creation():
     pymysql_cursor = pymysql.cursors.DictCursor(pymysql_connection)
     if request.method == "GET":
@@ -2281,7 +2200,7 @@ def user_creation():
         pymysql_cursor.execute(country_sql)
         country_list = pymysql_cursor.fetchall()
         pymysql_cursor.close()
-        return render_template("sign_up.html",country_list=country_list)
+        return render_template("sign_up.html", country_list=country_list)
     else:
         email_input = request.form["email_input"]
         username_input = request.form["username_input"]
@@ -2289,18 +2208,18 @@ def user_creation():
         country_input = request.form["country_input"]
         if username_input == None or password_input == None:
             if username_input == None:
-                flash("Username is blank","error")
+                flash("Username is blank", "error")
             if password_input == None:
-                flash("Password is blank","error")
+                flash("Password is blank", "error")
             return redirect(url_for('user_creation'))
         else:
-            if (username_special_character_cleaner(username_input)[0]==False):
-                if(check_if_user_exist(username_input) is None):
+            if (username_special_character_cleaner(username_input)[0] == False):
+                if (check_if_user_exist(username_input) is None):
                     hashed_password = bcrypt.generate_password_hash(
                         password_input
-                        ).decode(
-                            'utf-8'
-                            )
+                    ).decode(
+                        'utf-8'
+                    )
 
                     default_profile_picture = "default-profile-picture.png"
                     user_creation_sql = """
@@ -2318,12 +2237,12 @@ def user_creation():
                     user_creation_input = (
                         username_input,
                         hashed_password,
-                        email_input,country_input,
+                        email_input, country_input,
                         default_profile_picture
-                        )
+                    )
 
                     pymysql_cursor.execute(user_creation_sql,
-                    user_creation_input)
+                                           user_creation_input)
 
                     pymysql_connection.commit()
                     pymysql_cursor.close()
@@ -2338,17 +2257,18 @@ def user_creation():
 
                     return redirect(url_for('user_creation'))
             else:
-                if(username_special_character_cleaner(
+                if (username_special_character_cleaner(
                         username_input
-                        )[1]=="Username has special characters"):
-                    flash("Invalid Username","error")
+                )[1] == "Username has special characters"):
+                    flash("Invalid Username", "error")
                     return redirect(url_for('user_creation'))
 
-@app.route("/user/recipes",methods=["GET","POST"])
+
+@app.route("/user/recipes", methods=["GET", "POST"])
 def recipes():
     if session:
         current_user_id = session["user_id"]
-        if request.method=="GET":
+        if request.method == "GET":
             user_is_an_author = False
             if check_if_user_is_an_author(current_user_id):
                 user_is_an_author = True
@@ -2361,7 +2281,7 @@ def recipes():
                     user_recipe_list_search_function(
                         current_user_id,
                         search_terms
-                        )
+                    )
 
                 return render_template(
                     "recipes.html",
@@ -2369,11 +2289,11 @@ def recipes():
                     user_recipe_list=searched_user_recipes_post_list_details,
                     recipe_creator_form_details=recipe_creator_form_details,
                     recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION']
-                    )
+                )
 
             else:
                 user_recipe_lists_post_list_details = \
-                get_user_recipe_lists_post_list_details(current_user_id)
+                    get_user_recipe_lists_post_list_details(current_user_id)
 
                 return render_template(
                     "recipes.html",
@@ -2382,7 +2302,7 @@ def recipes():
                     user_is_an_author=user_is_an_author,
                     recipe_creator_form_details=recipe_creator_form_details,
                     recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION']
-                    )
+                )
 
         else:
             recipe_picture_uri = "null"
@@ -2396,16 +2316,16 @@ def recipes():
                     if check_if_file_is_allow(recipe_photo.filename):
                         recipe_photo.filename = secure_filename(
                             recipe_photo.filename
-                            )
+                        )
 
                         upload_picture_to_s3(
                             recipe_photo,
                             app.config["FLASKS3_BUCKET_NAME"],
                             False)
 
-                        recipe_picture_uri=str(recipe_photo.filename)
+                        recipe_picture_uri = str(recipe_photo.filename)
                     else:
-                        flash("That image extension is not allowed!","error")
+                        flash("That image extension is not allowed!", "error")
                         return redirect(url_for("recipes"))
 
             author_id = check_if_user_is_an_author(current_user_id)
@@ -2424,12 +2344,12 @@ def recipes():
                 request.form.getlist("ingredient_list_ingredient")
             ingredient_list_special = \
                 request.form.getlist("ingredient_list_special")
-            ingredient_list_array=[
+            ingredient_list_array = [
                 ingredient_list_ingredient,
                 ingredient_list_amount,
                 ingredient_list_measurement,
                 ingredient_list_special
-                ]
+            ]
             allergens = request.form.getlist("allergens")
             cooking_styles = request.form.getlist("cooking_styles")
             cuisines = request.form.getlist("cuisines")
@@ -2439,7 +2359,7 @@ def recipes():
 
             packed_ingredient_array = ingredient_list_packing_function(
                 ingredient_list_array
-                )
+            )
 
             creation_result = recipe_creator_big_function(
                 recipe_title,
@@ -2458,7 +2378,7 @@ def recipes():
                 meal_types,
                 packed_ingredient_array,
                 recipe_description
-                )
+            )
 
             if creation_result == True:
                 flash("The recipe has been successfully created!", "message")
@@ -2469,7 +2389,8 @@ def recipes():
     else:
         return redirect(url_for("init"))
 
-@app.route("/user",methods=["GET","POST"])
+
+@app.route("/user", methods=["GET", "POST"])
 def user_dashboard():
     if session:
         current_user_id = session["user_id"]
@@ -2481,7 +2402,7 @@ def user_dashboard():
                 user_details=user_details,
                 user_recipe_list=user_recipe_list,
                 profile_picture_url=app.config['PROFILE_PICTURE_LOCATION']
-                )
+            )
         else:
             email_input = request.form["email_input"]
             password_input = request.form["password_input"]
@@ -2491,7 +2412,7 @@ def user_dashboard():
                 email_input,
                 password_input,
                 bio_input
-                )
+            )
             if request.files:
                 uploaded_image = request.files["profile-picture-input"]
                 if uploaded_image.filename == '':
@@ -2500,26 +2421,27 @@ def user_dashboard():
                     if check_if_file_is_allow(uploaded_image.filename):
                         uploaded_image.filename = secure_filename(
                             uploaded_image.filename
-                            )
+                        )
 
                         upload_picture_to_s3(uploaded_image,
-                            app.config["FLASKS3_BUCKET_NAME"],
-                            True
-                            )
+                                             app.config["FLASKS3_BUCKET_NAME"],
+                                             True
+                                             )
 
-                        profile_picture_uri=str(uploaded_image.filename)
+                        profile_picture_uri = str(uploaded_image.filename)
                         update_user_profile_photo(profile_picture_uri,
                                                   current_user_id)
                     else:
-                        flash("That image extension is not allowed!","error")
+                        flash("That image extension is not allowed!", "error")
                         return redirect(url_for("user_dashboard"))
             flash(
                 "Your account details have successfully been updated!",
                 "message"
-                )
+            )
             return redirect(url_for("user_dashboard"))
     else:
         return redirect(url_for("init"))
+
 
 @app.route("/recipe_list")
 def recipe_list():
@@ -2528,14 +2450,14 @@ def recipe_list():
         searched_recipe_lists_post_list_details = recipe_list_search_function(
             search_terms,
             False
-            )
+        )
         top_categories = get_top_categories()
         return render_template(
             "recipe_list.html",
             recipe_list=searched_recipe_lists_post_list_details,
             recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
             top_categories=top_categories
-            )
+        )
     else:
         recipe_lists_post_list_details = get_recipe_lists_post_list_details()
         top_categories = get_top_categories()
@@ -2544,7 +2466,8 @@ def recipe_list():
             recipe_list=recipe_lists_post_list_details,
             recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
             top_categories=top_categories
-            )
+        )
+
 
 @app.route("/category/<category_id>")
 def single_category(category_id):
@@ -2552,7 +2475,7 @@ def single_category(category_id):
     searched_recipe_lists_post_list_details = recipe_list_search_function(
         category_details['name'],
         True
-        )
+    )
     top_categories = get_top_categories()
     return render_template(
         "single_category.html",
@@ -2561,9 +2484,10 @@ def single_category(category_id):
         recipe_list=searched_recipe_lists_post_list_details,
         recipe_picture_url=app.config['RECIPE_PICTURE_LOCATION'],
         top_categories=top_categories
-        )
+    )
 
-@app.route("/single/<int:post_id>",methods=["GET","POST"])
+
+@app.route("/single/<int:post_id>", methods=["GET", "POST"])
 def post(post_id):
     if check_if_post_exist(post_id):
         data = get_post_details(post_id)
@@ -2572,7 +2496,7 @@ def post(post_id):
         number_of_comments = len(post_comments)
         post_view_adder_function(post_id)
         if session:
-            if request.method=="GET":
+            if request.method == "GET":
                 return render_template(
                     "single.html",
                     author_details=data[0],
@@ -2592,7 +2516,7 @@ def post(post_id):
                     user_is_sign_in=True,
                     post_comments=post_comments,
                     number_of_comments=number_of_comments
-                    )
+                )
             else:
                 current_user_id = session["user_id"]
                 new_comment = request.form["comment_input"]
@@ -2603,17 +2527,17 @@ def post(post_id):
                     post_comment(
                         current_user_id,
                         comment_parent_object_type,
-                        post_id,new_comment,
+                        post_id, new_comment,
                         comment_parent_comment_id
-                        )
+                    )
                 else:
                     post_comment(
                         current_user_id,
                         comment_parent_object_type,
                         post_id,
                         new_comment
-                        )
-                return redirect(url_for("post",post_id=post_id))
+                    )
+                return redirect(url_for("post", post_id=post_id))
         else:
             return render_template(
                 "single.html",
@@ -2633,33 +2557,31 @@ def post(post_id):
                 profile_picture_url=app.config['PROFILE_PICTURE_LOCATION'],
                 post_comments=post_comments,
                 number_of_comments=number_of_comments
-                )
+            )
     else:
         return abort(404)
 
-@app.route("/single/<post_id>/editor",methods=["GET","POST"])
+
+@app.route("/single/<post_id>/editor", methods=["GET", "POST"])
 def recipe_editor(post_id):
     if session:
         if check_if_post_exist(post_id):
             current_user_id = session["user_id"]
             if user_is_current_post_author_checker(
-                current_user_id,post_id
-                ) == True:
+                current_user_id, post_id
+            ) == True:
                 if request.method == "GET":
                     editor_data = get_recipe_details_for_recipe_editor(post_id)
                     return render_template(
                         "recipe_editor.html",
                         recipe_details=editor_data["current_post_details"],
-                        current_post_categories=\
-                            editor_data["current_post_categories"],
-                        all_available_categories=\
-                            editor_data["all_available_categories"],
-                        all_available_ingredients=\
-                            editor_data["all_available_ingredients"]
-                        )
+                        current_post_categories=editor_data["current_post_categories"],
+                        all_available_categories=editor_data["all_available_categories"],
+                        all_available_ingredients=editor_data["all_available_ingredients"]
+                    )
                 else:
                     recipe_picture_uri = "null"
-                    change_photo_indicator=False
+                    change_photo_indicator = False
                     if request.files:
                         recipe_photo = request.files["recipe_photo"]
                         if recipe_photo.filename == '':
@@ -2668,21 +2590,21 @@ def recipe_editor(post_id):
                             if check_if_file_is_allow(recipe_photo.filename):
                                 recipe_photo.filename = secure_filename(
                                     recipe_photo.filename
-                                    )
+                                )
 
                                 upload_picture_to_s3(
                                     recipe_photo,
                                     app.config["FLASKS3_BUCKET_NAME"],
                                     False
-                                    )
+                                )
 
-                                recipe_picture_uri=str(recipe_photo.filename)
+                                recipe_picture_uri = str(recipe_photo.filename)
                                 change_photo_indicator = True
                             else:
                                 flash(
                                     "That image extension is not allowed!",
                                     "error"
-                                    )
+                                )
                                 return redirect(url_for("recipes"))
 
                     recipe_title = request.form["recipe_title"]
@@ -2695,7 +2617,8 @@ def recipe_editor(post_id):
                     allergens = request.form.getlist("allergens")
                     cooking_styles = request.form.getlist("cooking_styles")
                     cuisines = request.form.getlist("cuisines")
-                    diet_health_types = request.form.getlist("diet_health_types")
+                    diet_health_types = request.form.getlist(
+                        "diet_health_types")
                     dish_types = request.form.getlist("dish_types")
                     meal_types = request.form.getlist("meal_types")
                     ingredient_list_amount = \
@@ -2706,16 +2629,16 @@ def recipe_editor(post_id):
                         request.form.getlist("ingredient_list_ingredient")
                     ingredient_list_special = \
                         request.form.getlist("ingredient_list_special")
-                    ingredient_list_array=[
+                    ingredient_list_array = [
                         ingredient_list_ingredient,
                         ingredient_list_amount,
                         ingredient_list_measurement,
                         ingredient_list_special
-                        ]
+                    ]
 
                     packed_ingredient_array = ingredient_list_packing_function(
                         ingredient_list_array
-                        )
+                    )
 
                     updater_result = recipe_updater_big_function(
                         recipe_title,
@@ -2735,19 +2658,19 @@ def recipe_editor(post_id):
                         change_photo_indicator,
                         packed_ingredient_array,
                         recipe_description
-                        )
+                    )
 
                     if updater_result == True:
                         flash(
                             "The recipe has been successfully updated!",
                             "message"
-                            )
+                        )
                         return redirect(url_for("recipes"))
                     else:
                         flash(
                             "Something went wrong during recipe editing!",
                             "error"
-                            )
+                        )
                         return redirect(url_for("recipes"))
             else:
                 flash("You are not the author of this recipe!", "error")
@@ -2757,6 +2680,7 @@ def recipe_editor(post_id):
             return redirect(url_for("recipes"))
     else:
         return redirect(url_for("init"))
+
 
 @app.route("/delete-post/<post_id>")
 def delete_post(post_id):
@@ -2764,19 +2688,19 @@ def delete_post(post_id):
         if check_if_post_exist(post_id):
             current_user_id = session["user_id"]
             if user_is_current_post_author_checker(
-                current_user_id,post_id
-                ) == True:
-                if(delete_post_function(post_id) is True):
+                current_user_id, post_id
+            ) == True:
+                if (delete_post_function(post_id) is True):
                     flash(
                         "The recipe has been successfully deleted!",
                         "message"
-                        )
+                    )
                     return redirect(url_for("recipes"))
                 else:
                     flash(
                         "Something went wrong during the deletion process!",
                         "error"
-                        )
+                    )
                     return redirect(url_for("recipes"))
             else:
                 flash("You are not the author of this recipe!", "error")
@@ -2787,10 +2711,11 @@ def delete_post(post_id):
     else:
         return redirect(url_for("init"))
 
+
 @app.route("/delete-user/<user_id>")
 def delete_user(user_id):
     if check_if_user_exist(user_id):
-        if(delete_user_function(user_id) is True):
+        if (delete_user_function(user_id) is True):
             flash("The account has been successfully deleted!", "message")
             return redirect(url_for("init"))
         else:
@@ -2799,6 +2724,7 @@ def delete_user(user_id):
     else:
         flash("This user does not exist!", "error")
         return redirect(url_for("init"))
+
 
 @app.route("/become-an-author/<user_id>")
 def become_an_author(user_id):
@@ -2813,21 +2739,26 @@ def become_an_author(user_id):
         flash("This user does not exist!", "error")
         return redirect(url_for("init"))
 
+
 @app.route("/blogs")
 def bloghub():
-  return render_template("bloghub.html")
+    return render_template("bloghub.html")
+
 
 @app.route("/blogs/<int:blog_id>")
 def single_blog(blog_id):
-  return redirect(url_for("init"))
+    return redirect(url_for("init"))
+
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
 
+
 @app.errorhandler(500)
 def internal_error(e):
     return render_template("500.html"), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',

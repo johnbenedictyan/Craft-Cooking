@@ -6,7 +6,9 @@
         <div class="row no-gutters slider-text align-items-end justify-content-center">
             <div class="col-md-9 ftco-animate pb-5 text-center">
                 <h1 class="mb-3 bread">Sign In</h1>
-                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Sign In <i class="ion-ios-arrow-forward"></i></span></p>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i
+                                class="ion-ios-arrow-forward"></i></a></span> <span>Sign In <i
+                            class="ion-ios-arrow-forward"></i></span></p>
             </div>
         </div>
     </div>
@@ -20,10 +22,12 @@
                 <h2 class="mb-4"><span>Sign In</span></h2>
                 <form method="POST">
                     <div class="form-group">
-                        <input type="text" class="form-control" id="user_username" name="username_input" aria-describedby="user_username" placeholder="Username">
+                        <input type="text" class="form-control" id="user_username" name="username_input"
+                            aria-describedby="user_username" placeholder="Username">
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" id="user_password" name="password_input" placeholder="Password">
+                        <input type="password" class="form-control" id="user_password" name="password_input"
+                            placeholder="Password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
                 </form>
@@ -40,8 +44,8 @@
 
 {% block jquery_script_section %}
 <script>
-/* global $ */
-    $(function(){
+    /* global $ */
+    $(function () {
         $(".navbar-nav li").removeClass("active");
         $("#log_in_nav_item").addClass("active");
     });

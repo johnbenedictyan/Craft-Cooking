@@ -2,13 +2,15 @@
 {% block page_specific_css_section %}
 <style>
     .post_icon {
-        font-size:2rem;
+        font-size: 2rem;
     }
-    .comment-box-close-icon{
-      font-size:x-large;
+
+    .comment-box-close-icon {
+        font-size: x-large;
     }
-    .comment-box-close-icon:hover{
-      cursor: pointer;
+
+    .comment-box-close-icon:hover {
+        cursor: pointer;
     }
 </style>
 {% endblock %}
@@ -19,7 +21,9 @@
         <div class="row no-gutters slider-text align-items-end justify-content-center">
             <div class="col-md-9 ftco-animate pb-5 text-center">
                 <h1 class="mb-3 bread">{{recipe_details.name|title}}</h1>
-                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>{{recipe_details.name|title}}<i class="ion-ios-arrow-forward"></i></span></p>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i
+                                class="ion-ios-arrow-forward"></i></a></span> <span>{{recipe_details.name|title}}<i
+                            class="ion-ios-arrow-forward"></i></span></p>
             </div>
         </div>
     </div>
@@ -66,11 +70,14 @@
                             {% if i.measurement_type == "no units" and i.extra_information == "None" %}
                             <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}}</li>
                             {% elif i.measurement_type == "no units" %}
-                            <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
+                            <li>{{i.ingredient_amount|title}} {{i.ingredient_name|title}}
+                                ({{i.extra_information |title}})</li>
                             {% elif i.extra_information == "None" %}
-                            <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}}</li>
+                            <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}}
+                            </li>
                             {% else %}
-                            <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}} ({{i.extra_information |title}})</li>
+                            <li>{{i.ingredient_amount|title}} {{i.measurement_type|title}} {{i.ingredient_name|title}}
+                                ({{i.extra_information |title}})</li>
                             {% endif %}
                             {% endfor %}
                         </ul>
@@ -92,9 +99,9 @@
                     </div>
                     <div class="col-12">
                         <ul>
-                        {% for l in allergens %}
-                        <li>{{l.allergen_name |title}}</li>
-                        {% endfor %}
+                            {% for l in allergens %}
+                            <li>{{l.allergen_name |title}}</li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -125,7 +132,8 @@
                     <div class="col">
                         <div class="about-author d-flex p-4 bg-light">
                             <div class="bio mr-5" style="height:25%;width:25%;">
-                                <img src="{{profile_picture_url~author_details.profile_picture_uri}}" alt="Image placeholder" class="img-fluid mb-4">
+                                <img src="{{profile_picture_url~author_details.profile_picture_uri}}"
+                                    alt="Image placeholder" class="img-fluid mb-4">
                             </div>
                             <div class="desc">
                                 <h3>{{author_details.username}}</h3>
@@ -135,65 +143,69 @@
                     </div>
                 </div>
                 <div class="row pt-5 mt-5">
-                  <div class="col-12">
-                    <h3 class="mb-5">{{number_of_comments}} Comments</h3>
+                    <div class="col-12">
+                        <h3 class="mb-5">{{number_of_comments}} Comments</h3>
                     </div>
                     <div class="col-12">
-                      {% if post_comments %}
-                      <ul class="comment-list">
-                      {{ comment_packaging_function(post_comments,user_is_sign_in) }}
-                      <!-- END comment-list -->
-                      </ul>
-                      {% else %}
-                      <p>No Comments Yet!</p>
-                      {% endif %}
-                      </div>
+                        {% if post_comments %}
+                        <ul class="comment-list">
+                            {{ comment_packaging_function(post_comments,user_is_sign_in) }}
+                            <!-- END comment-list -->
+                        </ul>
+                        {% else %}
+                        <p>No Comments Yet!</p>
+                        {% endif %}
+                    </div>
                 </div>
                 {% if user_is_sign_in %}
                 <div class="row comment-form-wrap pt-5">
-                  <div class="col">
-                      <div class="row mb-2">
-                          <div class="col text-center">
-                            <h3 class="my-2">Leave a comment</h3>
-                          </div>
+                    <div class="col">
+                        <div class="row mb-2">
+                            <div class="col text-center">
+                                <h3 class="my-2">Leave a comment</h3>
+                            </div>
                         </div>
-                      <div class="row">
-                          <form class="p-5 bg-light w-100" method="POST">
-                              <div class="form-group">
-                                  <label for="message">Comment</label>
-                                  <textarea name="comment_input" id="comment" cols="30" rows="5" class="form-control"></textarea>
-                                  <input type="hidden" class="parent_obj_type" name="parent_obj_type" value="post">
-                              </div>
-                              <div class="form-group">
-                                <div class="col text-center">
-                                  <input type="submit" value="Post Comment" class="w-50 btn py-3 px-4 btn-primary">
-                                  </div>
-                              </div>
-                          </form>
+                        <div class="row">
+                            <form class="p-5 bg-light w-100" method="POST">
+                                <div class="form-group">
+                                    <label for="message">Comment</label>
+                                    <textarea name="comment_input" id="comment" cols="30" rows="5"
+                                        class="form-control"></textarea>
+                                    <input type="hidden" class="parent_obj_type" name="parent_obj_type" value="post">
+                                </div>
+                                <div class="form-group">
+                                    <div class="col text-center">
+                                        <input type="submit" value="Post Comment"
+                                            class="w-50 btn py-3 px-4 btn-primary">
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                  </div>
+                    </div>
                 </div>
                 {% else %}
                 <div class="row comment-form-wrap pt-5">
-                  <div class="col">
-                    <div class="row mb-2">
-                        <div class="col text-center">
-                          <h3 class="my-2">Leave a comment</h3>
+                    <div class="col">
+                        <div class="row mb-2">
+                            <div class="col text-center">
+                                <h3 class="my-2">Leave a comment</h3>
+                            </div>
                         </div>
-                      </div>
-                    <div class="row">
-                        <form class="p-5 bg-light w-100" method="POST">
-                            <div class="form-group">
-                                <label for="message">Comment</label>
-                                <textarea name="comment_input" readonly class="form-control-plaintext" id="comment" cols="30" rows="5">Please sign in to leave a comment!</textarea>
-                            </div>
-                            <div class="form-group">
-                              <div class="col text-center">
-                                <input type="submit" value="Post Comment" class="w-50 btn py-3 px-4 btn-primary">
-                              </div>
-                            </div>
-                        </form>
-                      </div>
+                        <div class="row">
+                            <form class="p-5 bg-light w-100" method="POST">
+                                <div class="form-group">
+                                    <label for="message">Comment</label>
+                                    <textarea name="comment_input" readonly class="form-control-plaintext" id="comment"
+                                        cols="30" rows="5">Please sign in to leave a comment!</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col text-center">
+                                        <input type="submit" value="Post Comment"
+                                            class="w-50 btn py-3 px-4 btn-primary">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -266,7 +278,9 @@
 
                 <div class="sidebar-box ftco-animate">
                     <h3 class="heading mb-4">Paragraph</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur similique, inventore eos fugit cupiditate numquam!</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus
+                        voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur
+                        similique, inventore eos fugit cupiditate numquam!</p>
                 </div>
             </div>
 
@@ -276,15 +290,15 @@
 {% endblock %}
 {% block jquery_script_section %}
 <script>
-$(function(){
-  //Initalise the popovers//
-  $('[data-toggle="popover"]').popover()
+    $(function () {
+        //Initalise the popovers//
+        $('[data-toggle="popover"]').popover()
 
-  //Each time a reply button is clicked, a new comment box will be appended to it//
-  $(".comment-body").on("click",".reply_comment",function(e){
-    e.preventDefault();
-    if($(this).siblings(".comment-box").length == 0){
-      $(this).parent().parent().append(`
+        //Each time a reply button is clicked, a new comment box will be appended to it//
+        $(".comment-body").on("click", ".reply_comment", function (e) {
+            e.preventDefault();
+            if ($(this).siblings(".comment-box").length == 0) {
+                $(this).parent().parent().append(`
       <div class="container comment-box">
       <form class="py-3 mt-2 bg-light w-100" method="POST">
           <div class="row form-group">
@@ -306,52 +320,51 @@ $(function(){
       </form>
       </div>
       `);
-      $(this).hide();
-    }
-  });
+                $(this).hide();
+            }
+        });
 
-  //When the cross icon is clicked, the comment box will be deleted//
-  $(".comment-body").on("click",".comment-box-close-icon",function(e){
-    e.preventDefault();
-    $(this).parents(".comment-box").prev().find(".reply_comment").show();
-    $(this).parents(".comment-box").remove();
-  })
+        //When the cross icon is clicked, the comment box will be deleted//
+        $(".comment-body").on("click", ".comment-box-close-icon", function (e) {
+            e.preventDefault();
+            $(this).parents(".comment-box").prev().find(".reply_comment").show();
+            $(this).parents(".comment-box").remove();
+        })
 
-  //This function checks the input comment for special characters//
-  function check_comments(input){
-    let comment_regex = /^[a-zA-Z0-9-_,.$#/!+-=\[\]()%@]+$/;
-    let element = input[0];
-    input.parents(".form-group").removeClass("was-validated");
-    if (comment_regex.test(element.value)!==true){
-      element.setCustomValidity("Invalid comment. No special characters.");
-    }
-    else{
-      element.setCustomValidity('');
-    }
-    input.parents(".form-group").addClass("was-validated");
-  }
+        //This function checks the input comment for special characters//
+        function check_comments(input) {
+            let comment_regex = /^[a-zA-Z0-9-_,.$#/!+-=\[\]()%@]+$/;
+            let element = input[0];
+            input.parents(".form-group").removeClass("was-validated");
+            if (comment_regex.test(element.value) !== true) {
+                element.setCustomValidity("Invalid comment. No special characters.");
+            } else {
+                element.setCustomValidity('');
+            }
+            input.parents(".form-group").addClass("was-validated");
+        }
 
-  //This function checks the validity of the comment everything the textbox is changed.//
-  $(".comment-body").on("change","#comment",function(e){
-    check_comments($(this));
-  });
+        //This function checks the validity of the comment everything the textbox is changed.//
+        $(".comment-body").on("change", "#comment", function (e) {
+            check_comments($(this));
+        });
 
-  //Each time the comment box's reply button is clicked, there will be client side checking for special characters inside the comments. If the comment is valid, then the JS will post the comment to Flask.//
-  $(".comment-body").on("click",".comment_reply_button",function(e){
-    e.preventDefault();
-    let input = $(this).parents(".row").prev().find("#comment");
-    let comment_has_custom_error = input[0].validity.customError;
-    let comment_parent_object = $(this).parents(".comment-box").prev().find(".reply_comment")[0];
-    let comment_parent_object_id = comment_parent_object.dataset.parentCommentId;
-    let comment_parent_object_type = comment_parent_object.dataset.parentObjType;
-    if(comment_has_custom_error == true){}
-    else{
-      //These hidden inputs are necessary so that flask will know the values of the comment parent object id and type.
-      input.siblings(".parent_comment_id").val(comment_parent_object_id);
-      input.siblings(".parent_obj_type").val(comment_parent_object_type);
-      input.closest("form").submit();
-    }
-  });
-});
+        //Each time the comment box's reply button is clicked, there will be client side checking for special characters inside the comments. If the comment is valid, then the JS will post the comment to Flask.//
+        $(".comment-body").on("click", ".comment_reply_button", function (e) {
+            e.preventDefault();
+            let input = $(this).parents(".row").prev().find("#comment");
+            let comment_has_custom_error = input[0].validity.customError;
+            let comment_parent_object = $(this).parents(".comment-box").prev().find(".reply_comment")[
+            0];
+            let comment_parent_object_id = comment_parent_object.dataset.parentCommentId;
+            let comment_parent_object_type = comment_parent_object.dataset.parentObjType;
+            if (comment_has_custom_error == true) {} else {
+                //These hidden inputs are necessary so that flask will know the values of the comment parent object id and type.
+                input.siblings(".parent_comment_id").val(comment_parent_object_id);
+                input.siblings(".parent_obj_type").val(comment_parent_object_type);
+                input.closest("form").submit();
+            }
+        });
+    });
 </script>
 {% endblock %}

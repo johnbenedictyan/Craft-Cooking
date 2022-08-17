@@ -6,7 +6,9 @@
         <div class="row no-gutters slider-text align-items-end justify-content-center">
             <div class="col-md-9 ftco-animate pb-5 text-center">
                 <h1 class="mb-3 bread">User Dashboard</h1>
-                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>User Dashboard<i class="ion-ios-arrow-forward"></i></span></p>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i
+                                class="ion-ios-arrow-forward"></i></a></span> <span>User Dashboard<i
+                            class="ion-ios-arrow-forward"></i></span></p>
             </div>
         </div>
     </div>
@@ -22,21 +24,29 @@
         </div>
         <div class="row mt-4">
             <div class="col-3">
-                <ul class="nav nav-pills flex-column" id="user_dashboard-tab" role="tablist" aria-orientation="vertical">
+                <ul class="nav nav-pills flex-column" id="user_dashboard-tab" role="tablist"
+                    aria-orientation="vertical">
                     <li class="nav-item">
-                        <a class="nav-link active" id="user_dashboard-home-tab" data-toggle="tab" href="#user_dashboard-home" role="tab" aria-controls="user_dashboard-home" aria-selected="true">Profile</a>
+                        <a class="nav-link active" id="user_dashboard-home-tab" data-toggle="tab"
+                            href="#user_dashboard-home" role="tab" aria-controls="user_dashboard-home"
+                            aria-selected="true">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="user_dashboard-profile-tab" data-toggle="tab" href="#user_dashboard-profile" role="tab" aria-controls="user_dashboard-profile" aria-selected="false">Update Profile</a>
+                        <a class="nav-link" id="user_dashboard-profile-tab" data-toggle="tab"
+                            href="#user_dashboard-profile" role="tab" aria-controls="user_dashboard-profile"
+                            aria-selected="false">Update Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="user_dashboard-delete_account-tab" data-toggle="tab" href="#user_dashboard-delete_account" role="tab" aria-controls="user_dashboard-delete_account" aria-selected="false">Delete Account</a>
+                        <a class="nav-link" id="user_dashboard-delete_account-tab" data-toggle="tab"
+                            href="#user_dashboard-delete_account" role="tab"
+                            aria-controls="user_dashboard-delete_account" aria-selected="false">Delete Account</a>
                     </li>
                 </ul>
             </div>
             <div class="col-9">
                 <div class="tab-content" id="user_dashboard-tabContent">
-                    <div class="tab-pane fade show active" id="user_dashboard-home" role="tabpanel" aria-labelledby="user_dashboard-home-tab">
+                    <div class="tab-pane fade show active" id="user_dashboard-home" role="tabpanel"
+                        aria-labelledby="user_dashboard-home-tab">
                         <div class="heading-section ftco-animate">
                             <h2 class="mb-4"><span>Profile</span></h2>
                         </div>
@@ -44,7 +54,8 @@
                             <div class="container">
                                 <div class="row mb-3">
                                     <div class="col-4">
-                                        <img src="{{profile_picture_url~user_details.profile_picture_uri}}" class="img-thumbnail"></img>
+                                        <img src="{{profile_picture_url~user_details.profile_picture_uri}}"
+                                            class="img-thumbnail"></img>
                                     </div>
                                     <div class="col-8">
                                         <div class="row">
@@ -65,7 +76,8 @@
                                                 {% if user_details.user_to_author_date %}
                                                 <p>Author Since: <span>{{user_details.user_to_author_date}}</span></p>
                                                 {% else %}
-                                                <a href="{{ url_for('become_an_author', user_id=user_details.id) }}" class="btn btn-primary btn-lg">Become an author</a>
+                                                <a href="{{ url_for('become_an_author', user_id=user_details.id) }}"
+                                                    class="btn btn-primary btn-lg">Become an author</a>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -82,7 +94,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="user_dashboard-profile" role="tabpanel" aria-labelledby="user_dashboard-profile-tab">
+                    <div class="tab-pane fade" id="user_dashboard-profile" role="tabpanel"
+                        aria-labelledby="user_dashboard-profile-tab">
                         <div class="heading-section ftco-animate">
                             <h2 class="mb-4"><span>Update Profile</span></h2>
                         </div>
@@ -92,38 +105,49 @@
                                     <div class="col-4 text-center">
                                         <div class="row mb-2">
                                             <div class="col">
-                                                <img src="{{profile_picture_url~user_details.profile_picture_uri}}" class="img-thumbnail"></img>
+                                                <img src="{{profile_picture_url~user_details.profile_picture_uri}}"
+                                                    class="img-thumbnail"></img>
                                             </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col">
-                                                <label class="btn btn-primary btn-rounded"><input type="file" name="profile-picture-input"/><i class="icon icon-cloud_upload"></i>New Picture</label>
+                                                <label class="btn btn-primary btn-rounded"><input type="file"
+                                                        name="profile-picture-input" /><i
+                                                        class="icon icon-cloud_upload"></i>New Picture</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-8">
                                         <div class="form-row">
                                             <div class="form-group col">
-                                                <input type="text" class="form-control" readonly class="form-control-plaintext" id="user_username" aria-describedby="user_username" value="{{user_details.username}}">
+                                                <input type="text" class="form-control" readonly
+                                                    class="form-control-plaintext" id="user_username"
+                                                    aria-describedby="user_username" value="{{user_details.username}}">
                                             </div>
                                             <div class="form-group col">
-                                                <input type="text" class="form-control" readonly class="form-control-plaintext" id="user_country" aria-describedby="user_country" value="{{user_details.country_name}}">
+                                                <input type="text" class="form-control" readonly
+                                                    class="form-control-plaintext" id="user_country"
+                                                    aria-describedby="user_country"
+                                                    value="{{user_details.country_name}}">
                                             </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col">
-                                                <input type="email" class="form-control" id="user_email" name="email_input" value="{{user_details.email}}">
+                                                <input type="email" class="form-control" id="user_email"
+                                                    name="email_input" value="{{user_details.email}}">
                                             </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col-7">
-                                                <input type="password" class="form-control" id="user_password" name="password_input" placeholder="New Password">
+                                                <input type="password" class="form-control" id="user_password"
+                                                    name="password_input" placeholder="New Password">
                                             </div>
                                             <div class="form-group col-5">
                                                 {% if user_details.user_to_author_date %}
                                                 <p>Author Since: <span>{{user_details.user_to_author_date}}</span></p>
                                                 {% else %}
-                                                <a href="{{ url_for('become_an_author', user_id=user_details.id) }}" class="btn btn-primary btn-lg">Become an author</a>
+                                                <a href="{{ url_for('become_an_author', user_id=user_details.id) }}"
+                                                    class="btn btn-primary btn-lg">Become an author</a>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -132,7 +156,8 @@
                                 <div class="form-row">
                                     <div class="form-group col">
                                         <h3 class="">Bio</h3>
-                                        <textarea class="form-control" id="bio-text-area" value="text area" name="bio_input" rows="5">{{user_details.bio}}</textarea>
+                                        <textarea class="form-control" id="bio-text-area" value="text area"
+                                            name="bio_input" rows="5">{{user_details.bio}}</textarea>
                                     </div>
                                 </div>
                                 <div class="mt-2">
@@ -141,7 +166,8 @@
                             </form>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="user_dashboard-delete_account" role="tabpanel" aria-labelledby="user_dashboard-delete_account-tab">
+                    <div class="tab-pane fade" id="user_dashboard-delete_account" role="tabpanel"
+                        aria-labelledby="user_dashboard-delete_account-tab">
                         <div class="heading-section ftco-animate">
                             <h2 class="mb-4"><span>Delete Account</span></h2>
                         </div>
@@ -162,7 +188,10 @@
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-4 text-center my-auto pr-0 px-md-3">
-                                        <span class="mb-0"><button type="button" class="btn btn-danger w-100" data-delete-button-user-id="{{user_details.id}}" data-toggle="modal" data-target="#confirm_recipe_deletion_modal">Delete Account</button></span>
+                                        <span class="mb-0"><button type="button" class="btn btn-danger w-100"
+                                                data-delete-button-user-id="{{user_details.id}}" data-toggle="modal"
+                                                data-target="#confirm_recipe_deletion_modal">Delete
+                                                Account</button></span>
                                     </div>
                                 </div>
                             </div>
@@ -177,29 +206,35 @@
 {% block page_specific_css_section %}
 <style>
     input[type="file"] {
-    display: none;
+        display: none;
     }
-    .icon-wrap i{
+
+    .icon-wrap i {
         color: #f15e5e;
-		font-size: 6rem;
+        font-size: 6rem;
     }
-    .modal-delete{
-        top:15%;
+
+    .modal-delete {
+        top: 15%;
     }
-    .modal-delete .modal-header{
-        border:none;
+
+    .modal-delete .modal-header {
+        border: none;
     }
-    .modal-delete .modal-footer{
-        border:none;
+
+    .modal-delete .modal-footer {
+        border: none;
     }
 </style>
 {% endblock %}
 {% block confirm_delete_modal_section %}
-<div class="modal fade" id="confirm_recipe_deletion_modal" tabindex="-1" role="dialog" aria-labelledby="confirm_recipe_deletion_modal_label" aria-hidden="true">
+<div class="modal fade" id="confirm_recipe_deletion_modal" tabindex="-1" role="dialog"
+    aria-labelledby="confirm_recipe_deletion_modal_label" aria-hidden="true">
     <div class="modal-dialog modal-delete" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="container">
@@ -215,7 +250,7 @@
                     </div>
                     <div class="row my-2">
                         <div class="col text-center">
-                            <p>Do you want to delete your account.<br/>This process cannot be undone.</p>
+                            <p>Do you want to delete your account.<br />This process cannot be undone.</p>
                         </div>
                     </div>
                 </div>
@@ -243,13 +278,13 @@
     let username_input = document.getElementById('');
     let password_input = document.getElementById('');
 
-    $(function() {
-        $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
-           let button = $(event.relatedTarget);
-           let user_id = parseInt(button.data("delete-button-user-id"), 10);
-           let modal = $(this);
-           let delete_link = "/delete-user/"+user_id;
-           modal.find("#delete-modal-delete-link").attr("href",delete_link);
+    $(function () {
+        $("#confirm_recipe_deletion_modal").on("show.bs.modal", function (event) {
+            let button = $(event.relatedTarget);
+            let user_id = parseInt(button.data("delete-button-user-id"), 10);
+            let modal = $(this);
+            let delete_link = "/delete-user/" + user_id;
+            modal.find("#delete-modal-delete-link").attr("href", delete_link);
         });
     });
 </script>

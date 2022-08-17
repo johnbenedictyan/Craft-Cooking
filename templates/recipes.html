@@ -1,11 +1,14 @@
 {% extends "layout.html" %} {% block hero_wrap_section %}
-<section class="hero-wrap hero-wrap-2" style="background-image: url({{url_for('static', filename='images/recipe-bg.jpg')}});">
+<section class="hero-wrap hero-wrap-2"
+    style="background-image: url({{url_for('static', filename='images/recipe-bg.jpg')}});">
     <div class="overlay"></div>
     <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-center">
             <div class="col-md-9 ftco-animate pb-5 text-center">
                 <h1 class="mb-3 bread">Recipes</h1>
-                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Recipes <i class="ion-ios-arrow-forward"></i></span></p>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i
+                                class="ion-ios-arrow-forward"></i></a></span> <span>Recipes <i
+                            class="ion-ios-arrow-forward"></i></span></p>
             </div>
         </div>
     </div>
@@ -15,14 +18,17 @@
     <div class="container">
         <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="pills-my_recipes-tab" data-toggle="pill" href="#pills-my_recipes" role="tab" aria-controls="pills-my_recipes" aria-selected="true">My Recipes</a>
+                <a class="nav-link active" id="pills-my_recipes-tab" data-toggle="pill" href="#pills-my_recipes"
+                    role="tab" aria-controls="pills-my_recipes" aria-selected="true">My Recipes</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="pills-recipe_creator-tab" data-toggle="pill" href="#pills-recipe_creator" role="tab" aria-controls="pills-recipe_creator" aria-selected="false">Recipe Creator</a>
+                <a class="nav-link" id="pills-recipe_creator-tab" data-toggle="pill" href="#pills-recipe_creator"
+                    role="tab" aria-controls="pills-recipe_creator" aria-selected="false">Recipe Creator</a>
             </li>
         </ul>
         <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-my_recipes" role="tabpanel" aria-labelledby="pills-my_recipes-tab">
+            <div class="tab-pane fade show active" id="pills-my_recipes" role="tabpanel"
+                aria-labelledby="pills-my_recipes-tab">
                 <div class="container">
                     <div class="row">
                         <div class="col heading-section ftco-animate">
@@ -35,7 +41,8 @@
                                                 <form class="search-form">
                                                     <div class="form-group">
                                                         <span class="icon icon-search"></span>
-                                                        <input type="text" name="search" class="form-control" placeholder="Search for a recipe">
+                                                        <input type="text" name="search" class="form-control"
+                                                            placeholder="Search for a recipe">
                                                     </div>
                                                 </form>
                                             </div>
@@ -46,10 +53,15 @@
                                         <div class="col-md-4 ftco-animate">
                                             <div class="blog-entry">
                                                 <div class="img-2-wrapper">
-                                                <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}" class="img-2" style="background-image:url({{recipe_picture_url~i.post_photo_uri}})"></a>
+                                                    <a href="{{ url_for('post', post_id='{}'.format(i.post_recipe_id)) }}"
+                                                        class="img-2"
+                                                        style="background-image:url({{recipe_picture_url~i.post_photo_uri}})"></a>
                                                 </div>
                                                 <div class="text pt-3">
-                                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}} views</span><span class="ml-auto pl-3">{{i.post_date_published|formatdatetime}}</span></p>
+                                                    <p class="meta d-flex"><span class="pr-3">{{i.post_number_of_views}}
+                                                            views</span><span
+                                                            class="ml-auto pl-3">{{i.post_date_published|formatdatetime}}</span>
+                                                    </p>
                                                     <h3><a href="single.html">{{i.post_recipe_name |title}}</a></h3>
                                                     <div class="tagcloud">
                                                         {% for j in i.cooking_styles %}
@@ -59,7 +71,8 @@
                                                         <a href="#" class="tag-cloud-link">{{k.cuisine_name}}</a>
                                                         {% endfor %}
                                                         {% for l in i.diet_health_types %}
-                                                        <a href="#" class="tag-cloud-link">{{l.diet_health_type_name}}</a>
+                                                        <a href="#"
+                                                            class="tag-cloud-link">{{l.diet_health_type_name}}</a>
                                                         {% endfor %}
                                                         {% for m in i.dish_types %}
                                                         <a href="#" class="tag-cloud-link">{{m.dish_type_name}}</a>
@@ -68,8 +81,15 @@
                                                         <a href="#" class="tag-cloud-link">{{n.meal_type_name}}</a>
                                                         {% endfor %}
                                                     </div>
-                                                    <span class="mb-0"><a href="{{ url_for('recipe_editor', post_id=i.post_recipe_id) }}" class="btn btn-black py-2">Edit Recipe</a></span>
-                                                    <span class="mb-0"><button type="button" class="btn btn-black py-2" data-delete-button-recipe-id="{{i.post_recipe_id}}" data-delete-button-recipe-name="{{i.post_recipe_name}}" data-toggle="modal" data-target="#confirm_recipe_deletion_modal">Delete Recipe</button></span>
+                                                    <span class="mb-0"><a
+                                                            href="{{ url_for('recipe_editor', post_id=i.post_recipe_id) }}"
+                                                            class="btn btn-black py-2">Edit Recipe</a></span>
+                                                    <span class="mb-0"><button type="button" class="btn btn-black py-2"
+                                                            data-delete-button-recipe-id="{{i.post_recipe_id}}"
+                                                            data-delete-button-recipe-name="{{i.post_recipe_name}}"
+                                                            data-toggle="modal"
+                                                            data-target="#confirm_recipe_deletion_modal">Delete
+                                                            Recipe</button></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -81,7 +101,8 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="pills-recipe_creator" role="tabpanel" aria-labelledby="pills-recipe_creator-tab">
+            <div class="tab-pane fade" id="pills-recipe_creator" role="tabpanel"
+                aria-labelledby="pills-recipe_creator-tab">
                 <div class="container">
                     <div class="row">
                         <div class="col heading-section ftco-animate">
@@ -136,9 +157,10 @@
                                             <div class="col-12 col-md-6 col-lg-3">
                                                 <div class="form-group">
                                                     <label for="serve_selection_list">Serves:</label>
-                                                    <select class="form-control" id="serve_selection_list" name="serves_number">
+                                                    <select class="form-control" id="serve_selection_list"
+                                                        name="serves_number">
                                                         {% for i in range(1,16) %}
-                                                      <option value="{{i}}">{{i}}</option>
+                                                        <option value="{{i}}">{{i}}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
@@ -149,9 +171,14 @@
                                                 <div class="form-group" id="recipe_procedure_div">
                                                     <label for="recipe_procedure_list">Recipe Procedure:</label>
                                                     <ol id="recipe_procedure_ordered_list">
-                                                        <li><input type="text" class="form-control list_item_custom_css recipe_procedure_item" name="recipe_procedure" /><button class="btn btn-outline-danger ml-2 remove_step_button">&times</button></li>
+                                                        <li><input type="text"
+                                                                class="form-control list_item_custom_css recipe_procedure_item"
+                                                                name="recipe_procedure" /><button
+                                                                class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
+                                                        </li>
                                                     </ol>
-                                                    <button class="btn btn-primary" id="add_next_step_button">Add a next step</button>
+                                                    <button class="btn btn-primary" id="add_next_step_button">Add a next
+                                                        step</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -162,16 +189,20 @@
                                                     <div id="ingredient_list_div">
                                                         <div class="form-row">
                                                             <div class="col-2">
-                                                                <label for="ingredient_list_amount">Ingredient Amount:</label>
+                                                                <label for="ingredient_list_amount">Ingredient
+                                                                    Amount:</label>
                                                             </div>
                                                             <div class="col-3">
-                                                                <label for="ingredient_list_measurement">Measurement:</label>
+                                                                <label
+                                                                    for="ingredient_list_measurement">Measurement:</label>
                                                             </div>
                                                             <div class="col-3">
-                                                                <label for="ingredient_list_ingredient">Ingredient Name:</label>
+                                                                <label for="ingredient_list_ingredient">Ingredient
+                                                                    Name:</label>
                                                             </div>
                                                             <div class="col-3">
-                                                                <label for="ingredient_list_special">Additionally Details:</label>
+                                                                <label for="ingredient_list_special">Additionally
+                                                                    Details:</label>
                                                             </div>
                                                             <div class="col-1">
                                                                 &nbsp;
@@ -179,57 +210,94 @@
                                                         </div>
                                                         <div class="form-row my-2">
                                                             <div class="col-2">
-                                                                <input type="text" class="form-control ingredient_list_item" name="ingredient_list_amount" value="0"/>
+                                                                <input type="text"
+                                                                    class="form-control ingredient_list_item"
+                                                                    name="ingredient_list_amount" value="0" />
                                                             </div>
                                                             <div class="col-3">
-                                                                <select class="selectpicker" name="ingredient_list_measurement" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
-                                                                  <optgroup label="Weight">
-                                                                    <option data-tokens="gram" value="gram">Gram(s)</option>
-                                                                    <option data-tokens="kilogram" value="kilogram">Kilogram(s)</option>
-                                                                    <option data-tokens="ounce" value="ounce">Ounce(s)</option>
-                                                                    <option data-tokens="pound" value="pound">Pound(s)</option>
-                                                                  </optgroup>
-                                                                  <optgroup label="Length">
-                                                                      <option data-tokens="centimetre" value="centimetre">Centimetre(s)</option>
-                                                                      <option data-tokens="inch" value="inch">Inch(es)</option>
-                                                                  </optgroup>
-                                                                  <optgroup label="Volume">
-                                                                      <option data-tokens="milliliter" value="milliliter">Milliliter(s)</option>
-                                                                      <option data-tokens="liter" value="liter">Liter(s)</option>
-                                                                      <option data-tokens="metric cup" value="metric cup">Metric Cup(s)</option>
-                                                                      <option data-tokens="fluid ounce" value="fluid ounce">Fluid Ounce(s)</option>
-                                                                      <option data-tokens="imperial cup" value="imperial cup">Imperial Cup(s)</option>
-                                                                      <option data-tokens="pint" value="pint">Pint(s)</option>
-                                                                      <option data-tokens="quart" value="quart">Quart(s)</option>
-                                                                      <option data-tokens="gallon" value="gallon">Gallon(s)</option>
-                                                                  </optgroup>
-                                                                  <optgroup label="Others">
-                                                                      <option data-tokens="drop" value="drop">Drop(s)</option>
-                                                                      <option data-tokens="smidgen" value="smidgen">Smidgen(s)</option>
-                                                                      <option data-tokens="pinch" value="pinch">Pinch(s)</option>
-                                                                      <option data-tokens="dash" value="dash">Dash(s)</option>
-                                                                      <option data-tokens="tablespoon" value="tablespoon">Tablespoon(s)</option>
-                                                                      <option data-tokens="teaspoon" value="teaspoon">Teaspoon(s)</option>
-                                                                      <option data-tokens="no units" value="no units" selected>No Units</option>
-                                                                  </optgroup>
+                                                                <select class="selectpicker"
+                                                                    name="ingredient_list_measurement"
+                                                                    title="Nothing Selected" data-live-search="true"
+                                                                    data-width="100%" data-dropup-auto="false"
+                                                                    data-size="10">
+                                                                    <optgroup label="Weight">
+                                                                        <option data-tokens="gram" value="gram">Gram(s)
+                                                                        </option>
+                                                                        <option data-tokens="kilogram" value="kilogram">
+                                                                            Kilogram(s)</option>
+                                                                        <option data-tokens="ounce" value="ounce">
+                                                                            Ounce(s)</option>
+                                                                        <option data-tokens="pound" value="pound">
+                                                                            Pound(s)</option>
+                                                                    </optgroup>
+                                                                    <optgroup label="Length">
+                                                                        <option data-tokens="centimetre"
+                                                                            value="centimetre">Centimetre(s)</option>
+                                                                        <option data-tokens="inch" value="inch">Inch(es)
+                                                                        </option>
+                                                                    </optgroup>
+                                                                    <optgroup label="Volume">
+                                                                        <option data-tokens="milliliter"
+                                                                            value="milliliter">Milliliter(s)</option>
+                                                                        <option data-tokens="liter" value="liter">
+                                                                            Liter(s)</option>
+                                                                        <option data-tokens="metric cup"
+                                                                            value="metric cup">Metric Cup(s)</option>
+                                                                        <option data-tokens="fluid ounce"
+                                                                            value="fluid ounce">Fluid Ounce(s)</option>
+                                                                        <option data-tokens="imperial cup"
+                                                                            value="imperial cup">Imperial Cup(s)
+                                                                        </option>
+                                                                        <option data-tokens="pint" value="pint">Pint(s)
+                                                                        </option>
+                                                                        <option data-tokens="quart" value="quart">
+                                                                            Quart(s)</option>
+                                                                        <option data-tokens="gallon" value="gallon">
+                                                                            Gallon(s)</option>
+                                                                    </optgroup>
+                                                                    <optgroup label="Others">
+                                                                        <option data-tokens="drop" value="drop">Drop(s)
+                                                                        </option>
+                                                                        <option data-tokens="smidgen" value="smidgen">
+                                                                            Smidgen(s)</option>
+                                                                        <option data-tokens="pinch" value="pinch">
+                                                                            Pinch(s)</option>
+                                                                        <option data-tokens="dash" value="dash">Dash(s)
+                                                                        </option>
+                                                                        <option data-tokens="tablespoon"
+                                                                            value="tablespoon">Tablespoon(s)</option>
+                                                                        <option data-tokens="teaspoon" value="teaspoon">
+                                                                            Teaspoon(s)</option>
+                                                                        <option data-tokens="no units" value="no units"
+                                                                            selected>No Units</option>
+                                                                    </optgroup>
                                                                 </select>
                                                             </div>
                                                             <div class="col-3">
-                                                                <select class="selectpicker" name="ingredient_list_ingredient" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
+                                                                <select class="selectpicker"
+                                                                    name="ingredient_list_ingredient"
+                                                                    title="Nothing Selected" data-live-search="true"
+                                                                    data-width="100%" data-dropup-auto="false"
+                                                                    data-size="10">
                                                                     {% for i in recipe_creator_form_details[0] %}
-                                                                    <option value="{{i.id}}" data-tokens="{{i.name}}">{{i.name | title}}</option>
+                                                                    <option value="{{i.id}}" data-tokens="{{i.name}}">
+                                                                        {{i.name | title}}</option>
                                                                     {% endfor %}
                                                                 </select>
                                                             </div>
                                                             <div class="col-3">
-                                                                <input type="text" class="form-control ingredient_list_item" name="ingredient_list_special" value="None"/>
+                                                                <input type="text"
+                                                                    class="form-control ingredient_list_item"
+                                                                    name="ingredient_list_special" value="None" />
                                                             </div>
                                                             <div class="col-1">
-                                                                <button class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
+                                                                <button
+                                                                    class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button class="btn btn-primary" id="add_next_ingredient_button">Add a new ingredient</button>
+                                                    <button class="btn btn-primary" id="add_next_ingredient_button">Add
+                                                        a new ingredient</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -238,24 +306,29 @@
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="allergens">Allergens:</label>
-                                                    <select class="form-control" id="allergen_selection_list" name="allergens" multiple>
-                                                    {% for i in recipe_creator_form_details[1] %}
-                                                    <option value="{{i.id}}">{{i.name | title}}</option>
-                                                    {% endfor %}
+                                                    <select class="form-control" id="allergen_selection_list"
+                                                        name="allergens" multiple>
+                                                        {% for i in recipe_creator_form_details[1] %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endfor %}
                                                     </select>
-                                                    <small id="allergens_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                                    <small id="allergens_Help" class="form-text text-muted">Hold down
+                                                        the control/command button to select multiple options.</small>
                                                 </div>
                                             </div>
 
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="cooking_styles">Cooking Style:</label>
-                                                    <select class="form-control" id="cooking_style_selection_list" name="cooking_styles" multiple>
-                                                    {% for i in recipe_creator_form_details[2] %}
-                                                    <option value="{{i.id}}">{{i.name | title}}</option>
-                                                    {% endfor %}
+                                                    <select class="form-control" id="cooking_style_selection_list"
+                                                        name="cooking_styles" multiple>
+                                                        {% for i in recipe_creator_form_details[2] %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endfor %}
                                                     </select>
-                                                    <small id="cooking_styles_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                                    <small id="cooking_styles_Help" class="form-text text-muted">Hold
+                                                        down the control/command button to select multiple
+                                                        options.</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -264,24 +337,29 @@
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="cuisines">Cuisine:</label>
-                                                    <select class="form-control" id="cuisine_selection_list" name="cuisines" multiple>
-                                                    {% for i in recipe_creator_form_details[3] %}
-                                                    <option value="{{i.id}}">{{i.name | title}}</option>
-                                                    {% endfor %}
+                                                    <select class="form-control" id="cuisine_selection_list"
+                                                        name="cuisines" multiple>
+                                                        {% for i in recipe_creator_form_details[3] %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endfor %}
                                                     </select>
-                                                    <small id="cuisines_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                                    <small id="cuisines_Help" class="form-text text-muted">Hold down the
+                                                        control/command button to select multiple options.</small>
                                                 </div>
                                             </div>
 
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="diet_health_types">Diet & Health:</label>
-                                                    <select class="form-control" id="diet_health_type_selection_list" name="diet_health_types" multiple>
-                                                    {% for i in recipe_creator_form_details[4] %}
-                                                    <option value="{{i.id}}">{{i.name | title}}</option>
-                                                    {% endfor %}
+                                                    <select class="form-control" id="diet_health_type_selection_list"
+                                                        name="diet_health_types" multiple>
+                                                        {% for i in recipe_creator_form_details[4] %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endfor %}
                                                     </select>
-                                                    <small id="diet_health_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                                    <small id="diet_health_types_Help" class="form-text text-muted">Hold
+                                                        down the control/command button to select multiple
+                                                        options.</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -290,31 +368,36 @@
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="dish_types">Dish Type:</label>
-                                                    <select class="form-control" id="dish_type_selection_list" name="dish_types" multiple>
-                                                    {% for i in recipe_creator_form_details[5] %}
-                                                    <option value="{{i.id}}">{{i.name | title}}</option>
-                                                    {% endfor %}
+                                                    <select class="form-control" id="dish_type_selection_list"
+                                                        name="dish_types" multiple>
+                                                        {% for i in recipe_creator_form_details[5] %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endfor %}
                                                     </select>
-                                                    <small id="dish_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                                    <small id="dish_types_Help" class="form-text text-muted">Hold down
+                                                        the control/command button to select multiple options.</small>
                                                 </div>
                                             </div>
 
                                             <div class="col-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="meal_types">Meal Type:</label>
-                                                    <select class="form-control" id="meal_type_selection_list" name="meal_types" multiple>
-                                                    {% for i in recipe_creator_form_details[6] %}
-                                                    <option value="{{i.id}}">{{i.name | title}}</option>
-                                                    {% endfor %}
+                                                    <select class="form-control" id="meal_type_selection_list"
+                                                        name="meal_types" multiple>
+                                                        {% for i in recipe_creator_form_details[6] %}
+                                                        <option value="{{i.id}}">{{i.name | title}}</option>
+                                                        {% endfor %}
                                                     </select>
-                                                    <small id="meal_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                                    <small id="meal_types_Help" class="form-text text-muted">Hold down
+                                                        the control/command button to select multiple options.</small>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="row mt-3">
                                             <div class="col text-center">
-                                                <button type="submit" class="btn btn-primary btn-lg">Create Recipe</button>
+                                                <button type="submit" class="btn btn-primary btn-lg">Create
+                                                    Recipe</button>
                                             </div>
                                         </div>
                                     </form>
@@ -342,15 +425,17 @@
 {% endblock %}
 {% block jquery_script_section %}
 <script>
-  /* global $ */
-  $(function() {
-      $( "#recipe_procedure_div" ).on( "click", " #add_next_step_button", function( event ) {
-          event.preventDefault();
-          $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
-      });
-      $( "#ingredient_list_big_div" ).on( "click", " #add_next_ingredient_button", function( event ) {
-          event.preventDefault();
-          $("#ingredient_list_div").append(`<div class="form-row my-2">
+    /* global $ */
+    $(function () {
+        $("#recipe_procedure_div").on("click", " #add_next_step_button", function (event) {
+            event.preventDefault();
+            $("#recipe_procedure_ordered_list").append(
+                "<li><input type=\"text\" class=\"form-control list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>"
+                );
+        });
+        $("#ingredient_list_big_div").on("click", " #add_next_ingredient_button", function (event) {
+            event.preventDefault();
+            $("#ingredient_list_div").append(`<div class="form-row my-2">
                                               <div class="col-2">
                                                   <input type="text" class="form-control ingredient_list_item" name="ingredient_list_amount" value="0"/>
                                               </div>
@@ -402,87 +487,99 @@
                                               </div>
                                           </div>
                                                       `);
-      $('.selectpicker').selectpicker('refresh');
-      });
-      $( "#recipe_procedure_div" ).on( "click", ".remove_step_button", function( event ) {
-          event.preventDefault();
-          $(this).parent().remove();
-      });
-      $( "#ingredient_list_div" ).on( "click", ".remove_step_button", function( event ) {
-          event.preventDefault();
-          $(this).parent().parent().remove();
-      });
-      $("#confirm_recipe_deletion_modal").on("show.bs.modal",function(event){
-         let button = $(event.relatedTarget);
-         let recipe_id = parseInt(button.data("delete-button-recipe-id"), 10);
-         let recipe_name = button.data("delete-button-recipe-name");
-         let modal = $(this);
-         let delete_link = "/delete-post/"+recipe_id;
-         modal.find("#delete-modal-recipe-name").text(recipe_name);
-         modal.find("#delete-modal-delete-link").attr("href",delete_link);
-      });
-  });
+            $('.selectpicker').selectpicker('refresh');
+        });
+        $("#recipe_procedure_div").on("click", ".remove_step_button", function (event) {
+            event.preventDefault();
+            $(this).parent().remove();
+        });
+        $("#ingredient_list_div").on("click", ".remove_step_button", function (event) {
+            event.preventDefault();
+            $(this).parent().parent().remove();
+        });
+        $("#confirm_recipe_deletion_modal").on("show.bs.modal", function (event) {
+            let button = $(event.relatedTarget);
+            let recipe_id = parseInt(button.data("delete-button-recipe-id"), 10);
+            let recipe_name = button.data("delete-button-recipe-name");
+            let modal = $(this);
+            let delete_link = "/delete-post/" + recipe_id;
+            modal.find("#delete-modal-recipe-name").text(recipe_name);
+            modal.find("#delete-modal-delete-link").attr("href", delete_link);
+        });
+    });
 </script>
 {% endblock %}
 {% block page_specific_css_section %}
 <style>
     .list_item_custom_css {
-        display:inline;
-        width:85%;
+        display: inline;
+        width: 85%;
     }
+
     #recipe_procedure_ordered_list {
-        font-size:x-large;
+        font-size: x-large;
     }
+
     .remove_step_button {
-        font-size:x-large;
-        width:52px;
+        font-size: x-large;
+        width: 52px;
     }
-    .modal-delete{
-        top:15%;
+
+    .modal-delete {
+        top: 15%;
     }
-    .modal-delete .modal-header{
-        border:none;
+
+    .modal-delete .modal-header {
+        border: none;
     }
-    .modal-delete .modal-footer{
-        border:none;
+
+    .modal-delete .modal-footer {
+        border: none;
     }
-    .blog-entry .img-2-wrapper{
-        height:250px;
+
+    .blog-entry .img-2-wrapper {
+        height: 250px;
         overflow: hidden;
     }
-    .blog-entry .img-2-wrapper .img-2 {
-         height: 100%;
-         width: 100%;
-         background-position: center;
-         background-size: cover;
-      -webkit-transform: scale(1);
-      -moz-transform: scale(1);
-      -o-transform: scale(1);
-      -ms-transform: scale(1);
-      transform: scale(1);
-      -moz-transition: all 0.3s ease;
-      -o-transition: all 0.3s ease;
-      -webkit-transition: all 0.3s ease;
-      -ms-transition: all 0.3s ease;
-      transition: all 0.3s ease; }
-  .blog-entry .img-2-wrapper:hover .img-2 {
-    -webkit-transform: scale(1.2);
-    -moz-transform: scale(1.2);
-    -o-transform: scale(1.2);
-    -ms-transform: scale(1.2);
-    transform: scale(1.2); }
 
-    .selectpicker + button {
-        height:52px;
+    .blog-entry .img-2-wrapper .img-2 {
+        height: 100%;
+        width: 100%;
+        background-position: center;
+        background-size: cover;
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -o-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+        -moz-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        -webkit-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+    }
+
+    .blog-entry .img-2-wrapper:hover .img-2 {
+        -webkit-transform: scale(1.2);
+        -moz-transform: scale(1.2);
+        -o-transform: scale(1.2);
+        -ms-transform: scale(1.2);
+        transform: scale(1.2);
+    }
+
+    .selectpicker+button {
+        height: 52px;
     }
 </style>
 {% endblock %}
 {% block confirm_delete_modal_section %}
-<div class="modal fade" id="confirm_recipe_deletion_modal" tabindex="-1" role="dialog" aria-labelledby="confirm_recipe_deletion_modal_label" aria-hidden="true">
+<div class="modal fade" id="confirm_recipe_deletion_modal" tabindex="-1" role="dialog"
+    aria-labelledby="confirm_recipe_deletion_modal_label" aria-hidden="true">
     <div class="modal-dialog modal-delete" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
                 <div class="container">
@@ -498,7 +595,8 @@
                     </div>
                     <div class="row my-2">
                         <div class="col text-center">
-                            <p>Do you want to delete <span id="delete-modal-recipe-name"></span><br/>This process cannot be undone.</p>
+                            <p>Do you want to delete <span id="delete-modal-recipe-name"></span><br />This process
+                                cannot be undone.</p>
                         </div>
                     </div>
                 </div>

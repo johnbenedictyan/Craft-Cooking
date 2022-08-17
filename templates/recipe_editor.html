@@ -1,11 +1,14 @@
 {% extends "layout.html" %} {% block hero_wrap_section %}
-<section class="hero-wrap hero-wrap-2" style="background-image: url({{url_for('static', filename='images/recipe-editor-bg-2.jpg')}});">
+<section class="hero-wrap hero-wrap-2"
+    style="background-image: url({{url_for('static', filename='images/recipe-editor-bg-2.jpg')}});">
     <div class="overlay"></div>
     <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-center">
             <div class="col-md-9 ftco-animate pb-5 text-center">
                 <h1 class="mb-3 bread">Recipe Editor</h1>
-                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i class="ion-ios-arrow-forward"></i></a></span> <span>Recipe Editor <i class="ion-ios-arrow-forward"></i></span></p>
+                <p class="breadcrumbs"><span class="mr-2"><a href="{{url_for('init')}}">Home <i
+                                class="ion-ios-arrow-forward"></i></a></span> <span>Recipe Editor <i
+                            class="ion-ios-arrow-forward"></i></span></p>
             </div>
         </div>
     </div>
@@ -22,7 +25,8 @@
                             <div class="form-row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label for="recipe_photo">Recipe Photo (Add a file to replace the current recipe photo)</label>
+                                        <label for="recipe_photo">Recipe Photo (Add a file to replace the current recipe
+                                            photo)</label>
                                         <input type="file" class="form-control" name="recipe_photo">
                                     </div>
                                 </div>
@@ -31,7 +35,8 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label for="recipe_title">Recipe Title</label>
-                                        <input type="text" class="form-control" name="recipe_title" value="{{recipe_details[0]['name'] | title}}">
+                                        <input type="text" class="form-control" name="recipe_title"
+                                            value="{{recipe_details[0]['name'] | title}}">
                                     </div>
                                 </div>
                             </div>
@@ -42,7 +47,8 @@
                                         {% if recipe_details[0]['description'] is sameas None %}
                                         <input type="text" class="form-control" name="recipe_description">
                                         {% else %}
-                                        <input type="text" class="form-control" name="recipe_description" value="{{recipe_details[0]['description'] | title}}">
+                                        <input type="text" class="form-control" name="recipe_description"
+                                            value="{{recipe_details[0]['description'] | title}}">
                                         {% endif %}
                                     </div>
                                 </div>
@@ -51,19 +57,22 @@
                                 <div class="col-12 col-md-6 col-lg-3">
                                     <div class="form-group">
                                         <label for="prep_time">Total Preparation Time:</label>
-                                        <input type="text" class="form-control" name="prep_time" value="{{recipe_details[3]['prep_duration_seconds']}}">
+                                        <input type="text" class="form-control" name="prep_time"
+                                            value="{{recipe_details[3]['prep_duration_seconds']}}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-3">
                                     <div class="form-group">
                                         <label for="cook_time">Total Cooking Time:</label>
-                                        <input type="text" class="form-control" name="cook_time" value="{{recipe_details[3]['cook_duration_seconds']}}">
+                                        <input type="text" class="form-control" name="cook_time"
+                                            value="{{recipe_details[3]['cook_duration_seconds']}}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-3">
                                     <div class="form-group">
                                         <label for="ready_in_time">Ready in Time:</label>
-                                        <input type="text" class="form-control" name="ready_in_time" value="{{recipe_details[3]['ready_in_duration_seconds']}}">
+                                        <input type="text" class="form-control" name="ready_in_time"
+                                            value="{{recipe_details[3]['ready_in_duration_seconds']}}">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-lg-3">
@@ -87,10 +96,15 @@
                                         <label for="recipe_procedure_list">Recipe Procedure:</label>
                                         <ol id="recipe_procedure_ordered_list">
                                             {% for i in recipe_details[2] %}
-                                            <li><input type="text" class="form-control list_item_custom_css recipe_procedure_item" name="recipe_procedure" value="{{i}}"/><button class="btn btn-outline-danger ml-2 remove_step_button">&times</button></li>
+                                            <li><input type="text"
+                                                    class="form-control list_item_custom_css recipe_procedure_item"
+                                                    name="recipe_procedure" value="{{i}}" /><button
+                                                    class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
+                                            </li>
                                             {% endfor %}
                                         </ol>
-                                        <button class="btn btn-primary" id="add_next_step_button">Add a next step</button>
+                                        <button class="btn btn-primary" id="add_next_step_button">Add a next
+                                            step</button>
                                     </div>
                                 </div>
                             </div>
@@ -119,146 +133,189 @@
                                             {% for i in recipe_details[1] %}
                                             <div class="form-row my-2">
                                                 <div class="col-2">
-                                                    <input type="text" class="form-control ingredient_list_item" name="ingredient_list_amount" value="{{i.ingredient_amount}}"/>
+                                                    <input type="text" class="form-control ingredient_list_item"
+                                                        name="ingredient_list_amount" value="{{i.ingredient_amount}}" />
                                                 </div>
                                                 <div class="col-3">
-                                                    <select class="selectpicker" name="ingredient_list_measurement" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
-                                                      <optgroup label="Weight">
-                                                          {% if i.measurement_type == "gram" %}
-                                                          <option selected data-tokens="gram" value="gram">Gram(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="gram" value="gram">Gram(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "kilogram" %}
-                                                          <option selected data-tokens="kilogram" value="kilogram">Kilogram(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="kilogram" value="kilogram">Kilogram(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "ounce" %}
-                                                          <option selected data-tokens="ounce" value="ounce">Ounce(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="ounce" value="ounce">Ounce(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "pound" %}
-                                                          <option selected data-tokens="pound" value="pound">Pound(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="pound" value="pound">Pound(s)</option>
-                                                          {% endif %}
-                                                      </optgroup>
-                                                      <optgroup label="Length">
-                                                          {% if i.measurement_type == "centimetre" %}
-                                                          <option selected data-tokens="centimetre" value="centimetre">Centimetre(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="centimetre" value="centimetre">Centimetre(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "inch" %}
-                                                          <option selected data-tokens="inch" value="inch">Inch(es)</option>
-                                                          {% else %}
-                                                          <option data-tokens="inch" value="inch">Inch(es)</option>
-                                                          {% endif %}
-                                                      </optgroup>
-                                                      <optgroup label="Volume">
-                                                          {% if i.measurement_type == "milliliter" %}
-                                                          <option selected data-tokens="milliliter" value="milliliter">Milliliter(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="milliliter" value="milliliter">Milliliter(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "liter" %}
-                                                          <option selected data-tokens="liter" value="liter">Liter(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="liter" value="liter">Liter(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "metric cup" %}
-                                                          <option selected data-tokens="metric cup" value="metric cup">Metric Cup(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="metric cup" value="metric cup">Metric Cup(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "fluid ounce" %}
-                                                          <option selected data-tokens="fluid ounce" value="fluid ounce">Fluid Ounce(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="fluid ounce" value="fluid ounce">Fluid Ounce(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "imperial cup" %}
-                                                          <option selected data-tokens="imperial cup" value="imperial cup">Imperial Cup(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="imperial cup" value="imperial cup">Imperial Cup(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "pint" %}
-                                                          <option selected data-tokens="pint" value="pint">Pint(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="pint" value="pint">Pint(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "quart" %}
-                                                          <option selected data-tokens="quart" value="quart">Quart(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="quart" value="quart">Quart(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "gallon" %}
-                                                          <option selected data-tokens="gallon" value="gallon">Gallon(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="gallon" value="gallon">Gallon(s)</option>
-                                                          {% endif %}
-                                                      </optgroup>
-                                                      <optgroup label="Others">
-                                                          {% if i.measurement_type == "drop" %}
-                                                          <option selected data-tokens="drop" value="drop">Drop(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="drop" value="drop">Drop(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "smidgen" %}
-                                                          <option selected data-tokens="smidgen" value="smidgen">Smidgen(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="smidgen" value="smidgen">Smidgen(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "pinch" %}
-                                                          <option selected data-tokens="pinch" value="pinch">Pinch(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="pinch" value="pinch">Pinch(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "dash" %}
-                                                          <option selected data-tokens="dash" value="dash">Dash(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="dash" value="dash">Dash(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "tablespoon" %}
-                                                          <option selected data-tokens="tablespoon" value="tablespoon">Tablespoon(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="tablespoon" value="tablespoon">Tablespoon(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "teaspoon" %}
-                                                          <option selected data-tokens="teaspoon" value="teaspoon">Teaspoon(s)</option>
-                                                          {% else %}
-                                                          <option data-tokens="teaspoon" value="teaspoon">Teaspoon(s)</option>
-                                                          {% endif %}
-                                                          {% if i.measurement_type == "no units" %}
-                                                          <option selected data-tokens="no units" value="no units">No Units</option>
-                                                          {% else %}
-                                                          <option data-tokens="no units" value="no units">No Units</option>
-                                                          {% endif %}
-                                                      </optgroup>
+                                                    <select class="selectpicker" name="ingredient_list_measurement"
+                                                        title="Nothing Selected" data-live-search="true"
+                                                        data-width="100%" data-dropup-auto="false" data-size="10">
+                                                        <optgroup label="Weight">
+                                                            {% if i.measurement_type == "gram" %}
+                                                            <option selected data-tokens="gram" value="gram">Gram(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="gram" value="gram">Gram(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "kilogram" %}
+                                                            <option selected data-tokens="kilogram" value="kilogram">
+                                                                Kilogram(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="kilogram" value="kilogram">Kilogram(s)
+                                                            </option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "ounce" %}
+                                                            <option selected data-tokens="ounce" value="ounce">Ounce(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="ounce" value="ounce">Ounce(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "pound" %}
+                                                            <option selected data-tokens="pound" value="pound">Pound(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="pound" value="pound">Pound(s)</option>
+                                                            {% endif %}
+                                                        </optgroup>
+                                                        <optgroup label="Length">
+                                                            {% if i.measurement_type == "centimetre" %}
+                                                            <option selected data-tokens="centimetre"
+                                                                value="centimetre">Centimetre(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="centimetre" value="centimetre">
+                                                                Centimetre(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "inch" %}
+                                                            <option selected data-tokens="inch" value="inch">Inch(es)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="inch" value="inch">Inch(es)</option>
+                                                            {% endif %}
+                                                        </optgroup>
+                                                        <optgroup label="Volume">
+                                                            {% if i.measurement_type == "milliliter" %}
+                                                            <option selected data-tokens="milliliter"
+                                                                value="milliliter">Milliliter(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="milliliter" value="milliliter">
+                                                                Milliliter(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "liter" %}
+                                                            <option selected data-tokens="liter" value="liter">Liter(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="liter" value="liter">Liter(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "metric cup" %}
+                                                            <option selected data-tokens="metric cup"
+                                                                value="metric cup">Metric Cup(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="metric cup" value="metric cup">Metric
+                                                                Cup(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "fluid ounce" %}
+                                                            <option selected data-tokens="fluid ounce"
+                                                                value="fluid ounce">Fluid Ounce(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="fluid ounce" value="fluid ounce">Fluid
+                                                                Ounce(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "imperial cup" %}
+                                                            <option selected data-tokens="imperial cup"
+                                                                value="imperial cup">Imperial Cup(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="imperial cup" value="imperial cup">
+                                                                Imperial Cup(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "pint" %}
+                                                            <option selected data-tokens="pint" value="pint">Pint(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="pint" value="pint">Pint(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "quart" %}
+                                                            <option selected data-tokens="quart" value="quart">Quart(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="quart" value="quart">Quart(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "gallon" %}
+                                                            <option selected data-tokens="gallon" value="gallon">
+                                                                Gallon(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="gallon" value="gallon">Gallon(s)
+                                                            </option>
+                                                            {% endif %}
+                                                        </optgroup>
+                                                        <optgroup label="Others">
+                                                            {% if i.measurement_type == "drop" %}
+                                                            <option selected data-tokens="drop" value="drop">Drop(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="drop" value="drop">Drop(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "smidgen" %}
+                                                            <option selected data-tokens="smidgen" value="smidgen">
+                                                                Smidgen(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="smidgen" value="smidgen">Smidgen(s)
+                                                            </option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "pinch" %}
+                                                            <option selected data-tokens="pinch" value="pinch">Pinch(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="pinch" value="pinch">Pinch(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "dash" %}
+                                                            <option selected data-tokens="dash" value="dash">Dash(s)
+                                                            </option>
+                                                            {% else %}
+                                                            <option data-tokens="dash" value="dash">Dash(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "tablespoon" %}
+                                                            <option selected data-tokens="tablespoon"
+                                                                value="tablespoon">Tablespoon(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="tablespoon" value="tablespoon">
+                                                                Tablespoon(s)</option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "teaspoon" %}
+                                                            <option selected data-tokens="teaspoon" value="teaspoon">
+                                                                Teaspoon(s)</option>
+                                                            {% else %}
+                                                            <option data-tokens="teaspoon" value="teaspoon">Teaspoon(s)
+                                                            </option>
+                                                            {% endif %}
+                                                            {% if i.measurement_type == "no units" %}
+                                                            <option selected data-tokens="no units" value="no units">No
+                                                                Units</option>
+                                                            {% else %}
+                                                            <option data-tokens="no units" value="no units">No Units
+                                                            </option>
+                                                            {% endif %}
+                                                        </optgroup>
                                                     </select>
                                                 </div>
                                                 <div class="col-3">
-                                                    <select class="selectpicker" name="ingredient_list_ingredient" title="Nothing Selected" data-live-search="true" data-width="100%" data-dropup-auto="false" data-size="10">
+                                                    <select class="selectpicker" name="ingredient_list_ingredient"
+                                                        title="Nothing Selected" data-live-search="true"
+                                                        data-width="100%" data-dropup-auto="false" data-size="10">
                                                         {% for j in all_available_ingredients %}
                                                         {% if j.id == i.ingredient_id %}
-                                                        <option value="{{j.id}}" data-tokens="{{j.name}}" selected>{{j.name | title}}</option>
+                                                        <option value="{{j.id}}" data-tokens="{{j.name}}" selected>
+                                                            {{j.name | title}}</option>
                                                         {% else %}
-                                                        <option value="{{j.id}}" data-tokens="{{j.name}}">{{j.name | title}}</option>
+                                                        <option value="{{j.id}}" data-tokens="{{j.name}}">
+                                                            {{j.name | title}}</option>
                                                         {% endif %}
                                                         {% endfor %}
                                                     </select>
                                                 </div>
                                                 <div class="col-3">
-                                                    <input type="text" class="form-control ingredient_list_item" name="ingredient_list_special" value="{{i.extra_information|title}}"/>
+                                                    <input type="text" class="form-control ingredient_list_item"
+                                                        name="ingredient_list_special"
+                                                        value="{{i.extra_information|title}}" />
                                                 </div>
                                                 <div class="col-1">
-                                                    <button class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
+                                                    <button
+                                                        class="btn btn-outline-danger ml-2 remove_step_button">&times</button>
                                                 </div>
                                             </div>
                                             {% endfor %}
                                         </div>
-                                        <button class="btn btn-primary" id="add_next_ingredient_button">Add a new ingredient</button>
+                                        <button class="btn btn-primary" id="add_next_ingredient_button">Add a new
+                                            ingredient</button>
                                     </div>
                                 </div>
                             </div>
@@ -266,31 +323,35 @@
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="allergens">Allergens:</label>
-                                        <select class="form-control" id="allergen_selection_list" name="allergens" multiple>
-                                                    {% for i in all_available_categories[0] %}
-                                                        {% if i.id in current_post_categories[0] %}
-                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
-                                                        {% else %}
-                                                        <option value="{{i.id}}">{{i.name | title}}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    </select>
-                                        <small id="allergens_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                        <select class="form-control" id="allergen_selection_list" name="allergens"
+                                            multiple>
+                                            {% for i in all_available_categories[0] %}
+                                            {% if i.id in current_post_categories[0] %}
+                                            <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                            {% else %}
+                                            <option value="{{i.id}}">{{i.name | title}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <small id="allergens_Help" class="form-text text-muted">Hold down the
+                                            control/command button to select multiple options.</small>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="cooking_styles">Cooking Style:</label>
-                                        <select class="form-control" id="cooking_style_selection_list" name="cooking_styles" multiple>
-                                                    {% for i in all_available_categories[1] %}
-                                                    {% if i.id in current_post_categories[1] %}
-                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
-                                                        {% else %}
-                                                        <option value="{{i.id}}">{{i.name | title}}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    </select>
-                                        <small id="cooking_styles_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                        <select class="form-control" id="cooking_style_selection_list"
+                                            name="cooking_styles" multiple>
+                                            {% for i in all_available_categories[1] %}
+                                            {% if i.id in current_post_categories[1] %}
+                                            <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                            {% else %}
+                                            <option value="{{i.id}}">{{i.name | title}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <small id="cooking_styles_Help" class="form-text text-muted">Hold down the
+                                            control/command button to select multiple options.</small>
                                     </div>
                                 </div>
                             </div>
@@ -298,31 +359,35 @@
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="cuisines">Cuisine:</label>
-                                        <select class="form-control" id="cuisine_selection_list" name="cuisines" multiple>
-                                                    {% for i in all_available_categories[2] %}
-                                                    {% if i.id in current_post_categories[2] %}
-                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
-                                                        {% else %}
-                                                        <option value="{{i.id}}">{{i.name | title}}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    </select>
-                                        <small id="cuisines_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                        <select class="form-control" id="cuisine_selection_list" name="cuisines"
+                                            multiple>
+                                            {% for i in all_available_categories[2] %}
+                                            {% if i.id in current_post_categories[2] %}
+                                            <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                            {% else %}
+                                            <option value="{{i.id}}">{{i.name | title}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <small id="cuisines_Help" class="form-text text-muted">Hold down the
+                                            control/command button to select multiple options.</small>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="diet_health_types">Diet & Health:</label>
-                                        <select class="form-control" id="diet_health_type_selection_list" name="diet_health_types" multiple>
-                                                    {% for i in all_available_categories[3] %}
-                                                    {% if i.id in current_post_categories[3] %}
-                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
-                                                        {% else %}
-                                                        <option value="{{i.id}}">{{i.name | title}}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    </select>
-                                        <small id="diet_health_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                        <select class="form-control" id="diet_health_type_selection_list"
+                                            name="diet_health_types" multiple>
+                                            {% for i in all_available_categories[3] %}
+                                            {% if i.id in current_post_categories[3] %}
+                                            <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                            {% else %}
+                                            <option value="{{i.id}}">{{i.name | title}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <small id="diet_health_types_Help" class="form-text text-muted">Hold down the
+                                            control/command button to select multiple options.</small>
                                     </div>
                                 </div>
                             </div>
@@ -330,31 +395,35 @@
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="dish_types">Dish Type:</label>
-                                        <select class="form-control" id="dish_type_selection_list" name="dish_types" multiple>
-                                                    {% for i in all_available_categories[4] %}
-                                                    {% if i.id in current_post_categories[4] %}
-                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
-                                                        {% else %}
-                                                        <option value="{{i.id}}">{{i.name | title}}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    </select>
-                                        <small id="dish_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                        <select class="form-control" id="dish_type_selection_list" name="dish_types"
+                                            multiple>
+                                            {% for i in all_available_categories[4] %}
+                                            {% if i.id in current_post_categories[4] %}
+                                            <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                            {% else %}
+                                            <option value="{{i.id}}">{{i.name | title}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <small id="dish_types_Help" class="form-text text-muted">Hold down the
+                                            control/command button to select multiple options.</small>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <div class="form-group">
                                         <label for="meal_types">Meal Type:</label>
-                                        <select class="form-control" id="meal_type_selection_list" name="meal_types" multiple>
-                                                    {% for i in all_available_categories[5] %}
-                                                    {% if i.id in current_post_categories[5] %}
-                                                        <option value="{{i.id}}" selected>{{i.name | title}}</option>
-                                                        {% else %}
-                                                        <option value="{{i.id}}">{{i.name | title}}</option>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    </select>
-                                        <small id="meal_types_Help" class="form-text text-muted">Hold down the control/command button to select multiple options.</small>
+                                        <select class="form-control" id="meal_type_selection_list" name="meal_types"
+                                            multiple>
+                                            {% for i in all_available_categories[5] %}
+                                            {% if i.id in current_post_categories[5] %}
+                                            <option value="{{i.id}}" selected>{{i.name | title}}</option>
+                                            {% else %}
+                                            <option value="{{i.id}}">{{i.name | title}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <small id="meal_types_Help" class="form-text text-muted">Hold down the
+                                            control/command button to select multiple options.</small>
                                     </div>
                                 </div>
                             </div>
@@ -375,12 +444,14 @@
 {% block jquery_script_section %}
 <script>
     /* global $ */
-    $(function() {
-        $( "#recipe_procedure_div" ).on( "click", " #add_next_step_button", function( event ) {
+    $(function () {
+        $("#recipe_procedure_div").on("click", " #add_next_step_button", function (event) {
             event.preventDefault();
-            $("#recipe_procedure_ordered_list").append("<li><input type=\"text\" class=\"form-control list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>");
+            $("#recipe_procedure_ordered_list").append(
+                "<li><input type=\"text\" class=\"form-control list_item_custom_css recipe_procedure_item\" name=\"recipe_procedure\"/><button class=\"btn btn-outline-danger ml-2 remove_step_button\">&times;</button></li>"
+                );
         });
-        $( "#ingredient_list_big_div" ).on( "click", " #add_next_ingredient_button", function( event ) {
+        $("#ingredient_list_big_div").on("click", " #add_next_ingredient_button", function (event) {
             event.preventDefault();
             $("#ingredient_list_div").append(`<div class="form-row my-2">
                                                 <div class="col-2">
@@ -434,13 +505,13 @@
                                                 </div>
                                             </div>
                                                         `);
-        $('.selectpicker').selectpicker('refresh');
+            $('.selectpicker').selectpicker('refresh');
         });
-        $( "#recipe_procedure_div" ).on( "click", ".remove_step_button", function( event ) {
+        $("#recipe_procedure_div").on("click", ".remove_step_button", function (event) {
             event.preventDefault();
             $(this).parent().remove();
         });
-        $( "#ingredient_list_div" ).on( "click", ".remove_step_button", function( event ) {
+        $("#ingredient_list_div").on("click", ".remove_step_button", function (event) {
             event.preventDefault();
             $(this).parent().parent().remove();
         });
@@ -451,18 +522,21 @@
 {% block page_specific_css_section %}
 <style>
     .list_item_custom_css {
-        display:inline;
-        width:85%;
+        display: inline;
+        width: 85%;
     }
+
     #recipe_procedure_ordered_list {
-        font-size:x-large;
+        font-size: x-large;
     }
+
     .remove_step_button {
-        font-size:x-large;
-        width:52px;
+        font-size: x-large;
+        width: 52px;
     }
-    .selectpicker + button {
-        height:52px;
+
+    .selectpicker+button {
+        height: 52px;
     }
 </style>
 {% endblock %}

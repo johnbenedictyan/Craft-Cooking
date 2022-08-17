@@ -15,7 +15,9 @@
                         {% if not i.post_recipe_description is sameas None %}
                         <p class="mb-md-5">{{i.post_recipe_description}}</p>
                         {% endif %}
-                        <p><a href="{{ url_for('post', post_id=i.post_id) }}" class="btn btn-black px-3 px-md-4 py-3">Read More <span class="icon-arrow_forward ml-lg-4"></span></a></p>
+                        <p><a href="{{ url_for('post', post_id=i.post_id) }}"
+                                class="btn btn-black px-3 px-md-4 py-3">Read More <span
+                                    class="icon-arrow_forward ml-lg-4"></span></a></p>
                     </div>
                 </div>
 
@@ -36,12 +38,14 @@
         <div class="row">
             <div class="col-md-6 order-md-last col-lg-6 ftco-animate">
                 <div class="blog-entry">
-                    <div class="img img-big d-flex align-items-end" style="background-image: url({{ url_for('static', filename='images/image_2.jpg') }});">
+                    <div class="img img-big d-flex align-items-end"
+                        style="background-image: url({{ url_for('static', filename='images/image_2.jpg') }});">
                         <div class="overlay"></div>
                         <div class="text">
                             <span class="subheading">Food</span>
                             <h3><a href="single.html">Tasty &amp; Delicious Foods</a></h3>
-                            <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                            <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span
+                                        class="icon-arrow_forward ml-4"></span></a></p>
                         </div>
                     </div>
                 </div>
@@ -50,49 +54,61 @@
                 <div class="row">
                     <div class="col-md-6 ftco-animate">
                         <div class="blog-entry">
-                            <a href="single.html" class="img d-flex align-items-end" style="background-image: url({{ url_for('static', filename='images/image_1.jpg') }});">
+                            <a href="single.html" class="img d-flex align-items-end"
+                                style="background-image: url({{ url_for('static', filename='images/image_1.jpg') }});">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March 01, 2018</span></p>
+                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March
+                                        01, 2018</span></p>
                                 <h3><a href="single.html">Tasty &amp; Delicious Foods</a></h3>
-                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span
+                                            class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 ftco-animate">
                         <div class="blog-entry">
-                            <a href="single.html" class="img d-flex align-items-end" style="background-image: url({{ url_for('static', filename='images/image_3.jpg') }});">
+                            <a href="single.html" class="img d-flex align-items-end"
+                                style="background-image: url({{ url_for('static', filename='images/image_3.jpg') }});">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March 01, 2018</span></p>
+                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March
+                                        01, 2018</span></p>
                                 <h3><a href="single.html">Tasty &amp; Delicious Foods from Scotland</a></h3>
-                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span
+                                            class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 ftco-animate">
                         <div class="blog-entry">
-                            <a href="single.html" class="img d-flex align-items-end" style="background-image: url({{ url_for('static', filename='images/image_4.jpg') }});">
+                            <a href="single.html" class="img d-flex align-items-end"
+                                style="background-image: url({{ url_for('static', filename='images/image_4.jpg') }});">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March 01, 2018</span></p>
+                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March
+                                        01, 2018</span></p>
                                 <h3><a href="single.html">Tasty &amp; Delicious Foods</a></h3>
-                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span
+                                            class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 ftco-animate">
                         <div class="blog-entry">
-                            <a href="single.html" class="img d-flex align-items-end" style="background-image: url({{ url_for('static', filename='images/image_5.jpg') }});">
+                            <a href="single.html" class="img d-flex align-items-end"
+                                style="background-image: url({{ url_for('static', filename='images/image_5.jpg') }});">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March 01, 2018</span></p>
+                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March
+                                        01, 2018</span></p>
                                 <h3><a href="single.html">Tasty &amp; Delicious Foods</a></h3>
-                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="single.html" class="btn-custom">Read More <span
+                                            class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
@@ -115,31 +131,43 @@
                 <div class="row">
                     <div class="col-md-4 ftco-animate">
                         <div class="blog-entry">
-                            <a href="single.html" class="img-2"><img src="{{ url_for('static', filename='images/blog-1.jpg') }}" class="img-fluid" alt="Colorlib Template"></a>
+                            <a href="single.html" class="img-2"><img
+                                    src="{{ url_for('static', filename='images/blog-1.jpg') }}" class="img-fluid"
+                                    alt="Colorlib Template"></a>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March 01, 2018</span></p>
+                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March
+                                        01, 2018</span></p>
                                 <h3><a href="#">Tasty &amp; Delicious Foods</a></h3>
-                                <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span
+                                            class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 ftco-animate">
                         <div class="blog-entry">
-                            <a href="single.html" class="img-2"><img src="{{ url_for('static', filename='images/blog-2.jpg') }}" class="img-fluid" alt="Colorlib Template"></a>
+                            <a href="single.html" class="img-2"><img
+                                    src="{{ url_for('static', filename='images/blog-2.jpg') }}" class="img-fluid"
+                                    alt="Colorlib Template"></a>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March 01, 2018</span></p>
+                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March
+                                        01, 2018</span></p>
                                 <h3><a href="#">Tasty &amp; Delicious Foods</a></h3>
-                                <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span
+                                            class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 ftco-animate">
                         <div class="blog-entry">
-                            <a href="single.html" class="img-2"><img src="{{ url_for('static', filename='images/blog-3.jpg') }}" class="img-fluid" alt="Colorlib Template"></a>
+                            <a href="single.html" class="img-2"><img
+                                    src="{{ url_for('static', filename='images/blog-3.jpg') }}" class="img-fluid"
+                                    alt="Colorlib Template"></a>
                             <div class="text pt-3">
-                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March 01, 2018</span></p>
+                                <p class="meta d-flex"><span class="pr-3">Dessert</span><span class="ml-auto pl-3">March
+                                        01, 2018</span></p>
                                 <h3><a href="#">Tasty &amp; Delicious Foods</a></h3>
-                                <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                <p class="mb-0"><a href="single.html" class="btn btn-black py-2">Read More <span
+                                            class="icon-arrow_forward ml-4"></span></a></p>
                             </div>
                         </div>
                     </div>
@@ -150,7 +178,8 @@
                 <div class="sidebar-wrap">
                     <div class="sidebar-box p-4 about text-center ftco-animate">
                         <h2 class="heading mb-4">About Me</h2>
-                        <img src="{{ url_for('static', filename='images/default-avater.jpg') }}" class="img-fluid" alt="Colorlib Template">
+                        <img src="{{ url_for('static', filename='images/default-avater.jpg') }}" class="img-fluid"
+                            alt="Colorlib Template">
                         <div class="text pt-4">
                             <p>Hi! My name is <strong>John Benedict</strong> and I created this website.</p>
                         </div>
@@ -184,24 +213,28 @@
                 <div class="row">
                     <div class="col-md-6 col-lg-6 ftco-animate">
                         <div class="blog-entry">
-                            <div class="img img-big img-big-2 d-flex align-items-end" style="background-image: url({{ url_for('static', filename='images/image_1.jpg') }});">
+                            <div class="img img-big img-big-2 d-flex align-items-end"
+                                style="background-image: url({{ url_for('static', filename='images/image_1.jpg') }});">
                                 <div class="overlay"></div>
                                 <div class="text">
                                     <span class="subheading">Food</span>
                                     <h3><a href="#">ham sandwich on white surface</a></h3>
-                                    <p class="mb-0"><a href="#" class="btn-custom">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                    <p class="mb-0"><a href="#" class="btn-custom">Read More <span
+                                                class="icon-arrow_forward ml-4"></span></a></p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-6 ftco-animate">
                         <div class="blog-entry">
-                            <div class="img img-big img-big-2 d-flex align-items-end" style="background-image: url({{ url_for('static', filename='images/image_3.jpg') }});">
+                            <div class="img img-big img-big-2 d-flex align-items-end"
+                                style="background-image: url({{ url_for('static', filename='images/image_3.jpg') }});">
                                 <div class="overlay"></div>
                                 <div class="text">
                                     <span class="subheading">Lifestyle</span>
                                     <h3><a href="#">White and red ceramic plate</a></h3>
-                                    <p class="mb-0"><a href="#" class="btn-custom">Read More <span class="icon-arrow_forward ml-4"></span></a></p>
+                                    <p class="mb-0"><a href="#" class="btn-custom">Read More <span
+                                                class="icon-arrow_forward ml-4"></span></a></p>
                                 </div>
                             </div>
                         </div>
@@ -213,15 +246,17 @@
                     <div class="sidebar-box categories text-center ftco-animate">
                         <h2 class="heading mb-4">Top Categories</h2>
                         <ul class="category-image">
-                          {% for i in top_categories %}
-                          <li class="category-image-wrapper">
-                              <a href="{{ url_for('single_category', category_id=i.category_id) }}" class="img d-flex align-items-center justify-content-center text-center" style="background-image: url({{ url_for('static', filename='images/{}'.format(i.category_uri)) }});">
-                                  <div class="text">
-                                      <h3>{{i.category_name|title}}</h3>
-                                  </div>
-                              </a>
-                          </li>
-                          {% endfor %}
+                            {% for i in top_categories %}
+                            <li class="category-image-wrapper">
+                                <a href="{{ url_for('single_category', category_id=i.category_id) }}"
+                                    class="img d-flex align-items-center justify-content-center text-center"
+                                    style="background-image: url({{ url_for('static', filename='images/{}'.format(i.category_uri)) }});">
+                                    <div class="text">
+                                        <h3>{{i.category_name|title}}</h3>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -237,7 +272,8 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-md-8 text-wrap text-center heading-section ftco-animate">
                     <h2 class="mb-4"><span>Subcribe to our Newsletter</span></h2>
-                    <p>A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+                    <p>A small river named Duden flows by their place and supplies it with the necessary regelialia. It
+                        is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
                     <div class="row d-flex justify-content-center mt-4 mb-4">
                         <div class="col-md-8">
                             <form action="#" class="subscribe-form">
@@ -257,8 +293,8 @@
 
 {% block jquery_script_section %}
 <script>
-/* global $ */
-    $(function(){
+    /* global $ */
+    $(function () {
         $(".navbar-nav li").removeClass("active");
         $("#home_nav_item").addClass("active");
     });
